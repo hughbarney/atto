@@ -1,0 +1,62 @@
+# Sample Configuration File
+# EMACS-like Interface with ANSI Function Keys
+# Anthony's Editor January 93
+# Public Domain 1991, 1993 by Anthony Howe.  No warranty.
+#
+# Hugh Barney, Mar 2013, Updated Key Bindings for closer compatibility to Emacs
+# Extended keyboard keys match codes generated under linux
+#
+#.help_off
+.cursor_up     ^[[A
+.cursor_down   ^[[B
+.cursor_left   ^[[D
+.cursor_right  ^[[C
+.line_left     ^A
+# home
+#.line_left     ^[OH
+.cursor_left   ^B
+.delete_right  ^D
+#.delete_right  ^[[3~
+.line_right    ^E
+# end
+#.line_right    ^[OF
+.cursor_right  ^F
+.delete_left   ^H
+#.delete_left   \0x7f
+.redraw        ^L
+.cursor_down   ^N
+.cursor_up     ^P
+.undo          ^U
+.page_down     ^V
+#.page_down     ^[[6~
+.file_top      ^[<
+.file_bottom   ^[>
+.page_up       ^[v
+#.page_up       ^[[5~
+.word_left     ^[b
+.word_right    ^[f
+#
+# mark=CTRL+SPACE
+.block         ^@
+.cut           ^W
+.paste         ^Y
+#.macro_define
+#.macro_define
+#.macro_define
+#.macro_define
+# copy, esc-w define as a macro, cut, paste back
+# does not work
+#.macro_define  ^[w ^@^E^W^Y
+# delete to eol
+#.macro_define
+# does not work - dont know why
+.macro_define ^K ^@^E^W
+#.macro_define \011 ^@^E^W
+#
+# file commands
+.file_read     ^X^F
+# ^X^S wont work
+.file_write    ^X^D
+#.quit_ask      ^C
+.quit          ^X^C
+.show_version  ^[^[
