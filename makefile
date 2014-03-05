@@ -6,9 +6,10 @@
 # Public Domain 1991, 1993 by Anthony Howe.  No warranty.
 #
 
-CC      = cc
+#CC      = cc -Wunused-function
+CC      = cc -Wunused-function
 #CFLAGS  = -O -DBSD=1
-CFLAGS  = -O
+CFLAGS  = -O -Wall
 
 LD      = cc
 LDFLAGS =

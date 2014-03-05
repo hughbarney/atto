@@ -10,11 +10,7 @@
 #include <string.h>
 #include "header.h"
 
-#ifdef __STDC__
 static void dispmsg(void);
-#else
-static void dispmsg();
-#endif
 
 /*
  * Reverse scan for start of logical line containing offset.

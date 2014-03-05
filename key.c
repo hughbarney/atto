@@ -32,10 +32,9 @@ static int k_help _((FILE *, char *, keymap_t *));
 static int k_itself _((FILE *, char *, keymap_t *));
 static int k_kill _((FILE *, char *, keymap_t *));
 static int k_token _((FILE *, char *, keymap_t *));
-static keymap_t *growkey _((keymap_t *, size_t));
 static int ipush _((char *));
 static int ipop _((void));
-static void iflush _((void));
+//static void iflush _((void));
 
 keyinit_t keywords[] = {
 	{ K_INSERT_ENTER ,"K_INSERT_ENTER" , "                        ", ".insert_enter", k_default },
@@ -58,9 +57,9 @@ keyinit_t keywords[] = {
 	{ K_LINE_RIGHT   ,"K_LINE_RIGHT"   , "C-e end-of-line         ", ".line_right", k_default },
 	{ K_FILE_TOP     ,"K_FILE_TOP"     , "esc < beg-of-buf        ", ".file_top", k_default },
 	{ K_FILE_BOTTOM  ,"K_FILE_BOTTOM"  , "esc > end-of-buf        ", ".file_bottom", k_default },
-	{ K_HELP         ,"K_HELP"         , "                        ", ".help", k_default },
-	{ K_HELP_OFF     ,"K_HELP_OFF"     , "                        ", ".help_off", k_token },
-	{ K_HELP_TEXT    ,"K_HELP_TEXT"    , "                        ", ".help_text", k_help },
+	//	{ K_HELP         ,"K_HELP"         , "                        ", ".help", k_default },
+	//	{ K_HELP_OFF     ,"K_HELP_OFF"     , "                        ", ".help_off", k_token },
+	//	{ K_HELP_TEXT    ,"K_HELP_TEXT"    , "                        ", ".help_text", k_help },
 	{ K_MACRO        ,"K_MACRO"        , "                        ", ".macro", k_default },
 	{ K_MACRO_DEFINE ,"K_MACRO_DEFINE" , "                        ", ".macro_define", k_define },
 	{ K_QUIT         ,"K_QUIT"         , "C-x C-c                 ", ".quit", k_default },
@@ -83,197 +82,6 @@ char *str, *buf;
 	return 1;
 }
 
-
-#ifdef OLD_CODE
-
-/*
- * Encode the given string into the supplied buffer that will be
- * large enough to contain the string and the terminating '\0'.
- * Return length of string string encoded in buffer; or 0 for
- * an error.
- */
-size_t
-encodekey(str, buf)
-char *str, *buf;
-{
-        long number;
-        char *ptr, *ctrl;
-        static char escmap[] = "bfnrst";
-        static char escvalue[] = "\b\f\n\r \t";
-        static char control[] = "@abcdefghijklmnopqrstuvwxyz[\\]^_";
-
-		char *ostr = str;
-		
-        for (ptr = buf; *str != '\0'; ++ptr) {
-                switch (*str) {
-                case '^':
-                        ++str;
-                        if (*str == '?') {
-                                /* ^? equals ASCII DEL character. */
-                                *ptr = 0x7f;
-								debug("^ptr=%c\n",*ptr);
-                        } else {
-                                /* Non-ASCII dependant control key mapping. */
-                                if (isupper(*str))
-                                        *str = tolower(*str);
-                                if ((ctrl = strchr(control, *str)) == NULL)
-                                        return (0);
-                                *ptr = (char) (ctrl - control);
-								debug("|ptr=%c\n",*ptr);
-                        }
-                        ++str;
-                        break;
-                case '\\':
-                        /* Escapes. */
-                        ++str;
-                        if (isdigit(*str)) {
-                                /* Numeric escapes allow for
-                                 *  octal       \0nnn
-                                 *  hex         \0xnn
-                                 *  decimal     \nnn
-                                 */
-                                number = strtol(str, &str, 0);
-                                if (255 < number)
-                                        return (0);
-                                *ptr = (char) number;
-								debug("\\ptr=%c\n",*ptr);								
-                                break;
-                        }
-                        if ((ctrl = strchr(escmap, *str)) != NULL) {
-                                *ptr = escvalue[ctrl - escmap];
-                                ++str;
-								debug("Eptr=%c\n",*ptr);								
-                                break;
-                        }
-                        /* Literal escapes. */
-                default:
-                        /* Character. */
-                        *ptr = *str++;
-						debug("Dptr=%c\n",*ptr);								
-                }
-        }
-        *ptr = '\0';
-
-		debug("encode: '%s'=>'%s'(%d)\n", ostr, buf, strlen(buf));
-        return ((size_t) (ptr - buf));
-
-}
-
-/*
- * Read a configuration file from either the current directory or
- * the user's home directory.  Return an error status.  Pass-back
- * either a pointer to a key mapping table, or NULL if an error
- * occured.
- */
-int
-initkey(fn, keys)
-char *fn;
-keymap_t **keys;
-{
-        FILE *fp;
-        int error;
-        keyinit_t *kp;
-        keymap_t *array;
-        char *buf, *token;
-        size_t len, count;
-
-        *keys = NULL;
-        if ((fp = openrc(fn)) == NULL)
-                return (INITKEY_OPEN);
-
-        /* Allocate an array big enough to hold at least one of everything. */
-        if ((array = growkey(NULL, len = K_MAX_CODES)) == NULL) {
-                error = INITKEY_ALLOC;
-                goto error1;
-        }
-
-        count = 0;
-        while ((error = getblock(fp, "\n", &buf)) != GETBLOCK_EOF) {
-                if (error == GETBLOCK_ALLOC) {
-                        error = INITKEY_ALLOC;
-                        goto error1;
-                }
-
-				debug("buf=%s\n", buf);
-				
-                if (buf[0] != '.'
-                || (token = strtok(buf, blank)) == NULL
-                || (kp = findikey(keywords, strlwr(token))) == NULL) {
-                        free(buf);
-                        continue;
-                }
-
-                array[count].code = kp->code;
-
-				debug("code=%d\n", kp->code);
-				
-				// call the init function
-                if (kp->fn != NULL) {
-                        if (!(*kp->fn)(fp, buf, &array[count])) {
-                                error = INITKEY_ERROR;
-                                goto error1;
-                        }
-                }
-
-				//debug_keyload(&array[count]);
-				
-                ++count;
-
-                if (len <= count) {
-                        keymap_t *new;
-                        len += K_MAX_CODES;
-                        if ((new = growkey(array, len)) == NULL) {
-                                error = INITKEY_ALLOC;
-                                goto error1;
-                        }
-                        array = new;
-                }
-        }
-        error = INITKEY_OK;
-        *keys = array;
-error1:
-        (void) fclose(fp);
-        array[count].code = K_ERROR;
-        if (error != INITKEY_OK)
-                finikey(array);
-        return (error);
-
-}
-
-#endif
-
-void
-finikey(keys)
-keymap_t *keys;
-{
-        keymap_t *kp;
-        if (keys != NULL) {
-                for (kp = keys; kp->code != K_ERROR; ++kp) {
-                        if (kp->lhs != NULL)
-                                free(kp->lhs);
-                }
-                free(keys);
-        }
-
-}
-
-/*
- * .help_text
- *   line(s) of text
- * .end
- *
- * Fetch a block of text.
- */
-static int
-k_help(fp, buf, kp)
-FILE *fp;
-char *buf;
-keymap_t *kp;
-{
-        free(buf);
-        return (getblock(fp, ".end\n", &kp->lhs) == GETBLOCK_OK);
-
-}
 
 /*
  * .function string
@@ -299,6 +107,7 @@ keymap_t *kp;
         return (TRUE);
 
 }
+
 
 /*
  * .macro_define
@@ -417,24 +226,6 @@ char *token;
 
 }
 
-/*
- *
- */
-static keymap_t *
-growkey(array, len)
-keymap_t *array;
-size_t len;
-{
-        keymap_t *new;
-        if (len == 0)
-                return (NULL);
-        len *= sizeof (keymap_t);
-        if (array == NULL)
-                return ((keymap_t *) malloc(len));
-        return ((keymap_t *) realloc(array, len));
-
-}
-
 int
 getkey(keys)
 keymap_t *keys;
@@ -545,22 +336,6 @@ ipop()
                 free(node);
         }
         return (ch);
-
-}
-
-/*
- * Flush the entire input stack.
- */
-static void
-iflush()
-{
-        input_t *node;
-
-        while (input != NULL) {
-                node = istack;
-                istack = istack->next;
-                free(node);
-        }
 
 }
 

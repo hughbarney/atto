@@ -6,43 +6,14 @@
  * Public Domain 1991, 1993 by Anthony Howe.  No warranty.
  */
 
-#ifdef __STDC__
 #include <stdlib.h>
 #include <stdarg.h>
-#endif /* __STDC__ */
-
-#ifdef ATARI_ST
-/* Atari's Sozobon C has ANSI-like libraries
- * and headers but no prototypes.
- */
-#include <stdlib.h>
-#include <stdarg.h>
-#endif /* ATARI_ST */
-
-#ifdef BSD
-#ifndef __STDC__
-#include <varargs.h>
-#define idlok(w,f)
-extern char *getenv();
-extern char *malloc();
-extern char *realloc();
-#endif /* __STDC__ */
-extern char *unctrl();
-#else
-#include <unctrl.h>
-#endif /* BSD */
-
 #include <assert.h>
 #include <curses.h>
 #include "key.h"
 
 #undef _
-#ifdef __STDC__
 #define _(x)    x
-#else
-#define _(x)    ()
-#define const
-#endif
 
 #define VERSION         \
 "AE January 93.  Public Domain 1991, 1993 by Anthony Howe.  No warranty."
@@ -184,10 +155,10 @@ extern void lineinput _((int));
 
 extern void fatal _((msg_t));
 extern void msg _((msg_t, ...));
-extern char *strlwr _((char *));
-extern char *strdup _((const char *));
-extern char *pathname _((char *, char *));
-extern FILE *openrc _((char *));
+//extern char *strlwr _((char *));
+//extern char *strdup _((const char *));
+//extern char *pathname _((char *, char *));
+//extern FILE *openrc _((char *));
 extern int getblock _((FILE *, char *, char **));
 
 extern void display _((void));
