@@ -155,10 +155,6 @@ extern void lineinput _((int));
 
 extern void fatal _((msg_t));
 extern void msg _((msg_t, ...));
-//extern char *strlwr _((char *));
-//extern char *strdup _((const char *));
-//extern char *pathname _((char *, char *));
-//extern FILE *openrc _((char *));
 extern int getblock _((FILE *, char *, char **));
 
 extern void display _((void));

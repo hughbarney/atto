@@ -26,15 +26,10 @@ static input_t *istack = NULL;
 static char blank[] = " \t\r\n";
 
 static int k_default _((FILE *, char *, keymap_t *));
-static int k_define _((FILE *, char *, keymap_t *));
 static int k_erase  _((FILE *, char *, keymap_t *));
-static int k_help _((FILE *, char *, keymap_t *));
-static int k_itself _((FILE *, char *, keymap_t *));
 static int k_kill _((FILE *, char *, keymap_t *));
-static int k_token _((FILE *, char *, keymap_t *));
 static int ipush _((char *));
 static int ipop _((void));
-//static void iflush _((void));
 
 keyinit_t keywords[] = {
 	{ K_INSERT_ENTER ,"K_INSERT_ENTER" , "                        ", ".insert_enter", k_default },
@@ -61,14 +56,14 @@ keyinit_t keywords[] = {
 	//	{ K_HELP_OFF     ,"K_HELP_OFF"     , "                        ", ".help_off", k_token },
 	//	{ K_HELP_TEXT    ,"K_HELP_TEXT"    , "                        ", ".help_text", k_help },
 	{ K_MACRO        ,"K_MACRO"        , "                        ", ".macro", k_default },
-	{ K_MACRO_DEFINE ,"K_MACRO_DEFINE" , "                        ", ".macro_define", k_define },
+	{ K_MACRO_DEFINE ,"K_MACRO_DEFINE" , "                        ", ".macro_define", k_default },
 	{ K_QUIT         ,"K_QUIT"         , "C-x C-c                 ", ".quit", k_default },
 	{ K_QUIT_ASK     ,"K_QUIT_ASK"     , "                        ", ".quit_ask", k_default },
 	{ K_FILE_READ    ,"K_FILE_READ"    , "C-x C-f find-file       ", ".file_read", k_default },
 	{ K_FILE_WRITE   ,"K_FILE_WRITE"   , "C-x C-d write-file      ", ".file_write", k_default },
-	{ K_STTY_ERASE   ,"K_STTY_ERASE"   , "                        ", ".stty_erase", k_erase },
-	{ K_STTY_KILL    ,"K_STTY_KILL"    , "                        ", ".stty_kill", k_kill },
-	{ K_ITSELF       ,"K_ITSELF"       , "                        ", ".itself", k_itself },
+	{ K_STTY_ERASE   ,"K_STTY_ERASE"   , "                        ", ".stty_erase", k_default },
+	{ K_STTY_KILL    ,"K_STTY_KILL"    , "                        ", ".stty_kill", k_default },
+	{ K_ITSELF       ,"K_ITSELF"       , "                        ", ".itself", k_default },
 	{ K_REDRAW       ,"K_REDRAW"       , "C-l                     ", ".redraw", k_default },
 	{ K_SHOW_VERSION ,"K_SHOW_VERSION" , "esc esc show-version    ", ".show_version", k_default },
 	{ K_LITERAL      ,"K_LITERA"       , "                        ", ".literal", k_default },
@@ -110,66 +105,6 @@ keymap_t *kp;
 
 
 /*
- * .macro_define
- * .macro_define lhs rhs
- *
- * The first case is used as a place holder to reserve macro
- * space.  The second case actual defines a macro.
- */
-static int
-k_define(fp, buf, kp)
-FILE *fp;
-char *buf;
-keymap_t *kp;
-{
-        char *tok;
-        size_t lhs, rhs;
-
-        if ((tok = strtok(NULL, blank)) == NULL) {
-                return (k_token(fp, buf, kp));
-        } else if ((lhs = encodekey(tok, buf)) != 0
-        && (tok = strtok(NULL, blank)) != NULL
-        && (rhs = encodekey(tok, buf+lhs+1)) != 0
-        && (kp->lhs = realloc(buf, lhs+rhs+2)) != NULL) {
-                kp->rhs = kp->lhs + lhs + 1;
-                return (TRUE);
-        }
-        free(buf);
-        return (FALSE);
-
-}
-
-/*
- * .token
- */
-static int
-k_token(fp, buf, kp)
-FILE *fp;
-char *buf;
-keymap_t *kp;
-{
-        free(buf);
-        kp->lhs = kp->rhs = NULL;
-        return (TRUE);
-
-}
-
-/*
- * .itself character
- */
-static int
-k_itself(fp, buf, kp)
-FILE *fp;
-char *buf;
-keymap_t *kp;
-{
-        buf[1] = '\0';
-        kp->code = *(unsigned char *) buf;
-        return ((kp->lhs = (char *) realloc(buf, 2)) != NULL);
-
-}
-
-/*
  * .stty_erase
  */
 static int
@@ -199,24 +134,13 @@ keymap_t *kp;
 
 }
 
+
 /*
  * Find token and return corresponding table entry; else NULL.
  */
 keymap_t *
 findkey(kp, token)
 keymap_t *kp;
-char *token;
-{
-        for (; kp->code != K_ERROR; ++kp)
-                if (kp->lhs != NULL && strcmp(token, kp->lhs) == 0)
-                        return (kp);
-        return (NULL);
-
-}
-
-keyinit_t *
-findikey(kp, token)
-keyinit_t *kp;
 char *token;
 {
         for (; kp->code != K_ERROR; ++kp)

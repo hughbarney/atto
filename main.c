@@ -13,7 +13,6 @@
 #include <stdarg.h>
 
 void debug(char *, ...);
-void dump_map();
 void get_hex(char *, char *);
 
 
@@ -71,7 +70,6 @@ char **argv;
                 fatal(f_initscr);
 
 		key_map = keymap2;
-		dump_map();
 		modeless = TRUE;
 		
         noecho();
@@ -104,7 +102,6 @@ char **argv;
         }
         if (scrap != NULL)
                 free(scrap);
-        //finikey(key_map);
         move(LINES-1, 0);
         refresh();
         endwin();
@@ -201,42 +198,3 @@ void debug(char *format, ...)
     fprintf(debug_fp,"%s", buffer);
     fflush(debug_fp);
 }
-		
-void dump_map()
-{
-	keymap_t *kp;
-	keyinit_t *kw;
-	char *key_sym;
-	char lsh[20];
-	char rsh[20];
-	
-	for (kp = key_map; kp->code != K_ERROR; ++kp)
-	{
-
-		kw = find_keyword(kp->code);
-		get_hex(kp->lhs, lsh);
-		
-		if (kp->code == K_MACRO_DEFINE) {
-			get_hex(kp->rhs, rsh);
-			debug(" {%-20s, \"%-25s\", \"%s\",\"%s\"},\n", kw->key_sym, kw->bind_desc, lsh, rsh);
-		}
-		else
-		{
-			debug(" {%-20s, \"%-25s\", \"%s\",\"%s\"},\n", kw->key_sym, kw->bind_desc, lsh, "NULL");
-		}
-	}
-}
-
-void get_hex(char *s, char *buf) {
-	char tbuf[6];
-	char *t;
-	int i;
-	int len = strlen(s);
-
-	strcpy(buf, "");
-	for (t=s, i=0; i<len; i++, t++) {
-		sprintf(tbuf, "\\x%02X", *t);
-		strcat(buf, tbuf);
-	}
-}
-

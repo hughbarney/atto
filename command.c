@@ -18,14 +18,12 @@ void
 top()
 {
         point = 0;
-
 }
 
 void
 bottom()
 {
         epage = point = pos(ebuf);
-
 }
 
 void
@@ -40,7 +38,6 @@ quit_ask()
                         return;
         }
         quit();
-
 }
 
 int
@@ -62,7 +59,6 @@ void
 quit()
 {
         done = 1;
-
 }
 
 void
@@ -89,7 +85,6 @@ left()
 {
         if (0 < point)
                 --point;
-
 }
 
 void
@@ -97,14 +92,12 @@ right()
 {
         if (point < pos(ebuf))
                 ++point;
-
 }
 
 void
 up()
 {
         point = lncolumn(upup(point), col);
-
 }
 
 void
@@ -118,7 +111,6 @@ void
 lnbegin()
 {
         point = segstart(lnstart(point), point);
-
 }
 
 void
@@ -126,7 +118,6 @@ lnend()
 {
         point = dndn(point);
         left();
-
 }
 
 void
@@ -137,7 +128,6 @@ wleft()
                 --point;
         while (isspace(*(p = ptr(point))) && buf < p)
                 --point;
-
 }
 
 void
@@ -161,8 +151,7 @@ pgup()
 
 }
 
-void
-wright()
+void wright()
 {
         char_t *p;
         while (!isspace(*(p = ptr(point))) && p < ebuf)
@@ -172,8 +161,7 @@ wright()
 
 }
 
-void
-insert()
+void insert()
 {
         assert(gap <= egap);
         if (gap == egap && !growgap(CHUNK))
@@ -185,8 +173,7 @@ insert()
 
 }
 
-void
-insert_mode()
+void insert_mode()
 {
         int ch;
         point_t opoint;
