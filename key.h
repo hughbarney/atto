@@ -13,12 +13,7 @@
 #include <sys/types.h>
 
 #undef _
-#ifdef __STDC__
 #define _(x)    x
-#else
-#define _(x)    ()
-#endif
-
 #define K_BUFFER_LENGTH         256
 #define ISFUNCKEY(x)            ((x) < 0)
 
@@ -93,25 +88,9 @@ typedef struct keymap_t {
 
 } keymap_t;
 
-typedef struct keyinit_t {
-	short code;
-	char *key_sym;
-	char *bind_desc;
-	char *lhs;
-	int (*fn) _((FILE *, char *, keymap_t *));
-
-} keyinit_t;
-
-extern int initkey _((char *, keymap_t **));
-extern void finikey _((keymap_t *));
-extern keymap_t *findkey _((keymap_t *, char *));
-extern keyinit_t *findikey _((keyinit_t *, char *));
-extern size_t encodekey _((char *, char *));
 extern int getliteral _((void));
 extern int getkey _((keymap_t *));
 extern int getinput _((char *, int, int));
 extern int ismacro _((void));
-extern keyinit_t *find_keyword(int);
-
 
 #endif /* __key_h__ */

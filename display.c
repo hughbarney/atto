@@ -15,9 +15,7 @@ static void dispmsg(void);
 /*
  * Reverse scan for start of logical line containing offset.
  */
-point_t
-lnstart(off)
-register point_t off;
+point_t lnstart(register point_t off)
 {
         register char_t *p;
         do
@@ -28,27 +26,10 @@ register point_t off;
 }
 
 /*
- * Forward scan for start of logical line following offset.
- */
-point_t
-lnnext(off)
-register point_t off;
-{
-        register char_t *p;
-        do
-                p = ptr(off++);
-        while (p < ebuf && *p != '\n');
-        return (p < ebuf ? off: pos(ebuf));
-
-}
-
-/*
  * Forward scan for start of logical line segment containing 'finish'.
  * A segment of a logical line corresponds to a physical screen line.
  */
-point_t
-segstart(start, finish)
-point_t start, finish;
+point_t segstart(point_t start, point_t finish)
 {
         char_t *p;
         int c = 0;
@@ -66,15 +47,12 @@ point_t start, finish;
                 c += *p == '\t' ? 8 - (c & 7) : 1;
         }
         return (c < COLS ? start : finish);
-
 }
 
 /*
  * Forward scan for start of logical line segment following 'finish'.
  */
-point_t
-segnext(start, finish)
-point_t start, finish;
+point_t segnext(point_t start, point_t finish)
 {
         char_t *p;
         int c = 0;
@@ -89,15 +67,12 @@ point_t start, finish;
                 c += *p == '\t' ? 8 - (c & 7) : 1;
         }
         return (p < ebuf ? scan : pos(ebuf));
-
 }
 
 /*
  * Move up one screen line.
  */
-point_t
-upup(off)
-point_t off;
+point_t upup(point_t off)
 {
         point_t curr = lnstart(off);
         point_t seg = segstart(curr, off);
@@ -106,27 +81,20 @@ point_t off;
         else
                 off = segstart(lnstart(curr-1), curr-1);
         return (off);
-
 }
 
 /*
  * Move down one screen line.
  */
-point_t
-dndn(off)
-point_t off;
+point_t dndn(point_t off)
 {
         return (segnext(lnstart(off), off));
-
 }
 
 /*
  * Return the offset of a column on the specified line.
  */
-point_t
-lncolumn(offset, column)
-point_t offset;
-int column;
+point_t lncolumn(point_t offset, int column)
 {
         int c = 0;
         char_t *p;
@@ -135,11 +103,9 @@ int column;
                 ++offset;
         }
         return (offset);
-
 }
 
-void
-display()
+void display()
 {
         char_t *p;
         int i, j;
@@ -168,14 +134,14 @@ display()
                 } else {
                         i = LINES;
                 }
-                i -= textline;
+                i -= FIRST_LINE;
                 /* Scan backwards the required number of lines. */
                 while (0 < i--)
                         page = upup(page);
         }
 
-        move(textline, 0);
-        i = textline;
+        move(FIRST_LINE, 0);
+        i = FIRST_LINE;
         j = 0;
         epage = page;
         while (1) {
@@ -217,11 +183,9 @@ display()
                 mvaddstr(i, 0, "<< EOF >>");
         move(row, col);
         refresh();
-
 }
 
-static void
-dispmsg()
+static void dispmsg()
 {
         standout();
         move(MSGLINE, 0);
@@ -235,27 +199,4 @@ dispmsg()
         }
         standend();
         clrtoeol();
-
 }
-
-void
-ruler(ncols)
-int ncols;
-{
-        int r, c, col;
-        getyx(stdscr, r, c);
-        for (col = 1; col <= ncols; ++col) {
-                switch (col % 10) {
-                case 0:
-                        mvprintw(r, col - (col < 100 ? 2 : 3), "%d", col);
-                        break;
-                case 5:
-                        addch('5');
-                        break;
-                default:
-                        addch('.');
-                }
-        }
-
-}
-

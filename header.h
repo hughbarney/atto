@@ -77,7 +77,8 @@ extern int msgflag;             /* True if msgline should be displayed. */
 
 extern int row;                 /* Cursor screen row */
 extern int col;                 /* Cursor screen column. */
-extern int textline;            /* First screen line used for text. */
+//extern int textline;            /* First screen line used for text. */
+#define FIRST_LINE 1            /* First screen line used for text. */
 
 extern point_t point;           /* Cursor offset in text buffer. */
 extern point_t pointline;       /* Cursor line number. */
@@ -186,7 +187,6 @@ extern void delete _((void));
 extern void down _((void));
 extern void help _((void));
 extern void insert _((void));
-extern void insert_mode _((void));
 extern void left _((void));
 extern void lnbegin _((void));
 extern void lnend _((void));

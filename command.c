@@ -10,24 +10,19 @@
 #include <string.h>
 #include "header.h"
 
-void prt_macros _((void));
 int yesno _((int));
-int more _((int));
 
-void
-top()
+void top()
 {
         point = 0;
 }
 
-void
-bottom()
+void bottom()
 {
         epage = point = pos(ebuf);
 }
 
-void
-quit_ask()
+void quit_ask()
 {
         if (modified) {
                 standout();
@@ -40,9 +35,7 @@ quit_ask()
         quit();
 }
 
-int
-yesno(flag)
-int flag;
+int yesno(int flag)
 {
         int ch;
 
@@ -55,73 +48,51 @@ int flag;
 
 }
 
-void
-quit()
+void quit()
 {
         done = 1;
 }
 
-void
-redraw()
+void redraw()
 {
-        int col;
-        keymap_t *kp;
-        clear();
-        if (textline != HELPLINE) {
-                move(HELPLINE, 0);
-                /* Display all the help text entries. */
-                for (kp = key_map; kp->code != K_ERROR; ++kp)
-                        if (kp->code == K_HELP_TEXT)
-                                addstr(kp->lhs);
-                ruler(COLS);
-                getyx(stdscr, textline, col);
-        }
-        display();
-
+	clear();
+	display();
 }
 
-void
-left()
+void left()
 {
         if (0 < point)
                 --point;
 }
 
-void
-right()
+void right()
 {
         if (point < pos(ebuf))
                 ++point;
 }
 
-void
-up()
+void up()
 {
         point = lncolumn(upup(point), col);
 }
 
-void
-down()
+void down()
 {
         point = lncolumn(dndn(point), col);
-
 }
 
-void
-lnbegin()
+void lnbegin()
 {
         point = segstart(lnstart(point), point);
 }
 
-void
-lnend()
+void lnend()
 {
         point = dndn(point);
         left();
 }
 
-void
-wleft()
+void wleft()
 {
         char_t *p;
         while (!isspace(*(p = ptr(point))) && buf < p)
@@ -130,25 +101,21 @@ wleft()
                 --point;
 }
 
-void
-pgdown()
+void pgdown()
 {
         page = point = upup(epage);
-        while (textline < row--)
+        while (FIRST_LINE < row--)
                 down();
         epage = pos(ebuf);
-
 }
 
-void
-pgup()
+void pgup()
 {
         int i = LINES;
-        while (textline < --i) {
+        while (FIRST_LINE < --i) {
                 page = upup(page);
                 up();
         }
-
 }
 
 void wright()
@@ -158,7 +125,6 @@ void wright()
                 ++point;
         while (isspace(*(p = ptr(point))) && p < ebuf)
                 ++point;
-
 }
 
 void insert()
@@ -170,39 +136,9 @@ void insert()
         *gap++ = input == '\r' ? '\n' : input;
         modified = TRUE;
         point = pos(egap);
-
 }
 
-void insert_mode()
-{
-        int ch;
-        point_t opoint;
-        point = opoint = movegap(point);
-        undoset();
-        while ((ch = getkey(key_mode)) != K_INSERT_EXIT) {
-                if (ch == K_STTY_ERASE) {
-                        if (opoint < point) {
-                                --gap;
-                                modified = TRUE;
-                        }
-                } else {
-                        assert(gap <= egap);
-                        if (gap == egap) {
-                                point = pos(egap);
-                                if (!growgap(CHUNK))
-                                        break;
-                        }
-                        *gap++ = ch == '\r' ? '\n' : ch;
-                        modified = TRUE;
-                }
-                point = pos(egap);
-                display();
-        }
-
-}
-
-void
-backsp()
+void backsp()
 {
         point = movegap(point);
         undoset();
@@ -211,11 +147,9 @@ backsp()
                 modified = TRUE;
         }
         point = pos(egap);
-
 }
 
-void
-delete()
+void delete()
 {
         point = movegap(point);
         undoset();
@@ -223,11 +157,9 @@ delete()
                 point = pos(++egap);
                 modified = TRUE;
         }
-
 }
 
-void
-readfile()
+void readfile()
 {
         standout();
         mvaddstr(MSGLINE, 0, str_read);
@@ -239,11 +171,9 @@ readfile()
         getinput((char*) temp, BUFSIZ, TRUE);
         if (temp[0] != '\0')
                 (void) load(temp);
-
 }
 
-void
-writefile()
+void writefile()
 {
         standout();
         mvaddstr(MSGLINE, 0, str_write);
@@ -255,29 +185,14 @@ writefile()
         getinput((char*) temp, BUFSIZ, TRUE);
         if (temp[0] != '\0')
                 (void) save(temp);
-
 }
 
-void
-help()
-{
-        textline = textline == HELPLINE ? -1 : HELPLINE;
-        /* When textline != HELPLINE, then redraw() will compute the
-         * actual textline that follows the help text.
-         */
-        redraw();
-
-}
-
-void
-block()
+void block()
 {
         marker = marker == NOMARK ? point : NOMARK;
-
 }
 
-void
-cut()
+void cut()
 {
         char_t *p;
         if (marker == NOMARK || point == marker)
@@ -305,11 +220,9 @@ cut()
                 point = pos(egap);
                 modified = TRUE;
         }
-
 }
 
-void
-paste()
+void paste()
 {
         if (nscrap <= 0) {
                 msg(m_scrap);
@@ -321,134 +234,9 @@ paste()
                 point = pos(egap);
                 modified = TRUE;
         }
-
 }
 
-void
-version()
+void version()
 {
         msg(m_version);
-
 }
-
-void
-macro()
-{
-        keymap_t *kp;
-        int lhs_len, rhs_len;
-        char *buf, *lhs, *rhs;
-
-        if ((buf = (char *) malloc(BUFSIZ)) == NULL) {
-                msg(m_alloc);
-                return;
-        }
-        standout();
-        mvaddstr(MSGLINE, 0, str_macro);
-        standend();
-        clrtoeol();
-        addch(' ');
-        refresh();
-        buf[0] = '\0';
-        getinput(buf, BUFSIZ, TRUE);
-        if ((lhs = strtok(buf, " \t")) == NULL) {
-                prt_macros();
-				/*
-        } else if (0 == (lhs_len = encodekey(lhs, buf))) {
-                msg(m_lhsbad);
-				*/
-        } else {
-                kp = findkey(key_map, lhs);
-                if ((rhs = strtok(NULL, " \t")) == NULL) {
-                        /* Delete macro. */
-                        if (kp == NULL || kp->code != K_MACRO_DEFINE) {
-                                msg(m_nomacro);
-                        } else {
-                                free(kp->lhs);
-                                kp->lhs = kp->rhs = NULL;
-                        }
-						/*
-                } else if (0 == (rhs_len = encodekey(rhs, buf+lhs_len+1))) {
-                        msg(m_rhsbad);
-						*/
-                } else {
-                        /* Assume that shrinking succeeds. */
-                        lhs = (char *) realloc(buf, lhs_len+rhs_len+2);
-                        if (kp == NULL) {
-                                /* Find free slot to add macro. */
-                                for (kp = key_map; kp->code != K_ERROR; ++kp) {
-                                        if (kp->code == K_MACRO_DEFINE
-                                        && kp->lhs == NULL)
-                                                break;
-                                }
-                        }
-                        if (kp->code == K_ERROR) {
-                                free(lhs);
-                                msg(m_slots);
-                        } else if (kp->code == K_MACRO_DEFINE) {
-                                /* Change macro. */
-                                kp->lhs = lhs;
-                                kp->rhs = lhs+lhs_len+1;
-                                return;
-                        } else {
-                                msg(m_nomacro);
-                        }
-                }
-        }
-        free(buf);
-
-}
-
-void
-prt_macros()
-{
-        char *ptr;
-        keymap_t *kp;
-        int used, total;
-
-        erase();
-        scrollok(stdscr, TRUE);
-        for (used = total = 0, kp = key_map; kp->code != K_ERROR; ++kp) {
-                if (kp->code == K_MACRO_DEFINE) {
-                        ++total;
-                        if (kp->rhs != NULL) {
-                                ++used;
-                                addstr(kp->lhs);
-                                addch('\t');
-                                for (ptr = kp->rhs; *ptr != '\0'; ++ptr) {
-                                        if (isprint(*ptr))
-                                                addch(*ptr);
-                                        else
-                                                addstr(unctrl(*ptr));
-                                }
-                                addch('\n');
-                                (void) more(used);
-                        }
-                }
-        }
-        printw("\n%d/%d\n", used, total, str_press);
-        scrollok(stdscr, FALSE);
-        (void) more(-1);
-        redraw();
-
-}
-
-int
-more(row)
-int row;
-{
-        int ch;
-
-        if (0 < row % (LINES-1))
-                return (TRUE);
-        standout();
-        addstr(str_more);
-        standend();
-        clrtoeol();
-        refresh();
-        ch = getliteral();
-        addch('\r');
-        clrtoeol();
-        return (ch != str_quit[1] && ch != str_no[1]);
-
-}
-

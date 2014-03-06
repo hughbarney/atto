@@ -19,7 +19,7 @@ point_t epage;
 point_t marker = NOMARK;
 
 int row, col;
-int textline = HELPLINE;
+//int textline = HELPLINE;
 
 char_t *buf;
 char_t *ebuf;
@@ -36,6 +36,7 @@ char filename[BUFSIZ];
 char temp[BUFSIZ];
 char *prog_name;
 
+// need to add define macro
 keytable_t table[] = {
         { K_CURSOR_LEFT, left },
         { K_CURSOR_RIGHT, right },
@@ -51,7 +52,6 @@ keytable_t table[] = {
         { K_FILE_BOTTOM, bottom },
         { K_DELETE_LEFT, backsp },
         { K_DELETE_RIGHT, delete },
-        { K_INSERT_ENTER, insert_mode },
         { K_BLOCK, block },
         { K_CUT, cut },
         { K_PASTE, paste },
@@ -59,13 +59,10 @@ keytable_t table[] = {
         { K_FILE_READ, readfile },
         { K_FILE_WRITE, writefile },
         { K_REDRAW, redraw },
-        { K_HELP, help },
         { K_QUIT, quit },
         { K_QUIT_ASK, quit_ask },
         { K_SHOW_VERSION, version },
-        { K_MACRO, macro },
         { 0, NULL }
-
 };
 
 keymap_t key_mode[] = {

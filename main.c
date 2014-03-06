@@ -13,8 +13,6 @@
 #include <stdarg.h>
 
 void debug(char *, ...);
-void get_hex(char *, char *);
-
 
 keymap_t keymap2[] = {
  {K_CURSOR_UP         , "C-p                      ", "\x1B\x5B\x41","NULL"},
@@ -24,6 +22,7 @@ keymap_t keymap2[] = {
  {K_LINE_LEFT         , "C-a beginning-of-line    ", "\x01","NULL"},
  {K_CURSOR_LEFT       , "C-b                      ", "\x02","NULL"},
  {K_DELETE_RIGHT      , "C-d forward-delete-char  ", "\x04","NULL"},
+ {K_DELETE_LEFT       , "backspace delete-left r  ", "\x7f","NULL"},
  {K_LINE_RIGHT        , "C-e end-of-line          ", "\x05","NULL"},
  {K_CURSOR_RIGHT      , "C-f                      ", "\x06","NULL"},
  {K_DELETE_LEFT       , "C-h backspace            ", "\x08","NULL"},
@@ -38,9 +37,10 @@ keymap_t keymap2[] = {
  {K_WORD_LEFT         , "esc b back-word          ", "\x1B\x62","NULL"},
  {K_WORD_RIGHT        , "esc f forward-word       ", "\x1B\x66","NULL"},
  {K_BLOCK             , "C-space set-amrk         ", "","NULL"},
- {K_CUT               , "C-w                      ", "\x17","NULL"},
+ {K_CUT               , "C-w                      ", "\x17","NULL"},    /* c-w not working on chrome book */
+ {K_CUT               , "C-i                      ", "\x09","NULL"},    /* c-i use for now */
  {K_PASTE             , "C-y                      ", "\x19","NULL"},
- {K_MACRO_DEFINE      , "                         ", "\x0B",""},
+ {K_MACRO_DEFINE      , "C-k                      ", "\x0B","\x01\x00\x05\x09"},
  {K_FILE_READ         , "C-x C-f find-file        ", "\x18\x06","NULL"},
  {K_FILE_WRITE        , "C-x C-d write-file       ", "\x18\x04","NULL"},
  {K_QUIT              , "C-x C-c                  ", "\x18\x03","NULL"},
@@ -50,14 +50,9 @@ keymap_t keymap2[] = {
 
 
 
-int
-main(argc, argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
         int i;
-        keymap_t *kp;
-        char *ap, *config;
 
         /* Find basename. */
         prog_name = *argv;
@@ -71,7 +66,6 @@ char **argv;
 
 		key_map = keymap2;
 		modeless = TRUE;
-		
         noecho();
         lineinput(FALSE);
         idlok(stdscr, TRUE);
@@ -87,7 +81,6 @@ char **argv;
 
         top();
         i = msgflag;
-        help();
         msgflag = i;
         while (!done) {
                 display();
@@ -96,9 +89,9 @@ char **argv;
                 while (table[i].key != 0 && input != table[i].key)
                         ++i;
                 if (table[i].func != NULL)
-                        (*table[i].func)();
-                else if (modeless)
-                        insert();
+					(*table[i].func)();
+                else
+					insert();
         }
         if (scrap != NULL)
                 free(scrap);
@@ -107,7 +100,6 @@ char **argv;
         endwin();
         putchar('\n');
         return (EXIT_OK);
-
 }
 
 #ifdef TERMIOS
@@ -125,9 +117,7 @@ char **argv;
  *      CURSES' cbreak()/nocbreak() functions; however signals will be
  *      still be in effect.
  */
-void
-lineinput(bf)
-int bf;
+void lineinput(int bf)
 {
         int error;
         struct termios term;

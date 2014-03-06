@@ -11,9 +11,6 @@
 #include "header.h"
 #include "key.h"
 
-extern void debug(char *, ...);
-void debug_keyload(keymap_t *);
-
 /* Variable length structure. */
 typedef struct input_t {
         struct input_t *next;
@@ -23,136 +20,10 @@ typedef struct input_t {
 } input_t;
 
 static input_t *istack = NULL;
-static char blank[] = " \t\r\n";
-
-static int k_default _((FILE *, char *, keymap_t *));
-static int k_erase  _((FILE *, char *, keymap_t *));
-static int k_kill _((FILE *, char *, keymap_t *));
 static int ipush _((char *));
 static int ipop _((void));
 
-keyinit_t keywords[] = {
-	{ K_INSERT_ENTER ,"K_INSERT_ENTER" , "                        ", ".insert_enter", k_default },
-	{ K_INSERT_EXIT  ,"K_INSERT_EXIT"  , "                        ", ".insert_exit", k_default },
-	{ K_DELETE_LEFT  ,"K_DELETE_LEFT"  , "C-h backspace           ", ".delete_left", k_default },
-	{ K_DELETE_RIGHT ,"K_DELETE_RIGHT" , "C-d forward-delete-char ", ".delete_right", k_default },
-	{ K_BLOCK        ,"K_BLOCK"        , "C-space set-amrk        ", ".block", k_default },
-	{ K_CUT          ,"K_CUT"          , "C-w                     ", ".cut", k_default },
-	{ K_PASTE        ,"K_PASTE"        , "C-y                     ", ".paste", k_default },
-	{ K_UNDO         ,"K_UNDO"         , "C-u                     ", ".undo", k_default },
-	{ K_CURSOR_UP    ,"K_CURSOR_UP"    , "C-p                     ", ".cursor_up", k_default },
-	{ K_CURSOR_DOWN  ,"K_CURSOR_DOWN"  , "C-n                     ", ".cursor_down", k_default },
-	{ K_CURSOR_LEFT  ,"K_CURSOR_LEFT"  , "C-b                     ", ".cursor_left", k_default },
-	{ K_CURSOR_RIGHT ,"K_CURSOR_RIGHT" , "C-f                     ", ".cursor_right", k_default },
-	{ K_PAGE_UP      ,"K_PAGE_UP"      , "esc v                   ", ".page_up", k_default },
-	{ K_PAGE_DOWN    ,"K_PAGE_DOWN"    , "C-v                     ", ".page_down", k_default },
-	{ K_WORD_LEFT    ,"K_WORD_LEFT"    , "esc b back-word         ", ".word_left", k_default },
-	{ K_WORD_RIGHT   ,"K_WORD_RIGHT"   , "esc f forward-word      ", ".word_right", k_default },
-	{ K_LINE_LEFT    ,"K_LINE_LEFT"    , "C-a beginning-of-line   ", ".line_left", k_default },
-	{ K_LINE_RIGHT   ,"K_LINE_RIGHT"   , "C-e end-of-line         ", ".line_right", k_default },
-	{ K_FILE_TOP     ,"K_FILE_TOP"     , "esc < beg-of-buf        ", ".file_top", k_default },
-	{ K_FILE_BOTTOM  ,"K_FILE_BOTTOM"  , "esc > end-of-buf        ", ".file_bottom", k_default },
-	//	{ K_HELP         ,"K_HELP"         , "                        ", ".help", k_default },
-	//	{ K_HELP_OFF     ,"K_HELP_OFF"     , "                        ", ".help_off", k_token },
-	//	{ K_HELP_TEXT    ,"K_HELP_TEXT"    , "                        ", ".help_text", k_help },
-	{ K_MACRO        ,"K_MACRO"        , "                        ", ".macro", k_default },
-	{ K_MACRO_DEFINE ,"K_MACRO_DEFINE" , "                        ", ".macro_define", k_default },
-	{ K_QUIT         ,"K_QUIT"         , "C-x C-c                 ", ".quit", k_default },
-	{ K_QUIT_ASK     ,"K_QUIT_ASK"     , "                        ", ".quit_ask", k_default },
-	{ K_FILE_READ    ,"K_FILE_READ"    , "C-x C-f find-file       ", ".file_read", k_default },
-	{ K_FILE_WRITE   ,"K_FILE_WRITE"   , "C-x C-d write-file      ", ".file_write", k_default },
-	{ K_STTY_ERASE   ,"K_STTY_ERASE"   , "                        ", ".stty_erase", k_default },
-	{ K_STTY_KILL    ,"K_STTY_KILL"    , "                        ", ".stty_kill", k_default },
-	{ K_ITSELF       ,"K_ITSELF"       , "                        ", ".itself", k_default },
-	{ K_REDRAW       ,"K_REDRAW"       , "C-l                     ", ".redraw", k_default },
-	{ K_SHOW_VERSION ,"K_SHOW_VERSION" , "esc esc show-version    ", ".show_version", k_default },
-	{ K_LITERAL      ,"K_LITERA"       , "                        ", ".literal", k_default },
-	{ K_ERROR        ,"K_ERROR"        , "                        ", NULL, NULL }
-};
-
-// dummy
-size_t encodekey(str, buf)
-char *str, *buf;
-{
-	return 1;
-}
-
-
-/*
- * .function string
- *
- * Encode a key sequence for the given function.
- */
-static int
-k_default(fp, buf, kp)
-FILE *fp;
-char *buf;
-keymap_t *kp;
-{
-        char *tok;
-        size_t lhs;
-
-        if ((tok = strtok(NULL, blank)) == NULL
-			//|| (lhs = encodekey(tok, buf)) == 0
-        || (kp->lhs = (char *) realloc(buf, lhs)) == NULL) {
-                free(buf);
-                return (FALSE);
-        }
-
-        return (TRUE);
-
-}
-
-
-/*
- * .stty_erase
- */
-static int
-k_erase(fp, buf, kp)
-FILE *fp;
-char *buf;
-keymap_t *kp;
-{
-        buf[0] = erasechar();
-        buf[1] = '\0';
-        return ((kp->lhs = (char *) realloc(buf, 2)) != NULL);
-
-}
-
-/*
- * .stty_kill
- */
-static int
-k_kill(fp, buf, kp)
-FILE *fp;
-char *buf;
-keymap_t *kp;
-{
-        buf[0] = killchar();
-        buf[1] = '\0';
-        return ((kp->lhs = (char *) realloc(buf, 2)) != NULL);
-
-}
-
-
-/*
- * Find token and return corresponding table entry; else NULL.
- */
-keymap_t *
-findkey(kp, token)
-keymap_t *kp;
-char *token;
-{
-        for (; kp->code != K_ERROR; ++kp)
-                if (kp->lhs != NULL && strcmp(token, kp->lhs) == 0)
-                        return (kp);
-        return (NULL);
-
-}
-
-int
-getkey(keys)
-keymap_t *keys;
+int getkey(keymap_t *keys)
 {
         keymap_t *k;
         int submatch;
@@ -206,8 +77,7 @@ keymap_t *keys;
 
 }
 
-int
-getliteral()
+int getliteral()
 {
         int ch;
 
@@ -215,15 +85,13 @@ getliteral()
         if (ch == EOF)
                 return ((unsigned) getch());
         return (ch);
-
 }
 
 /*
  * Return true if a new input string was pushed onto the stack,
  * else false if there was no more memory for the stack.
  */
-static int
-ipush(buf)
+static int ipush(buf)
 char *buf;
 {
         input_t *new;
@@ -245,8 +113,7 @@ char *buf;
  * then free the node.  This will allow clean tail recursion that
  * won't blow the stack.  
  */
-static int
-ipop()
+static int ipop()
 {
         int ch;
         input_t *node;
@@ -263,11 +130,9 @@ ipop()
 
 }
 
-int
-ismacro()
+int ismacro()
 {
         return (istack != NULL);
-
 }
 
 /*
@@ -310,8 +175,7 @@ static char *fld_buffer;
 #define getmaxyx(w,r,c)         (r=LINES,c=COLS)
 #endif
 
-int
-getinput(buf, len, echoing)
+int getinput(buf, len, echoing)
 char *buf;
 int len, echoing;
 {
@@ -344,15 +208,12 @@ int len, echoing;
 
 }
 
-static int
-fld_done()
+static int fld_done() 
 {
         return (FALSE);
-
 }
 
-static int
-fld_left()
+static int fld_left()
 {
         int row, col, max_row, max_col;
         getyx(stdscr, row, col);
@@ -376,8 +237,7 @@ fld_left()
 
 }
 
-static int
-fld_erase()
+static int fld_erase()
 {
         int row, col;
         if (0 < fld_index) {
@@ -391,8 +251,7 @@ fld_erase()
 
 }
 
-static int
-fld_kill()
+static int fld_kill()
 {
         move(fld_row, fld_col);
         while (0 < fld_index--)
@@ -404,8 +263,7 @@ fld_kill()
 
 }
 
-static int
-fld_insert()
+static int fld_insert()
 {
         if (fld_index < fld_length) {
                 if (!ISFUNCKEY(fld_key)) {
@@ -415,18 +273,4 @@ fld_insert()
                 }
         }
         return (fld_index < fld_length);
-
-}
-
-keyinit_t *find_keyword(int code)
-{
-	keyinit_t *kw;
-	
-	for (kw = keywords; kw->code != K_ERROR; ++kw)
-	{
-		if (kw->code == code)
-			return kw;
-	}
-
-	return NULL;
 }
