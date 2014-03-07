@@ -6,9 +6,7 @@
 # Public Domain 1991, 1993 by Anthony Howe.  No warranty.
 #
 
-#CC      = cc -Wunused-function
 CC      = cc -Wunused-function
-#CFLAGS  = -O -DBSD=1
 CFLAGS  = -O -Wall
 
 LD      = cc
@@ -24,8 +22,8 @@ O       = .o
 
 OBJ     = command$(O) data$(O) display$(O) gap$(O) key$(O) main$(O)
 
-ae$(E) : $(OBJ)
-	$(LD) $(LDFLAGS) -o ae$(E) $(OBJ) $(LIBS)
+femto$(E) : $(OBJ)
+	$(LD) $(LDFLAGS) -o femto$(E) $(OBJ) $(LIBS)
 
 header.h : key.h
 
@@ -48,8 +46,8 @@ main$(O): main.c header.h
 	$(CC) $(CFLAGS) -c main.c
 
 clean:
-	-$(RM) $(OBJ) ae$(E)
+	-$(RM) $(OBJ) femto$(E)
 
 install:
-	-$(MV) ae$(E) $(HOME)/$(HOSTNAME)/bin
+	-$(MV) femto$(E) $(HOME)/$(HOSTNAME)/bin
 

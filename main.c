@@ -20,10 +20,13 @@ keymap_t keymap2[] = {
  {K_CURSOR_LEFT       , "C-b                      ", "\x1B\x5B\x44","NULL"},
  {K_CURSOR_RIGHT      , "C-f                      ", "\x1B\x5B\x43","NULL"},
  {K_LINE_LEFT         , "C-a beginning-of-line    ", "\x01","NULL"},
+ {K_LINE_LEFT         , "C-a beginning-of-line    ", "\x1B\x4F\x48","NULL"}, /* home key */
  {K_CURSOR_LEFT       , "C-b                      ", "\x02","NULL"},
  {K_DELETE_RIGHT      , "C-d forward-delete-char  ", "\x04","NULL"},
- {K_DELETE_LEFT       , "backspace delete-left r  ", "\x7f","NULL"},
+ {K_DELETE_RIGHT      , "DEL forward-delete-char  ", "\x1B\x5B\x33\x7E","NULL"}, /* Del key */
+ {K_DELETE_LEFT       , "backspace delete-left    ", "\x7f","NULL"},
  {K_LINE_RIGHT        , "C-e end-of-line          ", "\x05","NULL"},
+ {K_LINE_RIGHT        , "end end-of-line          ", "\x1B\x4F\x46","NULL"}, /* end key */
  {K_CURSOR_RIGHT      , "C-f                      ", "\x06","NULL"},
  {K_DELETE_LEFT       , "C-h backspace            ", "\x08","NULL"},
  {K_REDRAW            , "C-l                      ", "\x0C","NULL"},
@@ -31,9 +34,11 @@ keymap_t keymap2[] = {
  {K_CURSOR_UP         , "C-p                      ", "\x10","NULL"},
  {K_UNDO              , "C-u                      ", "\x15","NULL"},
  {K_PAGE_DOWN         , "C-v                      ", "\x16","NULL"},
+ {K_PAGE_DOWN         , "PgDn                     ", "\x1B\x5B\x36\x7E","NULL"}, /* PgDn key */
  {K_FILE_TOP          , "esc < beg-of-buf         ", "\x1B\x3C","NULL"},
  {K_FILE_BOTTOM       , "esc > end-of-buf         ", "\x1B\x3E","NULL"},
  {K_PAGE_UP           , "esc v                    ", "\x1B\x76","NULL"},
+ {K_PAGE_UP           , "PgUp                     ", "\x1B\x5B\x35\x7E","NULL"}, /* PgUp key */
  {K_WORD_LEFT         , "esc b back-word          ", "\x1B\x62","NULL"},
  {K_WORD_RIGHT        , "esc f forward-word       ", "\x1B\x66","NULL"},
  {K_BLOCK             , "C-space set-amrk         ", "","NULL"},
@@ -47,8 +52,6 @@ keymap_t keymap2[] = {
  {K_SHOW_VERSION      , "esc esc show-version     ", "\x1B\x1B","NULL"},
  {K_ERROR             , "K_ERROR                  ", NULL, NULL }
 };
-
-
 
 int main(int argc, char **argv)
 {
@@ -158,7 +161,6 @@ void fatal(msg_t m)
         if (m == f_usage)
                 exit(EXIT_USAGE);
         exit(EXIT_FAIL);
-
 }
 
 void msg(msg_t m, ...)
