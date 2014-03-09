@@ -21,7 +21,7 @@
  * Command key constants.
  */
 #define K_ERROR         (-1)
-#define K_DISABLED      (-2)
+//#define K_DISABLED      (-2)
 
 /* Edit functions. */
 #define K_INSERT_ENTER  (-101)
@@ -51,10 +51,6 @@
 #define K_ITSELF        (-121)
 #define K_REDRAW        (-122)
 #define K_SHOW_VERSION  (-123)
-#define K_HELP          (-124)
-#define K_HELP_OFF      (-125)
-#define K_HELP_TEXT     (-126)
-#define K_MACRO         (-127)
 #define K_MACRO_DEFINE  (-128)
 #define K_LITERAL       (-129)
 #define K_QUIT          (-130)
@@ -82,7 +78,7 @@
 
 typedef struct keymap_t {
 	short code;             /* Function code. */
-	char *bind_desc;
+	char *key_bind;
 	char *lhs;              /* Left hand side invokes function or macro. */
 	char *rhs;              /* Right hand side macro expansion. */
 

@@ -48,8 +48,7 @@ int getkey(keymap_t *keys)
                 /* If recorded bytes match any multi-byte sequence... */
                 for (k = keys, submatch = 0; k->code != K_ERROR; ++k) {
                         char *p, *q;
-                        if (k->lhs == NULL
-                        || k->code == K_DISABLED || k->code == K_HELP_TEXT)
+                        if (k->lhs == NULL)
                                 continue;
                         for (p = buffer, q = k->lhs; *p == *q; ++p, ++q) {
                                 if (*q == '\0') {
@@ -74,7 +73,6 @@ int getkey(keymap_t *keys)
         /* Return first recorded byte. */
         record = buffer;
         return (*(unsigned char *)record++);
-
 }
 
 int getliteral()
@@ -104,7 +102,6 @@ char *buf;
         new->next = istack;
         istack = new;
         return (TRUE);
-
 }
 
 /*

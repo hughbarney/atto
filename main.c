@@ -41,11 +41,12 @@ keymap_t keymap2[] = {
  {K_PAGE_UP           , "PgUp                     ", "\x1B\x5B\x35\x7E","NULL"}, /* PgUp key */
  {K_WORD_LEFT         , "esc b back-word          ", "\x1B\x62","NULL"},
  {K_WORD_RIGHT        , "esc f forward-word       ", "\x1B\x66","NULL"},
- {K_BLOCK             , "C-space set-amrk         ", "","NULL"},
+ {K_BLOCK             , "C-space set-mark         ", "\x00","NULL"},    /* ctrl-space, note is NULL, cant use 0x00 is macros */
+ {K_BLOCK             , "C-/ set-mark             ", "\x0F","NULL"},    /* alternate, to enable use in macros */
  {K_CUT               , "C-w                      ", "\x17","NULL"},    /* c-w not working on chrome book */
  {K_CUT               , "C-i                      ", "\x09","NULL"},    /* c-i use for now */
  {K_PASTE             , "C-y                      ", "\x19","NULL"},
- {K_MACRO_DEFINE      , "C-k                      ", "\x0B","\x01\x00\x05\x09"},
+ {K_MACRO_DEFINE      , "C-k                      ", "\x0B","\x01\x0F\x05\x09\x04"},
  {K_FILE_READ         , "C-x C-f find-file        ", "\x18\x06","NULL"},
  {K_FILE_WRITE        , "C-x C-d write-file       ", "\x18\x04","NULL"},
  {K_QUIT              , "C-x C-c                  ", "\x18\x03","NULL"},
