@@ -130,7 +130,8 @@ void display()
                  */
                 if (pos(ebuf) <= page) {
                         page = pos(ebuf);
-                        i = LINES-2;
+                        i = LINES-2;  // -1 if no EOF marker
+                        //i = LINES - 1;
                 } else {
                         i = LINES;
                 }
@@ -150,7 +151,7 @@ void display()
                         col = j;
                 }
                 p = ptr(epage);
-                if (LINES <= i || ebuf <= p)
+                if ((MAXLINE) <= i || ebuf <= p)
                         break;
                 if (*p != '\r') {
                         if (marker != NOMARK) {
@@ -179,8 +180,15 @@ void display()
         }
         standend();
         clrtobot();
-        if (++i < LINES)
+		// if lines displayed shorter than LINES then show EOF marker
+		// will only happen on small files or last part of file.
+		// so can safely ditch this.
+		/*
+        if (++i < LINES) {
+			debug("EOF i=%d LINES=%d\n",i, LINES);
                 mvaddstr(i, 0, "<< EOF >>");
+		}
+		*/
         move(row, col);
         refresh();
 }

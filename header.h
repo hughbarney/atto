@@ -18,10 +18,6 @@
 #define VERSION         \
 "AE January 93.  Public Domain 1991, 1993 by Anthony Howe.  No warranty."
 
-#ifndef CONFIG
-#define CONFIG          "ae.rc"
-#endif /* CONFIG */
-
 #ifndef CHUNK
 #define CHUNK           8096L
 #endif /* CHUNK */
@@ -34,8 +30,13 @@
 
 /* Screen partitioning. */
 #define MSGLINE         0
-#define HELPLINE        1
-#undef  TEXTLINE        
+#define FIRST_LINE      1
+#define MAXLINE (LINES)
+
+//#define MSGLINE         (LINES-1)
+//#define FIRST_LINE      0
+//#define MAXLINE         (LINES-2)
+
 
 #define NOMARK          -1
 
@@ -77,8 +78,6 @@ extern int msgflag;             /* True if msgline should be displayed. */
 
 extern int row;                 /* Cursor screen row */
 extern int col;                 /* Cursor screen column. */
-//extern int textline;            /* First screen line used for text. */
-#define FIRST_LINE 1            /* First screen line used for text. */
 
 extern point_t point;           /* Cursor offset in text buffer. */
 extern point_t pointline;       /* Cursor line number. */
@@ -102,7 +101,7 @@ extern char *prog_name;         /* Name used to invoke editor. */
 
 extern keytable_t table[];      /* Command jump table. */
 extern keymap_t *key_map;       /* Command key mappings. */
-extern keymap_t key_mode[];     /* Key mappings used in insert_mode() */
+//extern keymap_t key_mode[];     /* Key mappings used in insert_mode() */
 
 /* fatal() messages. */
 extern msg_t f_ok;              /* EXIT_OK */
