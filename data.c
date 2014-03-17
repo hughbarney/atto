@@ -11,7 +11,7 @@
 
 int done;
 int modified;
-int modeless;
+//int modeless;
 
 point_t point;
 point_t page;

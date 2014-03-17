@@ -77,7 +77,6 @@ int growgap(point_t n)
         assert(gap < egap);          /* Gap must grow only. */
         assert(egap <= ebuf);
         return (TRUE);
-
 }
 
 /*

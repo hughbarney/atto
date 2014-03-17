@@ -11,6 +11,7 @@
 #include "header.h"
 
 static void dispmsg(void);
+static void modeline(void);
 
 /*
  * Reverse scan for start of logical line containing offset.
@@ -110,8 +111,6 @@ void display()
         char_t *p;
         int i, j;
 
-        dispmsg();
-
         /* Re-frame the screen with the screen line containing the point
          * as the first line, when point < page.  Handles the cases of a
          * backward scroll or moving to the top of file.  pgup() will
@@ -130,10 +129,11 @@ void display()
                  */
                 if (pos(ebuf) <= page) {
                         page = pos(ebuf);
-                        i = LINES-2;  // -1 if no EOF marker
-                        //i = LINES - 1;
+                        //i = LINES-2;  // Original code
+                        i = LINES - 3;
                 } else {
-                        i = LINES;
+					//i = LINES;
+					i = LINES - 2;
                 }
                 i -= FIRST_LINE;
                 /* Scan backwards the required number of lines. */
@@ -189,22 +189,42 @@ void display()
                 mvaddstr(i, 0, "<< EOF >>");
 		}
 		*/
+        modeline();
+        dispmsg();
         move(row, col);
         refresh();
 }
 
+static void modeline()
+{
+    	int i;
+		standout();
+		move(MODELINE, 0);
+		addch('=');
+		
+        if (modified) {
+			addch('*');
+        } else {
+			addch('=');
+        }
+
+		addstr(" Atto: == File: ");
+		addstr(filename);
+		addch(' ');
+		i = 19 + strlen(filename);
+		
+		for (; i<=COLS; i++)
+			addch('=');
+		
+        standend();
+}
+
 static void dispmsg()
 {
-        standout();
         move(MSGLINE, 0);
         if (msgflag) {
                 addstr(msgline);
                 msgflag = FALSE;
-        } else if (modified) {
-                printw(m_modified, filename);
-        } else {
-                printw(m_file, filename, pos(ebuf));
         }
-        standend();
         clrtoeol();
 }

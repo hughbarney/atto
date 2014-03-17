@@ -29,13 +29,14 @@
 #define EXIT_FAIL       3               /* Known failure. */
 
 /* Screen partitioning. */
-#define MSGLINE         0
-#define FIRST_LINE      1
-#define MAXLINE (LINES)
+//#define MSGLINE         0
+//#define FIRST_LINE      1
+//#define MAXLINE (LINES)
 
-//#define MSGLINE         (LINES-1)
-//#define FIRST_LINE      0
-//#define MAXLINE         (LINES-2)
+#define MSGLINE          (LINES-1)
+#define MODELINE         (LINES-2)
+#define FIRST_LINE       0
+#define MAXLINE          (LINES-2)
 
 
 #define NOMARK          -1
@@ -73,7 +74,6 @@ typedef struct keytable_t {
  */
 extern int done;                /* Quit flag. */
 extern int modified;            /* Text buffer modified flag. */
-extern int modeless;            /* Command-set style. */
 extern int msgflag;             /* True if msgline should be displayed. */
 
 extern int row;                 /* Cursor screen row */

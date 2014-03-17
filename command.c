@@ -175,16 +175,15 @@ void readfile()
 
 void writefile()
 {
-        standout();
         mvaddstr(MSGLINE, 0, str_write);
-        standend();
         clrtoeol();
         addch(' ');
         refresh();
         strcpy(temp, filename);
         getinput((char*) temp, BUFSIZ, TRUE);
         if (temp[0] != '\0')
-                (void) save(temp);
+			if (save(temp) == TRUE)
+				strcpy(filename, temp);
 }
 
 void block()

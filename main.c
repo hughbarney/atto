@@ -69,7 +69,6 @@ int main(int argc, char **argv)
                 fatal(f_initscr);
 
 		key_map = keymap2;
-		modeless = TRUE;
         noecho();
         lineinput(FALSE);
         idlok(stdscr, TRUE);
@@ -80,6 +79,7 @@ int main(int argc, char **argv)
                 strcpy(filename, argv[1]);
                 modified = FALSE;
         }
+
         if (!growgap(CHUNK))
                 fatal(f_alloc);
 

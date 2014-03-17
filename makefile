@@ -22,8 +22,8 @@ O       = .o
 
 OBJ     = command$(O) data$(O) display$(O) gap$(O) key$(O) main$(O)
 
-femto$(E) : $(OBJ)
-	$(LD) $(LDFLAGS) -o femto$(E) $(OBJ) $(LIBS)
+atto$(E) : $(OBJ)
+	$(LD) $(LDFLAGS) -o atto$(E) $(OBJ) $(LIBS)
 
 header.h : key.h
 
@@ -46,8 +46,8 @@ main$(O): main.c header.h
 	$(CC) $(CFLAGS) -c main.c
 
 clean:
-	-$(RM) $(OBJ) femto$(E)
+	-$(RM) $(OBJ) atto$(E)
 
 install:
-	-$(MV) femto$(E) $(HOME)/$(HOSTNAME)/bin
+	-$(MV) atto$(E) $(HOME)/$(HOSTNAME)/bin
 
