@@ -79,9 +79,6 @@ int growgap(point_t n)
         return (TRUE);
 }
 
-/*
- *
- */
 point_t movegap(point_t offset)
 {
         char_t *p = ptr(offset);
@@ -93,18 +90,14 @@ point_t movegap(point_t offset)
         assert(buf <= gap);
         assert(egap <= ebuf);
         return (pos(egap));
-
 }
 
-/*
- *      Given a buffer offset, convert it to a pointer into the buffer.
- */
+/* Given a buffer offset, convert it to a pointer into the buffer */
 char_t * ptr(register point_t offset)
 {
         if (offset < 0)
                 return (buf);
         return (buf+offset + (buf+offset < gap ? 0 : egap-gap));
-
 }
 
 /*
@@ -114,7 +107,6 @@ point_t pos(register char_t *cp)
 {
         assert(buf <= cp && cp <= ebuf);
         return (cp-buf - (cp < egap ? 0 : egap-gap));
-
 }
 
 int posix_file(char *fn)
@@ -127,12 +119,8 @@ int posix_file(char *fn)
                         return (FALSE);
         }
         return (TRUE);
-
 }
 
-/*
- *
- */
 int save(char *fn)
 {
         FILE *fp;
@@ -159,12 +147,8 @@ int save(char *fn)
         modified = FALSE;
         msg(m_saved, fn, pos(ebuf));
         return (TRUE);
-
 }
 
-/*
- *
- */
 int load(char *fn)
 {
         FILE *fp;
@@ -194,23 +178,17 @@ int load(char *fn)
         modified = TRUE;
         msg(m_loaded, fn, len);
         return (TRUE);
-
 }
 
-/*
- *      Record a new undo location.
- */
+/* Record a new undo location */
 void undoset()
 {
         ubuf.u_point = point;
         ubuf.u_gap = gap - buf;
         ubuf.u_egap = egap - buf;
-
 }
 
-/*
- *      Undo.
- */
+/* Undo */
 void undo()
 {
         undo_t tmp;

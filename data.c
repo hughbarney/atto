@@ -11,7 +11,6 @@
 
 int done;
 int modified;
-//int modeless;
 
 point_t point;
 point_t page;
@@ -69,38 +68,22 @@ msg_t f_ok = "%s: Terminated successfully.\n";
 msg_t f_error = "%s: Unspecified error.\n";
 msg_t f_usage = "usage: %s [-f <config>] [file]\n";
 msg_t f_initscr = "%s: Failed to initialize the screen.\n";
-msg_t f_config = "%s: Problem with configuration file.\n";
 msg_t f_alloc = "%s: Failed to allocate required memory.\n";
-
 msg_t m_ok = "Ok.";
 msg_t m_version = VERSION;
-msg_t m_error = "An unknown error occured.";
 msg_t m_alloc = "No more memory available.";
 msg_t m_toobig = "File \"%s\" is too big to load.";
 msg_t m_scrap = "Scrap is empty.  Nothing to paste.";
 msg_t m_stat = "Failed to find file \"%s\".";
 msg_t m_open = "Failed to open file \"%s\".";
 msg_t m_close = "Failed to close file \"%s\".";
-msg_t m_read = "Failed to read file \"%s\".";
 msg_t m_write = "Failed to write file \"%s\".";
 msg_t m_badname = "Not a portable POSIX file name.";
 msg_t m_file = "File \"%s\" %ld bytes.";
 msg_t m_saved = "File \"%s\" %ld bytes saved.";
 msg_t m_loaded = "File \"%s\" %ld bytes read.";
-msg_t m_modified = "File \"%s\" modified.";
-msg_t m_lhsbad = "Left-hand-side of macro is incorrectly specified.";
-msg_t m_rhsbad = "Right-hand-side of macro is incorrectly specified.";
-msg_t m_nomacro = "No such macro defined.";
-msg_t m_slots = "No more macro space.";
-
-msg_t str_macro = "Macro :";
 msg_t str_notsaved = "File not saved.  Quit (y/n) ?";
-msg_t str_press = "[ Press a key to continue. ]";
 msg_t str_read = "Read file :";
 msg_t str_write = "Write file :";
-msg_t str_more = " more ";
 msg_t str_yes = " y\b";
 msg_t str_no = " n\b";
-msg_t str_quit = " q\b";
-
-/* end */

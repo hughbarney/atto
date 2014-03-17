@@ -20,7 +20,7 @@ keymap_t keymap2[] = {
  {K_CURSOR_LEFT       , "C-b                      ", "\x1B\x5B\x44","NULL"},
  {K_CURSOR_RIGHT      , "C-f                      ", "\x1B\x5B\x43","NULL"},
  {K_LINE_LEFT         , "C-a beginning-of-line    ", "\x01","NULL"},
- {K_LINE_LEFT         , "C-a beginning-of-line    ", "\x1B\x4F\x48","NULL"}, /* home key */
+ {K_LINE_LEFT         , "home beginning-of-line   ", "\x1B\x4F\x48","NULL"}, /* home key */
  {K_CURSOR_LEFT       , "C-b                      ", "\x02","NULL"},
  {K_DELETE_RIGHT      , "C-d forward-delete-char  ", "\x04","NULL"},
  {K_DELETE_RIGHT      , "DEL forward-delete-char  ", "\x1B\x5B\x33\x7E","NULL"}, /* Del key */

@@ -16,7 +16,7 @@
 #define _(x)    x
 
 #define VERSION         \
-"AE January 93.  Public Domain 1991, 1993 by Anthony Howe.  No warranty."
+"Atto March 2014. Public Domain 2014, by Hugh Barney.  No warranty."
 
 #ifndef CHUNK
 #define CHUNK           8096L
@@ -29,10 +29,6 @@
 #define EXIT_FAIL       3               /* Known failure. */
 
 /* Screen partitioning. */
-//#define MSGLINE         0
-//#define FIRST_LINE      1
-//#define MAXLINE (LINES)
-
 #define MSGLINE          (LINES-1)
 #define MODELINE         (LINES-2)
 #define FIRST_LINE       0
@@ -52,15 +48,6 @@ typedef struct keytable_t {
 } keytable_t;
 
 /*
- * Function return codes.
- */
-#define GETBLOCK_OK     0
-#define GETBLOCK_EOF    1
-#define GETBLOCK_ALLOC  2
-#define GETBLOCK_ERROR  3
-#define GETBLOCK_BINARY 4
-
-/*
  * Some compilers define size_t as a unsigned 16 bit number while
  * point_t and off_t might be defined as a signed 32 bit number.  
  * malloc(), realloc(), fread(), and fwrite() take size_t parameters,
@@ -69,9 +56,6 @@ typedef struct keytable_t {
  */
 #define MAX_SIZE_T      ((unsigned long) (size_t) ~0)
 
-/*
- *
- */
 extern int done;                /* Quit flag. */
 extern int modified;            /* Text buffer modified flag. */
 extern int msgflag;             /* True if msgline should be displayed. */
@@ -80,7 +64,6 @@ extern int row;                 /* Cursor screen row */
 extern int col;                 /* Cursor screen column. */
 
 extern point_t point;           /* Cursor offset in text buffer. */
-extern point_t pointline;       /* Cursor line number. */
 extern point_t page;            /* Top of screen page. */
 extern point_t epage;           /* End of screen page +1 */
 extern point_t marker;          /* Block anchor point. */
@@ -101,20 +84,17 @@ extern char *prog_name;         /* Name used to invoke editor. */
 
 extern keytable_t table[];      /* Command jump table. */
 extern keymap_t *key_map;       /* Command key mappings. */
-//extern keymap_t key_mode[];     /* Key mappings used in insert_mode() */
 
 /* fatal() messages. */
 extern msg_t f_ok;              /* EXIT_OK */
 extern msg_t f_error;           /* EXIT_ERROR */
 extern msg_t f_usage;           /* EXIT_USAGE */
 extern msg_t f_initscr;         /* EXIT_FAILURE ... */
-extern msg_t f_config;
 extern msg_t f_alloc;
 
 /* Messages. */
 extern msg_t m_ok;
 extern msg_t m_version;
-extern msg_t m_error;
 extern msg_t m_alloc;
 extern msg_t m_toobig;
 extern msg_t m_scrap;
@@ -124,29 +104,16 @@ extern msg_t m_close;
 extern msg_t m_read;
 extern msg_t m_write;
 extern msg_t m_badname;
-extern msg_t m_file;
-extern msg_t m_modified;
 extern msg_t m_saved;
 extern msg_t m_loaded;
-extern msg_t m_lhsbad;
-extern msg_t m_rhsbad;
-extern msg_t m_nomacro;
-extern msg_t m_slots;
 
 /* Prompts */
-extern msg_t str_macro;
 extern msg_t str_notsaved;
-extern msg_t str_press;
 extern msg_t str_read;
 extern msg_t str_write;
 extern msg_t str_yes;
 extern msg_t str_no;
-extern msg_t str_quit;
-extern msg_t str_more;
 
-/*
- *
- */
 #ifdef TERMIOS
 extern void lineinput _((int));
 #else
@@ -155,17 +122,13 @@ extern void lineinput _((int));
 
 extern void fatal _((msg_t));
 extern void msg _((msg_t, ...));
-extern int getblock _((FILE *, char *, char **));
-
 extern void display _((void));
 extern point_t lnstart _((point_t));
-extern point_t lnnext _((point_t));
 extern point_t lncolumn _((point_t, int));
 extern point_t segstart _((point_t, point_t));
 extern point_t segnext _((point_t, point_t));
 extern point_t upup _((point_t));
 extern point_t dndn _((point_t));
-extern void ruler _((int));
 
 extern int growgap _((point_t));
 extern point_t movegap _((point_t));
@@ -175,21 +138,17 @@ extern int posix_file _((char *));
 extern int save _((char *));
 extern int load _((char *));
 extern void undoset _((void));
-extern void undosave _((void));
 extern void undo _((void));
-
 extern void backsp _((void));
 extern void block _((void));
 extern void bottom _((void));
 extern void cut _((void));
 extern void delete _((void));
 extern void down _((void));
-extern void help _((void));
 extern void insert _((void));
 extern void left _((void));
 extern void lnbegin _((void));
 extern void lnend _((void));
-extern void macro _((void));
 extern void paste _((void));
 extern void pgdown _((void));
 extern void pgup _((void));
@@ -204,4 +163,3 @@ extern void version _((void));
 extern void wleft _((void));
 extern void wright _((void));
 extern void writefile _((void));
-

@@ -17,15 +17,10 @@
 #define K_BUFFER_LENGTH         256
 #define ISFUNCKEY(x)            ((x) < 0)
 
-/*
- * Command key constants.
- */
+/* command key constants. */
 #define K_ERROR         (-1)
-//#define K_DISABLED      (-2)
 
 /* Edit functions. */
-#define K_INSERT_ENTER  (-101)
-#define K_INSERT_EXIT   (-102)
 #define K_DELETE_LEFT   (-103)
 #define K_DELETE_RIGHT  (-104)
 #define K_BLOCK         (-105)
@@ -48,7 +43,6 @@
 #define K_FILE_BOTTOM   (-120)
 
 /* Support functions. */
-#define K_ITSELF        (-121)
 #define K_REDRAW        (-122)
 #define K_SHOW_VERSION  (-123)
 #define K_MACRO_DEFINE  (-128)
@@ -59,22 +53,6 @@
 #define K_FILE_WRITE    (-133)
 #define K_STTY_ERASE    (-134)
 #define K_STTY_KILL     (-135)
-
-#define K_MAX_CODES     36
-
-/*
- * Function error codes.
- */
-#define INITKEY_OK      0
-#define INITKEY_OPEN    1
-#define INITKEY_ALLOC   2
-#define INITKEY_ERROR   3
-
-/*
- * ASCII Control Codes
- */
-#undef CTRL
-#define CTRL(x)         ((x) & 0x1f)
 
 typedef struct keymap_t {
 	short code;             /* Function code. */

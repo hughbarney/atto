@@ -124,7 +124,6 @@ static int ipop()
                 free(node);
         }
         return (ch);
-
 }
 
 int ismacro()
@@ -202,7 +201,6 @@ int len, echoing;
                 }
         }
         return (TRUE);
-
 }
 
 static int fld_done() 
@@ -231,7 +229,6 @@ static int fld_left()
                 move(row, col);
         }
         return (TRUE);
-
 }
 
 static int fld_erase()
@@ -245,7 +242,6 @@ static int fld_erase()
                 fld_buffer[fld_index] = '\0';
         }
         return (TRUE);
-
 }
 
 static int fld_kill()
@@ -257,7 +253,6 @@ static int fld_kill()
         fld_buffer[0] = '\0';
         fld_index = 0;
         return (TRUE);
-
 }
 
 static int fld_insert()

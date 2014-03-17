@@ -1,9 +1,6 @@
 /*
  * display.c            
- *
- * Anthony's Editor January 93
- *
- * Public Domain 1991, 1993 by Anthony Howe.  No warranty.
+ * derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
  */
 
 #include <ctype.h>
@@ -13,9 +10,7 @@
 static void dispmsg(void);
 static void modeline(void);
 
-/*
- * Reverse scan for start of logical line containing offset.
- */
+/* Reverse scan for start of logical line containing offset */
 point_t lnstart(register point_t off)
 {
         register char_t *p;
@@ -50,9 +45,7 @@ point_t segstart(point_t start, point_t finish)
         return (c < COLS ? start : finish);
 }
 
-/*
- * Forward scan for start of logical line segment following 'finish'.
- */
+/* Forward scan for start of logical line segment following 'finish' */
 point_t segnext(point_t start, point_t finish)
 {
         char_t *p;
@@ -70,9 +63,7 @@ point_t segnext(point_t start, point_t finish)
         return (p < ebuf ? scan : pos(ebuf));
 }
 
-/*
- * Move up one screen line.
- */
+/* Move up one screen line */
 point_t upup(point_t off)
 {
         point_t curr = lnstart(off);
@@ -84,17 +75,13 @@ point_t upup(point_t off)
         return (off);
 }
 
-/*
- * Move down one screen line.
- */
+/* Move down one screen line */
 point_t dndn(point_t off)
 {
         return (segnext(lnstart(off), off));
 }
 
-/*
- * Return the offset of a column on the specified line.
- */
+/* Return the offset of a column on the specified line */
 point_t lncolumn(point_t offset, int column)
 {
         int c = 0;
@@ -180,15 +167,6 @@ void display()
         }
         standend();
         clrtobot();
-		// if lines displayed shorter than LINES then show EOF marker
-		// will only happen on small files or last part of file.
-		// so can safely ditch this.
-		/*
-        if (++i < LINES) {
-			debug("EOF i=%d LINES=%d\n",i, LINES);
-                mvaddstr(i, 0, "<< EOF >>");
-		}
-		*/
         modeline();
         dispmsg();
         move(row, col);
