@@ -34,7 +34,8 @@ char filename[BUFSIZ];
 char temp[BUFSIZ];
 char *prog_name;
 
-keytable_t table[] = {
+/* key, func */
+command_table_t cmd_table[] = {
         { K_CURSOR_LEFT, left },
         { K_CURSOR_RIGHT, right },
         { K_CURSOR_DOWN, down },
@@ -53,8 +54,10 @@ keytable_t table[] = {
         { K_CUT, cut },
         { K_PASTE, paste },
         { K_UNDO, undo },
+        { K_FILE_INSERT, insertfile },
         { K_FILE_READ, readfile },
         { K_FILE_WRITE, writefile },
+        { K_SAVE_BUFFER, savebuffer },
         { K_REDRAW, redraw },
         { K_QUIT, quit },
         { K_QUIT_ASK, quit_ask },
@@ -83,7 +86,9 @@ msg_t m_file = "File \"%s\" %ld bytes.";
 msg_t m_saved = "File \"%s\" %ld bytes saved.";
 msg_t m_loaded = "File \"%s\" %ld bytes read.";
 msg_t str_notsaved = "File not saved.  Quit (y/n) ?";
-msg_t str_read = "Read file :";
+msg_t str_querysave = "Save changes (y/n) ?";
+msg_t str_read = "Find file :";
+msg_t str_insert_file ="Insert file :";
 msg_t str_write = "Write file :";
 msg_t str_yes = " y\b";
 msg_t str_no = " n\b";

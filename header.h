@@ -41,11 +41,11 @@ typedef char *msg_t;
 typedef unsigned char char_t;
 typedef long point_t;
 
-typedef struct keytable_t {
+typedef struct command_table_t {
         short key;
         void (*func) _((void));
 
-} keytable_t;
+} command_table_t;
 
 /*
  * Some compilers define size_t as a unsigned 16 bit number while
@@ -82,7 +82,7 @@ extern char filename[];         /* Current filename for text buffer. */
 extern char temp[];             /* Temporary buffer. */
 extern char *prog_name;         /* Name used to invoke editor. */
 
-extern keytable_t table[];      /* Command jump table. */
+extern command_table_t cmd_table[];      /* Command jump table. */
 extern keymap_t *key_map;       /* Command key mappings. */
 
 /* fatal() messages. */
@@ -109,7 +109,9 @@ extern msg_t m_loaded;
 
 /* Prompts */
 extern msg_t str_notsaved;
+extern msg_t str_querysave;
 extern msg_t str_read;
+extern msg_t str_insert_file;
 extern msg_t str_write;
 extern msg_t str_yes;
 extern msg_t str_no;
@@ -136,7 +138,9 @@ extern point_t pos _((char_t *));
 extern char_t *ptr _((point_t));
 extern int posix_file _((char *));
 extern int save _((char *));
-extern int load _((char *));
+extern int load_file _((char *));
+//extern int insert_file _((char *));
+extern int insert_file (char *, int);
 extern void undoset _((void));
 extern void undo _((void));
 extern void backsp _((void));
@@ -156,6 +160,7 @@ extern void quit _((void));
 extern void quit_ask _((void));
 extern void redraw _((void));
 extern void readfile _((void));
+extern void insertfile _((void));
 extern void right _((void));
 extern void top _((void));
 extern void up _((void));
@@ -163,3 +168,8 @@ extern void version _((void));
 extern void wleft _((void));
 extern void wright _((void));
 extern void writefile _((void));
+extern void savebuffer _((void));
+
+extern void debug(char *, ...);
+extern void debug_stats(char *);
+extern void modeline(void);

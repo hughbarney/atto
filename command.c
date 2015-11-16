@@ -24,17 +24,17 @@ void bottom()
 
 void quit_ask()
 {
-        if (modified) {
-                standout();
-                mvaddstr(MSGLINE, 0, str_notsaved);
-                standend();
-                clrtoeol();
-                if (!yesno(FALSE))
-                        return;
-        }
-        quit();
+	//debug("quit_ask()\n");
+	if (modified) {
+		mvaddstr(MSGLINE, 0, str_notsaved);
+		clrtoeol();
+		if (!yesno(FALSE))
+			return;
+	}
+	quit();
 }
 
+/* flag = default answer, FALSE=n, TRUE=y */
 int yesno(int flag)
 {
         int ch;
@@ -159,31 +159,64 @@ void delete()
         }
 }
 
+void insertfile()
+{
+	mvaddstr(MSGLINE, 0, str_insert_file);
+	clrtoeol();
+	addch(' ');
+	refresh();
+	temp[0] = '\0';
+	getinput((char*) temp, BUFSIZ, TRUE);
+	if (temp[0] != '\0')
+		(void) insert_file(temp, TRUE);
+}
+
 void readfile()
 {
-        standout();
-        mvaddstr(MSGLINE, 0, str_read);
-        standend();
-        clrtoeol();
-        addch(' ');
-        refresh();
-        temp[0] = '\0';
-        getinput((char*) temp, BUFSIZ, TRUE);
-        if (temp[0] != '\0')
-                (void) load(temp);
+	/* if modified as if want to save changes */
+	if (modified) {
+		mvaddstr(MSGLINE, 0, str_querysave);
+		clrtoeol();
+		if (yesno(TRUE)) {
+			savebuffer();
+			modeline();
+			refresh();
+        }
+	}
+	
+	mvaddstr(MSGLINE, 0, str_read);
+	clrtoeol();
+	addch(' ');
+	refresh();
+	temp[0] = '\0';
+	getinput((char*) temp, BUFSIZ, TRUE);
+	if (temp[0] != '\0')
+		(void) load_file(temp);
+}
+
+void savebuffer()
+{
+	//debug("savebuffer()\n");
+	if (filename[0] != '\0') {
+		save(filename);
+		return;
+	} else {
+		writefile();
+	}
+	refresh();
 }
 
 void writefile()
 {
-        mvaddstr(MSGLINE, 0, str_write);
-        clrtoeol();
-        addch(' ');
-        refresh();
-        strcpy(temp, filename);
-        getinput((char*) temp, BUFSIZ, TRUE);
-        if (temp[0] != '\0')
-			if (save(temp) == TRUE)
-				strcpy(filename, temp);
+	mvaddstr(MSGLINE, 0, str_write);
+	clrtoeol();
+	addch(' ');
+	refresh();
+	strcpy(temp, filename);
+	getinput((char*) temp, BUFSIZ, TRUE);
+	if (temp[0] != '\0')
+		if (save(temp) == TRUE)
+			strcpy(filename, temp);
 }
 
 void block()

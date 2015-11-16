@@ -80,8 +80,9 @@ int getliteral()
         int ch;
 
         ch = ipop();
-        if (ch == EOF)
-                return ((unsigned) getch());
+        if (ch == EOF) {
+			return ((unsigned) getch());
+		}
         return (ch);
 }
 

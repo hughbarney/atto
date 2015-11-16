@@ -7,8 +7,8 @@
 #include <string.h>
 #include "header.h"
 
-static void dispmsg(void);
-static void modeline(void);
+void dispmsg(void);
+void modeline(void);
 
 /* Reverse scan for start of logical line containing offset */
 point_t lnstart(register point_t off)
@@ -173,7 +173,7 @@ void display()
         refresh();
 }
 
-static void modeline()
+void modeline()
 {
     	int i;
 		standout();
@@ -197,7 +197,7 @@ static void modeline()
         standend();
 }
 
-static void dispmsg()
+void dispmsg()
 {
         move(MSGLINE, 0);
         if (msgflag) {

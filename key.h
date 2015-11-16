@@ -49,10 +49,12 @@
 #define K_LITERAL       (-129)
 #define K_QUIT          (-130)
 #define K_QUIT_ASK      (-131)
-#define K_FILE_READ     (-132)
-#define K_FILE_WRITE    (-133)
-#define K_STTY_ERASE    (-134)
-#define K_STTY_KILL     (-135)
+#define K_FILE_INSERT   (-132)
+#define K_FILE_READ     (-133)
+#define K_FILE_WRITE    (-134)
+#define K_STTY_ERASE    (-135)
+#define K_STTY_KILL     (-136)
+#define K_SAVE_BUFFER  (-137)
 
 typedef struct keymap_t {
 	short code;             /* Function code. */

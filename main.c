@@ -1,20 +1,24 @@
 /*
  * main.c              
  *
- * Anthony's Editor January 93
+ * AttoEmacs, Hugh Barney, November 2015, based on Anthony's Editor
+ * A single buffer, single screen Emacs
  *
+ * Anthony's Editor January 93
  * Public Domain 1991, 1993 by Anthony Howe.  No warranty.
  */
 
 #include <ctype.h>
 #include <errno.h>
 #include <string.h>
+#include <signal.h>
 #include "header.h"
 #include <stdarg.h>
 
-void debug(char *, ...);
 
-keymap_t keymap2[] = {
+/* code, key_bin, lhs, rhs */
+
+keymap_t keymap[] = {
  {K_CURSOR_UP         , "C-p                      ", "\x1B\x5B\x41","NULL"},
  {K_CURSOR_DOWN       , "C-n                      ", "\x1B\x5B\x42","NULL"},
  {K_CURSOR_LEFT       , "C-b                      ", "\x1B\x5B\x44","NULL"},
@@ -47,9 +51,11 @@ keymap_t keymap2[] = {
  {K_CUT               , "C-i                      ", "\x09","NULL"},    /* c-i use for now */
  {K_PASTE             , "C-y                      ", "\x19","NULL"},
  {K_MACRO_DEFINE      , "C-k                      ", "\x0B","\x01\x0F\x05\x09\x04"},
+ {K_FILE_INSERT       , "C-x i insert-file        ", "\x18\x69","NULL"},
  {K_FILE_READ         , "C-x C-f find-file        ", "\x18\x06","NULL"},
- {K_FILE_WRITE        , "C-x C-d write-file       ", "\x18\x04","NULL"},
- {K_QUIT              , "C-x C-c                  ", "\x18\x03","NULL"},
+ {K_SAVE_BUFFER       , "C-x C-s save-buffer      ", "\x18\x13","NULL"},  
+ {K_FILE_WRITE        , "C-x C-w write-file       ", "\x18\x17","NULL"},  /* write and prompt for name */
+ {K_QUIT_ASK          , "C-x C-c exit             ", "\x18\x03","NULL"},
  {K_SHOW_VERSION      , "esc esc show-version     ", "\x1B\x1B","NULL"},
  {K_ERROR             , "K_ERROR                  ", NULL, NULL }
 };
@@ -68,13 +74,13 @@ int main(int argc, char **argv)
         if (initscr() == NULL)
                 fatal(f_initscr);
 
-		key_map = keymap2;
+        raw();
         noecho();
-        lineinput(FALSE);
         idlok(stdscr, TRUE);
-
+		filename[0] = '\0';
+		
         if (1 < argc) {
-                (void) load(argv[1]);
+ 			    (void) insert_file(argv[1], FALSE);
                 /* Save filename irregardless of load() success. */
                 strcpy(filename, argv[1]);
                 modified = FALSE;
@@ -83,68 +89,33 @@ int main(int argc, char **argv)
         if (!growgap(CHUNK))
                 fatal(f_alloc);
 
+		key_map = keymap;
         top();
-        i = msgflag;
-        msgflag = i;
+
         while (!done) {
                 display();
                 i = 0;
                 input = getkey(key_map);
-                while (table[i].key != 0 && input != table[i].key)
+                while (cmd_table[i].key != 0 && input != cmd_table[i].key)
                         ++i;
-                if (table[i].func != NULL)
-					(*table[i].func)();
-                else
+                if (cmd_table[i].func != NULL) {
+					//debug("key func=%d\n", cmd_table[i].key);
+					(*cmd_table[i].func)();
+				} else {
 					insert();
+				}
+				//debug_stats("main loop:");
         }
         if (scrap != NULL)
                 free(scrap);
+
         move(LINES-1, 0);
         refresh();
+        noraw();
         endwin();
-        putchar('\n');
+
         return (EXIT_OK);
 }
-
-#ifdef TERMIOS
-#include <termios.h>
-
-/*
- *      Set the desired input mode.
- *
- *      FALSE enables immediate character processing (disable line processing
- *      and signals for INTR, QUIT, and SUSP).  TRUE enables line processing
- *      and signals (disables immediate character processing).  In either
- *      case flow control (XON/XOFF) is still active.  
- *
- *      If the termios function calls fail, then fall back on using
- *      CURSES' cbreak()/nocbreak() functions; however signals will be
- *      still be in effect.
- */
-void lineinput(int bf)
-{
-        int error;
-        struct termios term;
-        error = tcgetattr(fileno(stdin), &term) < 0;
-        if (!error) {
-                if (bf)
-                        term.c_lflag |= ISIG | ICANON;
-                else
-                        term.c_lflag &= ~(ISIG | ICANON);
-                error = tcsetattr(fileno(stdin), TCSANOW, &term) < 0;
-        }
-        /* Fall back on CURSES functions that do almost what we need if
-         * either tcgetattr() or tcsetattr() fail.
-         */
-        if (error) {
-                if (bf)
-                        nocbreak();
-                else
-                        cbreak();
-        }
-}
-
-#endif /* TERMIOS */
 
 void fatal(msg_t m)
 {
@@ -190,4 +161,8 @@ void debug(char *format, ...)
 
     fprintf(debug_fp,"%s", buffer);
     fflush(debug_fp);
+}
+
+void debug_stats(char *s) {
+	debug("%s bsz=%d gap=%d egap=%d\n", s, ebuf - buf, gap - buf, egap - buf);
 }

@@ -32,6 +32,8 @@ int growgap(point_t n)
         char_t *new;
         point_t buflen, newlen, xgap, xegap;
 
+		//debug_stats("growgap() START");
+		
         assert(buf <= gap);
         assert(gap <= egap);
         assert(egap <= ebuf);
@@ -76,7 +78,10 @@ int growgap(point_t n)
         assert(buf <= gap);
         assert(gap < egap);          /* Gap must grow only. */
         assert(egap <= ebuf);
-        return (TRUE);
+
+		//debug_stats("growgap() END");
+
+		return (TRUE);
 }
 
 point_t movegap(point_t offset)
@@ -125,6 +130,9 @@ int save(char *fn)
 {
         FILE *fp;
         point_t length;
+
+		//debug("save()\n");
+		
         if (!posix_file(fn)) {
                 msg(m_badname);
                 return (FALSE);
@@ -149,12 +157,25 @@ int save(char *fn)
         return (TRUE);
 }
 
-int load(char *fn)
+int load_file(char *fn)
+{
+	/* reset the gap, make it the whole buffer */
+	gap = buf;
+	egap = ebuf;
+	top();
+	return insert_file(fn, FALSE);
+}
+
+/* reads file into buffer at point */
+int insert_file(char *fn, int modflag)
 {
         FILE *fp;
         size_t len;
         struct stat sb;
-        if (stat(fn, &sb) < 0) {
+
+		//debug_stats("load() START: ");
+
+		if (stat(fn, &sb) < 0) {
                 msg(m_stat, fn);
                 return (FALSE);
         }
@@ -171,11 +192,14 @@ int load(char *fn)
         point = movegap(point);
         undoset();
         gap += len = fread(gap, sizeof (char), (size_t) sb.st_size, fp);
-        if (fclose(fp) != 0) {
+
+		//debug_stats("load() END: ");
+
+		if (fclose(fp) != 0) {
                 msg(m_close, fn);
                 return (FALSE);
         }
-        modified = TRUE;
+        modified = modflag;
         msg(m_loaded, fn, len);
         return (TRUE);
 }
