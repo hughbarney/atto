@@ -116,12 +116,6 @@ extern msg_t str_write;
 extern msg_t str_yes;
 extern msg_t str_no;
 
-#ifdef TERMIOS
-extern void lineinput _((int));
-#else
-#define lineinput(bf)           (bf ? nocbreak() : cbreak())
-#endif /* TERMIOS */
-
 extern void fatal _((msg_t));
 extern void msg _((msg_t, ...));
 extern void display _((void));
@@ -139,7 +133,6 @@ extern char_t *ptr _((point_t));
 extern int posix_file _((char *));
 extern int save _((char *));
 extern int load_file _((char *));
-//extern int insert_file _((char *));
 extern int insert_file (char *, int);
 extern void undoset _((void));
 extern void undo _((void));
