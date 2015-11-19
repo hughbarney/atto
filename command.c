@@ -178,7 +178,7 @@ void readfile()
 			savebuffer();
 			modeline();
 			refresh();
-        }
+		}
 	}
 	
 	mvaddstr(MSGLINE, 0, str_read);
@@ -188,7 +188,8 @@ void readfile()
 	temp[0] = '\0';
 	getinput((char*) temp, BUFSIZ, TRUE);
 	if (temp[0] != '\0')
-		(void) load_file(temp);
+		if (load_file(temp) == TRUE)
+			strcpy(filename, temp);
 }
 
 void savebuffer()

@@ -144,13 +144,6 @@ void display()
 		if ((MAXLINE) <= i || ebuf <= p)
 			break;
 		if (*p != '\r') {
-			if (marker != NOMARK) {
-				if ((marker <= epage && epage < point)
-					|| (point <= epage && epage < marker))
-					standout();
-				else
-					standend();
-			}
 			if (isprint(*p) || *p == '\t' || *p == '\n') {
 				j += *p == '\t' ? 8-(j&7) : 1;
 				addch(*p);
