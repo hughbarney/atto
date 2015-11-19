@@ -1,7 +1,7 @@
 #
 # makefile
 #
-# Anthony's Editor January 93
+# Based on Anthony's Editor January 93
 #
 # Public Domain 1991, 1993 by Anthony Howe.  No warranty.
 #
