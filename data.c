@@ -1,9 +1,9 @@
 /*
  * data.c              
  *
- * Anthony's Editor January 93
+ * AttoEmacs, Hugh Barney, November 2015, A single buffer, single screen Emacs
+ * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
  *
- * Public Domain 1991, 1993 by Anthony Howe.  No warranty.
  */
 
 #include "header.h"

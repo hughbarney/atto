@@ -1,9 +1,9 @@
 /*
  * header.h            
  *
- * Anthony's Editor January 93
+ * AttoEmacs, Hugh Barney, November 2015, A single buffer, single screen Emacs
+ * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
  *
- * Public Domain 1991, 1993 by Anthony Howe.  No warranty.
  */
 
 #include <stdlib.h>
@@ -150,6 +150,7 @@ extern void paste _((void));
 extern void pgdown _((void));
 extern void pgup _((void));
 extern void quit _((void));
+extern int yesno _((int));
 extern void quit_ask _((void));
 extern void redraw _((void));
 extern void readfile _((void));
