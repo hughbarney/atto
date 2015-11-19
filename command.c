@@ -24,7 +24,6 @@ void bottom()
 
 void quit_ask()
 {
-	//debug("quit_ask()\n");
 	if (modified) {
 		mvaddstr(MSGLINE, 0, str_notsaved);
 		clrtoeol();
@@ -271,4 +270,8 @@ void paste()
 void version()
 {
         msg(m_version);
+}
+
+void macro_noop()
+{
 }

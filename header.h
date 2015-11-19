@@ -173,3 +173,4 @@ extern void savebuffer _((void));
 extern void debug(char *, ...);
 extern void debug_stats(char *);
 extern void modeline(void);
+extern void macro_noop(void);

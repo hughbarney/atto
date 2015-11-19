@@ -48,8 +48,9 @@ int getkey(keymap_t *keys)
                 /* If recorded bytes match any multi-byte sequence... */
                 for (k = keys, submatch = 0; k->code != K_ERROR; ++k) {
                         char *p, *q;
-                        if (k->lhs == NULL)
+                        if (k->lhs == NULL) {
                                 continue;
+						}
                         for (p = buffer, q = k->lhs; *p == *q; ++p, ++q) {
                                 if (*q == '\0') {
                                         if (k->code == K_LITERAL)
@@ -58,8 +59,13 @@ int getkey(keymap_t *keys)
                                                 /* Return extended key code. */
                                                 return (k->code);
                                         }
-                                        if (k->rhs != NULL)
+                                        if (k->rhs != NULL) {
                                                 (void) ipush(k->rhs);
+												// reset record and return 'we are a macro'
+												record = buffer;
+												*record = '\0';
+												return K_MACRO_DEFINE;
+										}
                                         break;
                                 }
                         }

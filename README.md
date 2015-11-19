@@ -74,6 +74,10 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     Up    Move to the previous line
     Down  Move to the next line
     Backspace delete caharacter on the left
+    Ctrl+Up      beginning of file
+    Ctrl+Down    end of file
+    Ctrk+Left    Page Down
+    Ctrl+Right   Page Up
 
 ###Copying and moving
     ^@ or M-<spacebar> Set mark at current position.
@@ -125,16 +129,11 @@ The following key strokes could be added fairly cheaply
   
 It would be simple to add the following key-bindings
 
-    Ctrl+Up      beginning of file
-    Ctrl+Down    end of file
-    Ctrk+Left    Page Down
-    Ctrl+Right   Page Up
     Esc-Left     Delete word left
     Esc-right    Delete word right
 
 
 ##Known Issues
-   Dont currently handle / display TAB properly
    The arrow keys dont work properly when entering filenames on the prompt line
 
 ##Copying

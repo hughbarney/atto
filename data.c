@@ -62,6 +62,7 @@ command_table_t cmd_table[] = {
         { K_QUIT, quit },
         { K_QUIT_ASK, quit_ask },
         { K_SHOW_VERSION, version },
+        { K_MACRO_DEFINE, macro_noop },
         { 0, NULL }
 };
 
