@@ -15,8 +15,8 @@
 #undef _
 #define _(x)    x
 
-#define VERSION         \
-"Atto March 2014. Public Domain 2014, by Hugh Barney.  No warranty."
+#define VERSION															\
+	"Atto March 2014. Public Domain 2014, by Hugh Barney.  No warranty."
 
 #ifndef CHUNK
 #define CHUNK           8096L
@@ -42,8 +42,8 @@ typedef unsigned char char_t;
 typedef long point_t;
 
 typedef struct command_table_t {
-        short key;
-        void (*func) _((void));
+	short key;
+	void (*func) _((void));
 
 } command_table_t;
 
