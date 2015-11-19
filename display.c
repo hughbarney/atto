@@ -152,7 +152,7 @@ void display()
 				j += *p == '\t' ? 8-(j&7) : 1;
 				addch(*p);
 			} else {
-				char *ctrl = unctrl(*p);
+				const char *ctrl = unctrl(*p);
 				j += (int) strlen(ctrl);
 				addstr(ctrl);
 			}

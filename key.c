@@ -215,29 +215,6 @@ static int fld_done()
 	return (FALSE);
 }
 
-static int fld_left()
-{
-	int row, col, max_row, max_col;
-	getyx(stdscr, row, col);
-	getmaxyx(stdscr, max_row, max_col);
-	if (0 < fld_index) {
-		--fld_index;
-		/* Assume that if 0 < fld_index then fld_row <= row
-		 * and fld_col < col.  So when fld_index == 0, then
-		 * fld_row == row and fld_col == col.
-		 */
-		if (0 < col) {
-			--col;
-		} else if (0 < row) {
-			/* Handle reverse line wrap. */
-			--row;
-			col = max_col-1;
-		}
-		move(row, col);
-	}
-	return (TRUE);
-}
-
 static int fld_erase()
 {
 	int row, col;
@@ -272,4 +249,28 @@ static int fld_insert()
 		}
 	}
 	return (fld_index < fld_length);
+}
+
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+static int fld_left()
+{
+	int row, col, max_row, max_col;
+	getyx(stdscr, row, col);
+	getmaxyx(stdscr, max_row, max_col);
+	if (0 < fld_index) {
+		--fld_index;
+		/* Assume that if 0 < fld_index then fld_row <= row
+		 * and fld_col < col.  So when fld_index == 0, then
+		 * fld_row == row and fld_col == col.
+		 */
+		if (0 < col) {
+			--col;
+		} else if (0 < row) {
+			/* Handle reverse line wrap. */
+			--row;
+			col = max_col-1;
+		}
+		move(row, col);
+	}
+	return (TRUE);
 }
