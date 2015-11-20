@@ -115,6 +115,7 @@ extern msg_t str_insert_file;
 extern msg_t str_write;
 extern msg_t str_yes;
 extern msg_t str_no;
+extern msg_t str_mark;
 
 extern void fatal _((msg_t));
 extern void msg _((msg_t, ...));
@@ -138,6 +139,7 @@ extern void undoset _((void));
 extern void undo _((void));
 extern void backsp _((void));
 extern void block _((void));
+extern void iblock _((void));
 extern void bottom _((void));
 extern void cut _((void));
 extern void copy _((void));

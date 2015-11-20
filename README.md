@@ -57,6 +57,7 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     M-v   Page Up  
     M-f   Forward Word
     M-b   Backwards Word
+    M-w   copy-region
     
     C-<spacebar> Set mark at current position. 
       
@@ -80,9 +81,10 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     Ctrl+Right   Page Up
 
 ###Copying and moving
-    ^@ or M-<spacebar> Set mark at current position.
-    ^W   Delete region.
-    ^Y   Yank back kill buffer at cursor.
+    C-<spacebar> Set mark at current position
+    ^W   Delete region
+    ^Y   Yank back kill buffer at cursor
+    M-w  Copy Region
 
 A region is defined as the area between this mark and the current cursor position. The kill buffer is the text which has been most recently deleted or copied.
 

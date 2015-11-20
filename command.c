@@ -217,6 +217,12 @@ void writefile()
 			strcpy(filename, temp);
 }
 
+void iblock()
+{
+	block();
+	msg(str_mark);
+}
+
 void block()
 {
 	marker = marker == NOMARK ? point : NOMARK;

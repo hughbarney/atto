@@ -50,7 +50,7 @@ command_table_t cmd_table[] = {
 	{ K_FILE_BOTTOM, bottom },
 	{ K_DELETE_LEFT, backsp },
 	{ K_DELETE_RIGHT, delete },
-	{ K_BLOCK, block },
+	{ K_BLOCK, iblock },
 	{ K_CUT, cut },
 	{ K_COPY, copy },
 	{ K_PASTE, paste },
@@ -94,3 +94,4 @@ msg_t str_insert_file ="Insert file :";
 msg_t str_write = "Write file :";
 msg_t str_yes = " y\b";
 msg_t str_no = " n\b";
+msg_t str_mark = "Mark set";
