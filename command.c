@@ -222,9 +222,18 @@ void block()
 	marker = marker == NOMARK ? point : NOMARK;
 }
 
-void cut()
+void copy() {
+	copy_cut(FALSE);
+}
+
+void cut() {
+	copy_cut(TRUE);
+}
+
+void copy_cut(int cut)
 {
 	char_t *p;
+	/* if no mark or point == marker, nothing doing */
 	if (marker == NOMARK || point == marker)
 		return;
 	if (scrap != NULL) {
@@ -232,10 +241,12 @@ void cut()
 		scrap = NULL;
 	}
 	if (point < marker) {
+		/* point above marker: move gap under point, region = marker - point */
 		p = ptr(point);
 		(void) movegap(point);
 		nscrap = marker - point;
 	} else {
+		/* if point below marker: move gap under marker, region = point - marker */
 		p = ptr(marker);
 		(void) movegap(marker);
 		nscrap = point - marker;
@@ -245,10 +256,14 @@ void cut()
 	} else {
 		undoset();
 		(void) memcpy(scrap, p, nscrap * sizeof (char_t));
-		egap += nscrap;
-		block();
-		point = pos(egap);
-		modified = TRUE;
+		if (cut) {
+			egap += nscrap; /* if cut expand gap down */
+			block();
+			point = pos(egap); /* set point to after region */
+			modified = TRUE;
+		} else {
+			block(); /* can maybe do without */
+		}
 	}
 }
 

@@ -140,6 +140,8 @@ extern void backsp _((void));
 extern void block _((void));
 extern void bottom _((void));
 extern void cut _((void));
+extern void copy _((void));
+extern void copy_cut _((int));
 extern void delete _((void));
 extern void down _((void));
 extern void insert _((void));

@@ -27,6 +27,7 @@
 #define K_CUT           (-106)
 #define K_PASTE         (-107)
 #define K_UNDO          (-108)
+#define K_COPY          (-102)
 
 /* Cursor motion. */
 #define K_CURSOR_UP     (-109)

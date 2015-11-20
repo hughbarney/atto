@@ -53,8 +53,9 @@ keymap_t keymap[] = {
 	{K_WORD_RIGHT        , "esc f forward-word       ", "\x1B\x66","NULL"},
 	{K_BLOCK             , "C-space set-mark         ", "\x00","NULL"},    /* ctrl-space, note is NULL, cant use 0x00 is macros */
 	{K_BLOCK             , "C-/ set-mark             ", "\x0F","NULL"},    /* alternate, to enable use in macros */
-	{K_CUT               , "C-w                      ", "\x17","NULL"},    /* c-w not working on chrome book */
-	{K_PASTE             , "C-y                      ", "\x19","NULL"},
+	{K_CUT               , "C-w kill-region          ", "\x17","NULL"},    /* c-w not working on chrome book */
+	{K_PASTE             , "C-y yank                 ", "\x19","NULL"},
+	{K_COPY              , "esc w copy-region        ", "\x1B\x77","NULL"},
 
 	{K_MACRO_DEFINE      , "C-k kill-to-eol          ", "\x0B","\x0F\x05\x17"}, /*C-K => C-/, C-E, C-W */
 	{K_FILE_INSERT       , "C-x i insert-file        ", "\x18\x69","NULL"},

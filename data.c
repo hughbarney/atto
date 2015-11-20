@@ -52,6 +52,7 @@ command_table_t cmd_table[] = {
 	{ K_DELETE_RIGHT, delete },
 	{ K_BLOCK, block },
 	{ K_CUT, cut },
+	{ K_COPY, copy },
 	{ K_PASTE, paste },
 	{ K_UNDO, undo },
 	{ K_FILE_INSERT, insertfile },
