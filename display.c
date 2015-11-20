@@ -176,12 +176,7 @@ void modeline()
 	move(MODELINE, 0);
 	addch('=');
 		
-	if (modified) {
-		addch('*');
-	} else {
-		addch('=');
-	}
-
+	addch(modified ? '*' : '=');
 	addstr(" Atto: == File: ");
 	addstr(filename);
 	addch(' ');

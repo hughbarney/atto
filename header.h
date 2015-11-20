@@ -18,10 +18,6 @@
 #define VERSION															\
 	"Atto March 2014. Public Domain 2014, by Hugh Barney.  No warranty."
 
-#ifndef CHUNK
-#define CHUNK           8096L
-#endif /* CHUNK */
-
 /* Exit status. */
 #define EXIT_OK         0               /* Success */
 #define EXIT_ERROR      1               /* Unknown error. */
@@ -34,8 +30,8 @@
 #define FIRST_LINE       0
 #define MAXLINE          (LINES-2)
 
-
 #define NOMARK          -1
+#define CHUNK           8096L
 
 typedef char *msg_t;
 typedef unsigned char char_t;
@@ -167,7 +163,6 @@ extern void wleft _((void));
 extern void wright _((void));
 extern void writefile _((void));
 extern void savebuffer _((void));
-
 extern void debug(char *, ...);
 extern void debug_stats(char *);
 extern void modeline(void);

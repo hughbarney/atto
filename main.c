@@ -12,9 +12,7 @@
 #include "header.h"
 #include <stdarg.h>
 
-
-/* code, key_bin, lhs, rhs */
-
+/* code, desc, lhs, rhs */
 keymap_t keymap[] = {
 	{K_CURSOR_UP         , "up previous-line         ", "\x1B\x5B\x41","NULL"},
 	{K_CURSOR_DOWN       , "down next-line           ", "\x1B\x5B\x42","NULL"},

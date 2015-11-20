@@ -170,7 +170,7 @@ void insertfile()
 
 void readfile()
 {
-	/* if modified as if want to save changes */
+	/* if modified and if want to save changes */
 	if (modified) {
 		mvaddstr(MSGLINE, 0, str_querysave);
 		clrtoeol();
@@ -194,7 +194,6 @@ void readfile()
 
 void savebuffer()
 {
-	//debug("savebuffer()\n");
 	if (filename[0] != '\0') {
 		save(filename);
 		return;

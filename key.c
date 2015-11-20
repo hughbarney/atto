@@ -61,7 +61,7 @@ int getkey(keymap_t *keys)
 					}
 					if (k->rhs != NULL) {
 						(void) ipush(k->rhs);
-						// reset record and return 'we are a macro'
+						/* reset record and return 'we are a macro' */
 						record = buffer;
 						*record = '\0';
 						return K_MACRO_DEFINE;
