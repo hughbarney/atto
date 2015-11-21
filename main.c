@@ -61,7 +61,7 @@ keymap_t keymap[] = {
 	{K_SAVE_BUFFER       , "C-x C-s save-buffer      ", "\x18\x13","NULL"},  
 	{K_FILE_WRITE        , "C-x C-w write-file       ", "\x18\x17","NULL"},  /* write and prompt for name */
 	{K_QUIT_ASK          , "C-x C-c exit             ", "\x18\x03","NULL"},
-// {K_SHOW_VERSION      , "esc esc show-version     ", "\x1B\x1B","NULL"},
+	{K_SHOW_VERSION      , "esc esc show-version     ", "\x1B\x1B","NULL"},
 	{K_ERROR             , "K_ERROR                  ", NULL, NULL }
 };
 

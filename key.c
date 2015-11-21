@@ -138,139 +138,55 @@ int ismacro()
 	return (istack != NULL);
 }
 
-/*
- * Field input.
- */
-typedef struct key_entry_t {
-	int code;
-	int (*func) _((void));
-
-} key_entry_t;
-
-static int fld_done _((void));
-static int fld_erase _((void));
-static int fld_kill _((void));
-static int fld_left _((void));
-static int fld_insert _((void));
-
-#define ERASE_KEY       0
-#define KILL_KEY        1
-
-static key_entry_t ktable[] = {
-	{ K_STTY_ERASE, fld_erase },
-	{ K_STTY_KILL, fld_kill },
-	{ '\r', fld_done },
-	{ '\n', fld_done },
-	{ '\b', fld_erase },
-	{ -1, fld_insert }
-
-};
-
-static int fld_row;
-static int fld_col;
-static int fld_key;
-static int fld_echo;
-static int fld_index;
-static int fld_length;
-static char *fld_buffer;
-
-#ifndef getmaxyx
-#define getmaxyx(w,r,c)         (r=LINES,c=COLS)
-#endif
-
-int getinput(buf, len, echoing)
-char *buf;
-int len, echoing;
+int getinput(char *prompt, char *buf, int nbuf)
 {
-	int first;
-	key_entry_t *k;
-	fld_buffer = buf;
-	fld_index = (int) strlen(fld_buffer);
-	fld_length = len < 0 ? COLS : len;
-	if (--fld_length < 1)
-		return (FALSE);
-	ktable[ERASE_KEY].code = erasechar();
-	ktable[KILL_KEY].code = killchar();    
-	fld_echo = echoing;
-	getyx(stdscr, fld_row, fld_col);
-	addstr(fld_buffer);
-	move(fld_row, fld_col);
-	for (first = TRUE;; first = FALSE) {
+	int cpos = 0;
+	int c;
+	int start_col = strlen(prompt); 
+
+	mvaddstr(MSGLINE, 0, prompt);
+	clrtoeol();
+
+	/* if we have a default value print it and go to end of it */
+	if (buf[0] != '\0') {
+		addstr(buf);
+		cpos = strlen(buf);
+	}
+
+	for (;;)
+    {
 		refresh();
-		fld_key = getliteral();
-		for (k = ktable; k->code != -1 && k->code != fld_key; ++k)
-			;
-		if (first && k->func == fld_insert)
-			fld_kill();
-		if (k->func != NULL && !(*k->func)()) {
-			fld_buffer[fld_index] = '\0';
+		c = getch();
+		/* ignore control keys other than backspace, cr, lf */
+		if (c < 32 && c != 0x08 && c != 0x0a && c != 0x0d)
+			continue;
+
+		switch(c) {
+		case 0x0a: /* cr, lf */
+		case 0x0d:
+			buf[cpos] = '\0';
+			return (cpos > 0 ? TRUE : FALSE);
+
+		case 0x07: /* ctrl-g */
+			return FALSE;
+
+		case 0x7f: /* del, erase */
+		case 0x08: /* backspace */
+			if (cpos == 0)
+				continue;
+			
+			move(MSGLINE, start_col + cpos - 1);
+			addch(' ');
+			move(MSGLINE, start_col + cpos - 1);
+			buf[--cpos] = '\0';
+			break;
+
+		default:	
+			if (cpos < nbuf -1) {
+				addch(c);
+				buf[cpos++] = c;
+			}
 			break;
 		}
-	}
-	return (TRUE);
-}
-
-static int fld_done() 
-{
-	return (FALSE);
-}
-
-static int fld_erase()
-{
-	int row, col;
-	if (0 < fld_index) {
-		fld_left();
-		getyx(stdscr, row, col);
-		addch(' ');
-		move(row, col);
-		fld_buffer[fld_index] = '\0';
-	}
-	return (TRUE);
-}
-
-static int fld_kill()
-{
-	move(fld_row, fld_col);
-	while (0 < fld_index--)
-		addch(' ');
-	move(fld_row, fld_col);
-	fld_buffer[0] = '\0';
-	fld_index = 0;
-	return (TRUE);
-}
-
-static int fld_insert()
-{
-	if (fld_index < fld_length) {
-		if (!ISFUNCKEY(fld_key)) {
-			fld_buffer[fld_index++] = fld_key;
-			if (fld_echo)
-				addch(fld_key);
-		}
-	}
-	return (fld_index < fld_length);
-}
-
-#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-static int fld_left()
-{
-	int row, col, max_row, max_col;
-	getyx(stdscr, row, col);
-	getmaxyx(stdscr, max_row, max_col);
-	if (0 < fld_index) {
-		--fld_index;
-		/* Assume that if 0 < fld_index then fld_row <= row
-		 * and fld_col < col.  So when fld_index == 0, then
-		 * fld_row == row and fld_col == col.
-		 */
-		if (0 < col) {
-			--col;
-		} else if (0 < row) {
-			/* Handle reverse line wrap. */
-			--row;
-			col = max_col-1;
-		}
-		move(row, col);
-	}
-	return (TRUE);
+    }
 }

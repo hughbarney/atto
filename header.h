@@ -15,8 +15,7 @@
 #undef _
 #define _(x)    x
 
-#define VERSION															\
-	"Atto March 2014. Public Domain 2014, by Hugh Barney.  No warranty."
+#define VERSION	 "Atto 1.0, Public Domain, November 2015, by Hugh Barney,  No warranty."
 
 /* Exit status. */
 #define EXIT_OK         0               /* Success */

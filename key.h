@@ -15,7 +15,6 @@
 #undef _
 #define _(x)    x
 #define K_BUFFER_LENGTH         256
-#define ISFUNCKEY(x)            ((x) < 0)
 
 /* command key constants. */
 #define K_ERROR         (-1)
@@ -67,7 +66,7 @@ typedef struct keymap_t {
 
 extern int getliteral _((void));
 extern int getkey _((keymap_t *));
-extern int getinput _((char *, int, int));
+extern int getinput _((char *, char *, int));
 extern int ismacro _((void));
 
 #endif /* __key_h__ */

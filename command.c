@@ -158,12 +158,8 @@ void delete()
 
 void insertfile()
 {
-	mvaddstr(MSGLINE, 0, str_insert_file);
-	clrtoeol();
-	addch(' ');
-	refresh();
 	temp[0] = '\0';
-	getinput((char*) temp, BUFSIZ, TRUE);
+	getinput(str_insert_file, (char*) temp, BUFSIZ);
 	if (temp[0] != '\0')
 		(void) insert_file(temp, TRUE);
 }
@@ -180,13 +176,9 @@ void readfile()
 			refresh();
 		}
 	}
-	
-	mvaddstr(MSGLINE, 0, str_read);
-	clrtoeol();
-	addch(' ');
-	refresh();
+
 	temp[0] = '\0';
-	getinput((char*) temp, BUFSIZ, TRUE);
+	getinput(str_read, (char*) temp, BUFSIZ);
 	if (temp[0] != '\0')
 		if (load_file(temp) == TRUE)
 			strcpy(filename, temp);
@@ -205,12 +197,8 @@ void savebuffer()
 
 void writefile()
 {
-	mvaddstr(MSGLINE, 0, str_write);
-	clrtoeol();
-	addch(' ');
-	refresh();
 	strcpy(temp, filename);
-	getinput((char*) temp, BUFSIZ, TRUE);
+	getinput(str_write, (char*)temp, BUFSIZ);
 	if (temp[0] != '\0')
 		if (save(temp) == TRUE)
 			strcpy(filename, temp);
