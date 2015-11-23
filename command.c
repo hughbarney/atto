@@ -215,6 +215,18 @@ void block()
 	marker = marker == NOMARK ? point : NOMARK;
 }
 
+void killtoeol()
+{
+	/* point = start of empty line or last char in file */
+	if (*(ptr(point)) == 0xa || (point + 1 == ((ebuf-buf) - (egap-gap))) ) {
+		delete();
+	} else {
+		marker = point;
+		lnend();
+		copy_cut(TRUE);
+	}
+}
+
 void copy() {
 	copy_cut(FALSE);
 }
@@ -272,6 +284,11 @@ void paste()
 		point = pos(egap);
 		modified = TRUE;
 	}
+}
+
+void showpos()
+{
+	msg(str_pos, unctrl(*(ptr(point))), *(ptr(point)), point, ((ebuf-buf) - (egap-gap)) );
 }
 
 void version()

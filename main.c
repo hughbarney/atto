@@ -54,8 +54,9 @@ keymap_t keymap[] = {
 	{K_CUT               , "C-w kill-region          ", "\x17","NULL"},    /* c-w not working on chrome book */
 	{K_PASTE             , "C-y yank                 ", "\x19","NULL"},
 	{K_COPY              , "esc w copy-region        ", "\x1B\x77","NULL"},
+	{K_KILL_TO_EOL       , "C-k kill-to-eol          ", "\x0B", "NULL"},
 
-	{K_MACRO_DEFINE      , "C-k kill-to-eol          ", "\x0B","\x0F\x05\x17"}, /*C-K => C-/, C-E, C-W */
+	{K_SHOW_POS          , "C-x = cursor-position    ", "\x18\x3D","NULL"},
 	{K_FILE_INSERT       , "C-x i insert-file        ", "\x18\x69","NULL"},
 	{K_FILE_READ         , "C-x C-f find-file        ", "\x18\x06","NULL"},
 	{K_SAVE_BUFFER       , "C-x C-s save-buffer      ", "\x18\x13","NULL"},  

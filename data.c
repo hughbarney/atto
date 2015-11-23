@@ -55,6 +55,8 @@ command_table_t cmd_table[] = {
 	{ K_COPY, copy },
 	{ K_PASTE, paste },
 	{ K_UNDO, undo },
+	{ K_SHOW_POS, showpos },
+	{ K_KILL_TO_EOL, killtoeol },
 	{ K_FILE_INSERT, insertfile },
 	{ K_FILE_READ, readfile },
 	{ K_FILE_WRITE, writefile },
@@ -95,3 +97,5 @@ msg_t str_write = "Write file: ";
 msg_t str_yes = " y\b";
 msg_t str_no = " n\b";
 msg_t str_mark = "Mark set";
+msg_t str_pos = "Char = %s 0x%x  Point = %d/%d";
+

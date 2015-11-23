@@ -66,6 +66,7 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     ^X^S  Save current buffer to disk, using the buffer's filename as the name of  
     ^X^W  Write current buffer to disk. Type in a new filename at the prompt to  
     ^Xi   Insert file at point
+    ^X=   Show Character at position
       
     Home  Beginning-of-line
     End   End-of-line
@@ -112,12 +113,6 @@ $ sudo apt-get install libncurses5-dev
 
 
 ##Future Enhancements
-The following key strokes could be added fairly cheaply
-
-    ^X=   show position
-    ^XX   Exchange Point and Mark
-    ^C    copy-region (same as M-W)
-
 Atto currently only works on one file, one buffer, one window.  This will be a priority of the next release.   The ability to edit multiple files (single window view) could be added by modifying the code to encapsulate the buffer variables into a structure. It is expected this would add between 50-100 lines of code.  At least two additional key bindings will be required to manage multiple buffers.
 
     ^XN   Next Buffer

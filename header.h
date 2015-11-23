@@ -101,6 +101,8 @@ extern msg_t m_write;
 extern msg_t m_badname;
 extern msg_t m_saved;
 extern msg_t m_loaded;
+extern msg_t str_mark;
+extern msg_t str_pos;
 
 /* Prompts */
 extern msg_t str_notsaved;
@@ -110,7 +112,6 @@ extern msg_t str_insert_file;
 extern msg_t str_write;
 extern msg_t str_yes;
 extern msg_t str_no;
-extern msg_t str_mark;
 
 extern void fatal _((msg_t));
 extern void msg _((msg_t, ...));
@@ -166,3 +167,5 @@ extern void debug(char *, ...);
 extern void debug_stats(char *);
 extern void modeline(void);
 extern void macro_noop(void);
+extern void showpos(void);
+extern void killtoeol(void);

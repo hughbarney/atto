@@ -45,6 +45,8 @@
 /* Support functions. */
 #define K_REDRAW        (-122)
 #define K_SHOW_VERSION  (-123)
+#define K_SHOW_POS      (-124)
+#define K_KILL_TO_EOL   (-125)
 #define K_MACRO_DEFINE  (-128)
 #define K_LITERAL       (-129)
 #define K_QUIT          (-130)
