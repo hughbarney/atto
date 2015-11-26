@@ -11,131 +11,105 @@
 #include "header.h"
 #include "key.h"
 
-/* Variable length structure. */
-typedef struct input_t {
-	struct input_t *next;
-	char *ptr;
-	char buf[1];
+/* desc, keys, func */
+keymap_t keymap[] = {
+	{"up previous-line         ", "\x1B\x5B\x41", up },
+	{"down next-line           ", "\x1B\x5B\x42", down },
+	{"left backward-character  ", "\x1B\x5B\x44", left },
+	{"right forward-character  ", "\x1B\x5B\x43", right },
 
-} input_t;
+	{"C-a beginning-of-line    ", "\x01", lnbegin },
+	{"C-e end-of-line          ", "\x05", lnend },
+	{"home beginning-of-line   ", "\x1B\x4F\x48", lnbegin }, /* home key */
+	{"end end-of-line          ", "\x1B\x4F\x46", lnend }, /* end key */
 
-static input_t *istack = NULL;
-static int ipush _((char *));
-static int ipop _((void));
+	{"C-b                      ", "\x02", left },
+	{"C-f                      ", "\x06", right },
+	{"C-n                      ", "\x0E", down },
+	{"C-p                      ", "\x10", up },
+ 
+	{"C-d forward-delete-char  ", "\x04", delete },
+	{"DEL forward-delete-char  ", "\x1B\x5B\x33\x7E", delete }, /* Del key */
+	{"backspace delete-left    ", "\x7f", backsp },
+	{"C-h backspace            ", "\x08", backsp },
+	{"C-l                      ", "\x0C", redraw },
 
-int getkey(keymap_t *keys)
+	{"C-u                      ", "\x15", undo },
+	{"esc v                    ", "\x1B\x76", pgup },
+	{"C-v                      ", "\x16", pgdown },
+	{"PgUp                     ", "\x1B\x5B\x35\x7E",pgup }, /* PgUp key */
+	{"PgDn                     ", "\x1B\x5B\x36\x7E", pgdown }, /* PgDn key */
+
+	{"esc < beg-of-buf         ", "\x1B\x3C", top },
+	{"esc > end-of-buf         ", "\x1B\x3E", bottom },
+	{"esc home, beg-of-buf     ", "\x1B\x1B\x4F\x48", top },
+	{"esc end, end-of-buf      ", "\x1B\x1B\x4F\x46", bottom },
+	{"esc up, beg-of-buf       ", "\x1B\x1B\x5B\x41", top },
+	{"esc down, end-of-buf     ", "\x1B\x1B\x5B\x42", bottom },
+ 
+	{"esc b back-word          ", "\x1B\x62", wleft },
+	{"esc f forward-word       ", "\x1B\x66", wright },
+	{"C-space set-mark         ", "\x00", iblock },  /* ctrl-space */
+	{"C-w kill-region          ", "\x17", cut},
+	{"C-y yank                 ", "\x19", paste},
+	{"esc w copy-region        ", "\x1B\x77", copy},
+	{"C-k kill-to-eol          ", "\x0B", killtoeol },
+	{"C-s search               ", "\x13", search },
+	{"C-r search               ", "\x12", search },
+	
+	{"C-x = cursor-position    ", "\x18\x3D", showpos },
+	{"C-x i insert-file        ", "\x18\x69", insertfile },
+	{"C-x C-f find-file        ", "\x18\x06", readfile },
+	{"C-x C-s save-buffer      ", "\x18\x13", savebuffer },  
+	{"C-x C-w write-file       ", "\x18\x17", writefile },  /* write and prompt for name */
+	{"C-x C-c exit             ", "\x18\x03", quit_ask },
+	{"esc esc show-version     ", "\x1B\x1B", version },
+	{"K_ERROR                  ", NULL, NULL }
+};
+
+int getkey(keymap_t *keys, keymap_t **key_return)
 {
 	keymap_t *k;
 	int submatch;
 	static char buffer[K_BUFFER_LENGTH];
 	static char *record = buffer;
 
-	/* If recorded bytes remain, return next recorded byte. */
+	*key_return = NULL;
+
+	/* if recorded bytes remain, return next recorded byte. */
 	if (*record != '\0')
-		return (*(unsigned char *)record++);
-	/* Reset record buffer. */
+		*key_return = NULL;
+	/* reset record buffer. */
 	record = buffer;
+
 	do {
-		if (K_BUFFER_LENGTH < record - buffer) {
-			record = buffer;
-			buffer[0] = '\0';
-			return (K_ERROR);
-		}
-		/* Read and record one byte. */
-		*record++ = getliteral();
+		assert(K_BUFFER_LENGTH > record - buffer);
+		/* read and record one byte. */
+		*record++ = (unsigned)getch();
 		*record = '\0';
 
-		/* If recorded bytes match any multi-byte sequence... */
-		for (k = keys, submatch = 0; k->code != K_ERROR; ++k) {
+		/* if recorded bytes match any multi-byte sequence... */
+		for (k = keys, submatch = 0; k->lhs != NULL; ++k) {
 			char *p, *q;
-			if (k->lhs == NULL) {
-				continue;
-			}
+
 			for (p = buffer, q = k->lhs; *p == *q; ++p, ++q) {
-				if (*q == '\0') {
-					if (k->code == K_LITERAL)
-						return (getliteral());
-					if (k->code != K_MACRO_DEFINE) {
-						/* Return extended key code. */
-						return (k->code);
-					}
-					if (k->rhs != NULL) {
-						(void) ipush(k->rhs);
-						/* reset record and return 'we are a macro' */
-						record = buffer;
-						*record = '\0';
-						return K_MACRO_DEFINE;
-					}
-					break;
+			        /* an exact match */
+				if (*q == '\0' && *p == '\0') {
+	    				record = buffer;
+					*record = '\0';
+					*key_return = k;
+					return -1;
 				}
 			}
+			/* record bytes match part of a command sequence */
 			if (*p == '\0' && *q != '\0') {
-				/* Recorded bytes match anchored substring. */
 				submatch = 1;
 			}
 		}
-		/* If recorded bytes matched an anchored substring, loop. */
 	} while (submatch);
-	/* Return first recorded byte. */
+	/* nothing matched, return recorded bytes. */
 	record = buffer;
 	return (*(unsigned char *)record++);
-}
-
-int getliteral()
-{
-	int ch;
-
-	ch = ipop();
-	if (ch == EOF) {
-		return ((unsigned) getch());
-	}
-	return (ch);
-}
-
-/*
- * Return true if a new input string was pushed onto the stack,
- * else false if there was no more memory for the stack.
- */
-static int ipush(buf)
-char *buf;
-{
-	input_t *new;
-
-	new = (input_t *) malloc(sizeof (input_t) + strlen (buf));
-	if (new == NULL)
-		return (FALSE);
-	(void) strcpy(new->buf, buf);
-	new->ptr = new->buf;
-	new->next = istack;
-	istack = new;
-	return (TRUE);
-}
-
-/*
- * Pop and return a character off the input stack.  Return EOF if
- * the stack is empty.  If the end of an input string is reached,
- * then free the node.  This will allow clean tail recursion that
- * won't blow the stack.  
- */
-static int ipop()
-{
-	int ch;
-	input_t *node;
-
-	if (istack == NULL)
-		return (EOF);
-	ch = (unsigned) *istack->ptr++;
-	if (*istack->ptr == '\0') {
-		node = istack;
-		istack = istack->next;
-		free(node);
-	}
-	return (ch);
-}
-
-int ismacro()
-{
-	return (istack != NULL);
 }
 
 int getinput(char *prompt, char *buf, int nbuf)
@@ -154,7 +128,7 @@ int getinput(char *prompt, char *buf, int nbuf)
 	}
 
 	for (;;)
-    {
+	{
 		refresh();
 		c = getch();
 		/* ignore control keys other than backspace, cr, lf */
@@ -188,5 +162,6 @@ int getinput(char *prompt, char *buf, int nbuf)
 			}
 			break;
 		}
-    }
+	}
 }
+

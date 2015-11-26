@@ -10,8 +10,6 @@
 #include <string.h>
 #include "header.h"
 
-void dispmsg(void);
-void modeline(void);
 
 /* Reverse scan for start of logical line containing offset */
 point_t lnstart(register point_t off)

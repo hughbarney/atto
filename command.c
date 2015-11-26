@@ -38,7 +38,7 @@ int yesno(int flag)
 
 	addstr(flag ? str_yes : str_no);
 	refresh();
-	ch = getliteral();
+	ch = getch();
 	if (ch == '\r' || ch == '\n')
 		return (flag);
 	return (ch == str_yes[1]);
@@ -296,6 +296,7 @@ void version()
 	msg(m_version);
 }
 
-void macro_noop()
+void search()
 {
+	dosearch("Search: ", searchtext, BUFSIZ);
 }

@@ -15,7 +15,13 @@ As of Atto v1.0.0, these goal has been almost been achieved. So far we have a ba
 ##Derivation
 
 Atto is based on the public domain code of Anthony Howe's editor (commonly known as Anthony's Editor or AE, [2]).  Rather than representing a file as a linked list of lines, the AE Editor uses the concept of a Buffer-Gap [4,5,6].  A Buffer-Gap editor stores the file in a single piece of contiguous memory with some extra unused space known as the buffer gap.  On character insertion and deletion the gap is first moved to the current point.  A character deletion then extends the gap by moving the gap pointer back by 1 OR the gap is reduced by 1 when a character is inserted.  The Buffer-Gap technique is elegant and significantly reduces the amount of code required to load a file, modify it and redraw the display.  The proof of this is seen when you consider that Atto supports almost the same command set that Pico supports,  but Pico requires almost 17 times the amount of code.
-  
+ 
+
+## Atto v1.1 26 November 2015
+* Reduced code footprint by simplification of key code and the definition of keymap. This means I dont have to edit more than one map to add a function.
+* Added forward and reverse text search.
+* Code footprint is less that 1400 lines ! 
+
 
 ##Comparisons with Other Emacs Implementations
 
@@ -38,7 +44,8 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     C-B   backward-character  
     C-D   delete-char  
     C-E   End-of-line  
-    C-F   Forward Character  
+    C-F   Forward Character
+	C-G	  Abort (at prompts)
     C-H   Backspace  
     C-J   Newline  
     C-K   Kill to eol  
@@ -46,8 +53,10 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     C-M   Carrage Return      
     C-N   next line  
     C-P   previous line  
-    C-V   Page Down  
+	C-R   search-backwards
+	C-S	  search-forwards
     C-U   Undo
+    C-V   Page Down  
 	C-W   Kill Region (Cut)
     C-X   CTRL-X command prefix  
     C-Y   Yank (Paste) 
@@ -94,8 +103,13 @@ Generally, the procedure for copying or moving text is:
 2. Delete it (with ^W) or copy it (with M-W) into the kill buffer.
 3. Move the cursor to the desired location and yank it back (with ^Y).
 
-
-
+###Searching
+   C-S or C-R enters the search prompt, type the search string
+   BACKSPACE - will reduce the search string, any other character will extend it
+   C-S at the search prompt will search forward, will wrap at end of the buffer
+   C-R at the search prompt will search backwards, will wrap at start of the buffer
+   ESC will escape from the search prompt and return to the point of the match
+   C-G abort the search and return to point before the search started
 
 ##Building on Ubuntu
 

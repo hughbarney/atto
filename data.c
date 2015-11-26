@@ -32,43 +32,10 @@ int msgflag;
 char msgline[BUFSIZ];
 char filename[BUFSIZ];
 char temp[BUFSIZ];
+char searchtext[BUFSIZ];
 char *prog_name;
 
-/* key, func */
-command_table_t cmd_table[] = {
-	{ K_CURSOR_LEFT, left },
-	{ K_CURSOR_RIGHT, right },
-	{ K_CURSOR_DOWN, down },
-	{ K_CURSOR_UP, up },
-	{ K_WORD_LEFT, wleft },
-	{ K_WORD_RIGHT, wright },
-	{ K_PAGE_UP, pgup },
-	{ K_PAGE_DOWN, pgdown },
-	{ K_LINE_LEFT, lnbegin },
-	{ K_LINE_RIGHT, lnend },
-	{ K_FILE_TOP, top },
-	{ K_FILE_BOTTOM, bottom },
-	{ K_DELETE_LEFT, backsp },
-	{ K_DELETE_RIGHT, delete },
-	{ K_BLOCK, iblock },
-	{ K_CUT, cut },
-	{ K_COPY, copy },
-	{ K_PASTE, paste },
-	{ K_UNDO, undo },
-	{ K_SHOW_POS, showpos },
-	{ K_KILL_TO_EOL, killtoeol },
-	{ K_FILE_INSERT, insertfile },
-	{ K_FILE_READ, readfile },
-	{ K_FILE_WRITE, writefile },
-	{ K_SAVE_BUFFER, savebuffer },
-	{ K_REDRAW, redraw },
-	{ K_QUIT, quit },
-	{ K_QUIT_ASK, quit_ask },
-	{ K_SHOW_VERSION, version },
-	{ K_MACRO_DEFINE, macro_noop },
-	{ 0, NULL }
-};
-
+keymap_t *key_return;
 keymap_t *key_map;
 
 msg_t f_ok = "%s: Terminated successfully.\n";
@@ -98,4 +65,3 @@ msg_t str_yes = " y\b";
 msg_t str_no = " n\b";
 msg_t str_mark = "Mark set";
 msg_t str_pos = "Char = %s 0x%x  Point = %d/%d";
-

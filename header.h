@@ -15,7 +15,7 @@
 #undef _
 #define _(x)    x
 
-#define VERSION	 "Atto 1.0, Public Domain, November 2015, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.1, Public Domain, November 2015, by Hugh Barney,  No warranty."
 
 /* Exit status. */
 #define EXIT_OK         0               /* Success */
@@ -35,12 +35,6 @@
 typedef char *msg_t;
 typedef unsigned char char_t;
 typedef long point_t;
-
-typedef struct command_table_t {
-	short key;
-	void (*func) _((void));
-
-} command_table_t;
 
 /*
  * Some compilers define size_t as a unsigned 16 bit number while
@@ -75,10 +69,12 @@ extern int input;               /* Current input character. */
 extern char msgline[];          /* Message line input/output buffer. */
 extern char filename[];         /* Current filename for text buffer. */
 extern char temp[];             /* Temporary buffer. */
+extern char searchtext[];
 extern char *prog_name;         /* Name used to invoke editor. */
 
-extern command_table_t cmd_table[];      /* Command jump table. */
 extern keymap_t *key_map;       /* Command key mappings. */
+extern keymap_t keymap[];
+extern keymap_t *key_return;    /* Command key return */
 
 /* fatal() messages. */
 extern msg_t f_ok;              /* EXIT_OK */
@@ -116,6 +112,9 @@ extern msg_t str_no;
 extern void fatal _((msg_t));
 extern void msg _((msg_t, ...));
 extern void display _((void));
+extern void dispmsg(void);
+extern void modeline(void);
+
 extern point_t lnstart _((point_t));
 extern point_t lncolumn _((point_t, int));
 extern point_t segstart _((point_t, point_t));
@@ -166,6 +165,8 @@ extern void savebuffer _((void));
 extern void debug(char *, ...);
 extern void debug_stats(char *);
 extern void modeline(void);
-extern void macro_noop(void);
 extern void showpos(void);
 extern void killtoeol(void);
+
+extern void search(void);
+extern void dosearch(char *, char *, int);
