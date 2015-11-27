@@ -11,6 +11,7 @@
 
 int done;
 int modified;
+int result;
 
 point_t point;
 point_t page;

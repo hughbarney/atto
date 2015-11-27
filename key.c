@@ -132,7 +132,7 @@ int getinput(char *prompt, char *buf, int nbuf)
 		refresh();
 		c = getch();
 		/* ignore control keys other than backspace, cr, lf */
-		if (c < 32 && c != 0x08 && c != 0x0a && c != 0x0d)
+		if (c < 32 && c != 0x07 && c != 0x08 && c != 0x0a && c != 0x0d)
 			continue;
 
 		switch(c) {
@@ -159,6 +159,7 @@ int getinput(char *prompt, char *buf, int nbuf)
 			if (cpos < nbuf -1) {
 				addch(c);
 				buf[cpos++] = c;
+				buf[cpos] ='\0';
 			}
 			break;
 		}

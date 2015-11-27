@@ -48,6 +48,7 @@ typedef long point_t;
 extern int done;                /* Quit flag. */
 extern int modified;            /* Text buffer modified flag. */
 extern int msgflag;             /* True if msgline should be displayed. */
+extern int result;
 
 extern int row;                 /* Cursor screen row */
 extern int col;                 /* Cursor screen column. */

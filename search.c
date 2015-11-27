@@ -63,8 +63,9 @@ void dosearch(char *prompt, char *search, int nsize)
 			break;
 
 		default:	
-			if (cpos < nsize -1) {
+			if (cpos < nsize - 1) {
 				search[cpos++] = c;
+				search[cpos] = '\0';
 				update_search_prompt(prompt, search);
 			}
 			break;

@@ -10,7 +10,6 @@
 #include <string.h>
 #include "header.h"
 
-
 /* Reverse scan for start of logical line containing offset */
 point_t lnstart(register point_t off)
 {
@@ -117,10 +116,8 @@ void display()
 		 */
 		if (pos(ebuf) <= page) {
 			page = pos(ebuf);
-			//i = LINES-2;  // Original code
 			i = LINES - 3;
 		} else {
-			//i = LINES;
 			i = LINES - 2;
 		}
 		i -= FIRST_LINE;

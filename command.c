@@ -159,8 +159,8 @@ void delete()
 void insertfile()
 {
 	temp[0] = '\0';
-	getinput(str_insert_file, (char*) temp, BUFSIZ);
-	if (temp[0] != '\0')
+	result = getinput(str_insert_file, (char*) temp, BUFSIZ);
+	if (temp[0] != '\0' && result)
 		(void) insert_file(temp, TRUE);
 }
 
@@ -178,8 +178,8 @@ void readfile()
 	}
 
 	temp[0] = '\0';
-	getinput(str_read, (char*) temp, BUFSIZ);
-	if (temp[0] != '\0')
+	result = getinput(str_read, (char*) temp, BUFSIZ);
+	if (temp[0] != '\0' && result)
 		if (load_file(temp) == TRUE)
 			strcpy(filename, temp);
 }
@@ -198,8 +198,8 @@ void savebuffer()
 void writefile()
 {
 	strcpy(temp, filename);
-	getinput(str_write, (char*)temp, BUFSIZ);
-	if (temp[0] != '\0')
+	result = getinput(str_write, (char*)temp, BUFSIZ);
+	if (temp[0] != '\0' && result)
 		if (save(temp) == TRUE)
 			strcpy(filename, temp);
 }
