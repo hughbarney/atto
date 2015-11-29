@@ -20,12 +20,10 @@ RM      = rm
 E       =
 O       = .o
 
-OBJ     = command$(O) data$(O) display$(O) gap$(O) key$(O) search$(O) main$(O)
+OBJ     = command$(O) data$(O) display$(O) gap$(O) key$(O) search$(O) buffer$(O) main$(O)
 
 atto$(E) : $(OBJ)
 	$(LD) $(LDFLAGS) -o atto$(E) $(OBJ) $(LIBS)
-
-header.h : key.h
 
 command$(O): command.c header.h
 	$(CC) $(CFLAGS) -c command.c
@@ -44,6 +42,9 @@ key$(O): key.c header.h
 
 search$(O): search.c header.h
 	$(CC) $(CFLAGS) -c search.c
+
+buffer$(O): buffer.c header.h
+	$(CC) $(CFLAGS) -c buffer.c
 
 main$(O): main.c header.h
 	$(CC) $(CFLAGS) -c main.c

@@ -1,7 +1,7 @@
 /*
  * gap.c                
  *
- * AttoEmacs, Hugh Barney, November 2015, A single buffer, single screen Emacs
+ * AttoEmacs, Hugh Barney, November 2015
  * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
  *
  */
@@ -14,15 +14,6 @@
 #include <sys/stat.h>
 #include "header.h"
 
-typedef struct undo_t {
-	point_t u_point;
-	point_t u_gap;
-	point_t u_egap;
-
-} undo_t;
-
-static undo_t ubuf;
-
 /*
  *      Enlarge the gap by n characters.  
  *      Note that the position of the gap cannot change.
@@ -32,13 +23,13 @@ int growgap(point_t n)
 	char_t *new;
 	point_t buflen, newlen, xgap, xegap;
 		
-	assert(buf <= gap);
-	assert(gap <= egap);
-	assert(egap <= ebuf);
+	assert(curbp->b_buf <= curbp->b_gap);
+	assert(curbp->b_gap <= curbp->b_egap);
+	assert(curbp->b_egap <= curbp->b_ebuf);
 
-	xgap = gap - buf;
-	xegap = egap - buf;
-	buflen = ebuf - buf;
+	xgap = curbp->b_gap - curbp->b_buf;
+	xegap = curbp->b_egap - curbp->b_buf;
+	buflen = curbp->b_ebuf - curbp->b_buf;
 	newlen = buflen + n * sizeof (char_t);
 
 	if (buflen == 0) {
@@ -53,7 +44,7 @@ int growgap(point_t n)
 			msg(m_alloc);
 			return (FALSE);
 		}
-		new = (char_t*) realloc(buf, (size_t) newlen);
+		new = (char_t*) realloc(curbp->b_buf, (size_t) newlen);
 		if (new == NULL) {
 			/* Report non-fatal error. */
 			msg(m_alloc);
@@ -64,40 +55,40 @@ int growgap(point_t n)
 	/* Relocate pointers in new buffer and append the new
 	 * extension to the end of the gap.
 	 */
-	buf = new;
-	gap = buf + xgap;      
-	ebuf = buf + buflen;
-	egap = buf + newlen;
+	curbp->b_buf = new;
+	curbp->b_gap = curbp->b_buf + xgap;      
+	curbp->b_ebuf = curbp->b_buf + buflen;
+	curbp->b_egap = curbp->b_buf + newlen;
 	while (xegap < buflen--)
-		*--egap = *--ebuf;
-	ebuf = buf + newlen;
+		*--curbp->b_egap = *--curbp->b_ebuf;
+	curbp->b_ebuf = curbp->b_buf + newlen;
 
-	assert(buf < ebuf);          /* Buffer must exist. */
-	assert(buf <= gap);
-	assert(gap < egap);          /* Gap must grow only. */
-	assert(egap <= ebuf);
+	assert(curbp->b_buf < curbp->b_ebuf);          /* Buffer must exist. */
+	assert(curbp->b_buf <= curbp->b_gap);
+	assert(curbp->b_gap < curbp->b_egap);          /* Gap must grow only. */
+	assert(curbp->b_egap <= curbp->b_ebuf);
 	return (TRUE);
 }
 
 point_t movegap(point_t offset)
 {
 	char_t *p = ptr(offset);
-	while (p < gap)
-		*--egap = *--gap;
-	while (egap < p)
-		*gap++ = *egap++;
-	assert(gap <= egap);
-	assert(buf <= gap);
-	assert(egap <= ebuf);
-	return (pos(egap));
+	while (p < curbp->b_gap)
+		*--curbp->b_egap = *--curbp->b_gap;
+	while (curbp->b_egap < p)
+		*curbp->b_gap++ = *curbp->b_egap++;
+	assert(curbp->b_gap <= curbp->b_egap);
+	assert(curbp->b_buf <= curbp->b_gap);
+	assert(curbp->b_egap <= curbp->b_ebuf);
+	return (pos(curbp->b_egap));
 }
 
 /* Given a buffer offset, convert it to a pointer into the buffer */
 char_t * ptr(register point_t offset)
 {
 	if (offset < 0)
-		return (buf);
-	return (buf+offset + (buf+offset < gap ? 0 : egap-gap));
+		return (curbp->b_buf);
+	return (curbp->b_buf+offset + (curbp->b_buf + offset < curbp->b_gap ? 0 : curbp->b_egap-curbp->b_gap));
 }
 
 /*
@@ -105,8 +96,8 @@ char_t * ptr(register point_t offset)
  */
 point_t pos(register char_t *cp)
 {
-	assert(buf <= cp && cp <= ebuf);
-	return (cp-buf - (cp < egap ? 0 : egap-gap));
+	assert(curbp->b_buf <= cp && cp <= curbp->b_ebuf);
+	return (cp - curbp->b_buf - (cp < curbp->b_egap ? 0 : curbp->b_egap - curbp->b_gap));
 }
 
 int posix_file(char *fn)
@@ -136,8 +127,8 @@ int save(char *fn)
 		return (FALSE);
 	}
 	(void) movegap((point_t) 0);
-	length = (point_t) (ebuf-egap);
-	if (fwrite(egap, sizeof (char), (size_t) length, fp) != length) {
+	length = (point_t) (curbp->b_ebuf - curbp->b_egap);
+	if (fwrite(curbp->b_egap, sizeof (char), (size_t) length, fp) != length) {
 		msg(m_write, fn);
 		return (FALSE);
 	}
@@ -145,16 +136,16 @@ int save(char *fn)
 		msg(m_close, fn);
 		return (FALSE);
 	}
-	modified = FALSE;
-	msg(m_saved, fn, pos(ebuf));
+	curbp->b_modified = FALSE;
+	msg(m_saved, fn, pos(curbp->b_ebuf));
 	return (TRUE);
 }
 
 int load_file(char *fn)
 {
 	/* reset the gap, make it the whole buffer */
-	gap = buf;
-	egap = ebuf;
+	curbp->b_gap = curbp->b_buf;
+	curbp->b_egap = curbp->b_ebuf;
 	top();
 	return insert_file(fn, FALSE);
 }
@@ -174,21 +165,21 @@ int insert_file(char *fn, int modflag)
 		msg(m_toobig, fn);
 		return (FALSE);
 	}
-	if (egap-gap < sb.st_size * sizeof (char_t) && !growgap(sb.st_size))
+	if (curbp->b_egap - curbp->b_gap < sb.st_size * sizeof (char_t) && !growgap(sb.st_size))
 		return (FALSE);
 	if ((fp = fopen(fn, "r")) == NULL) {
 		msg(m_open, fn);
 		return (FALSE);
 	}
-	point = movegap(point);
+	curbp->b_point = movegap(curbp->b_point);
 	undoset();
-	gap += len = fread(gap, sizeof (char), (size_t) sb.st_size, fp);
+	curbp->b_gap += len = fread(curbp->b_gap, sizeof (char), (size_t) sb.st_size, fp);
 
 	if (fclose(fp) != 0) {
 		msg(m_close, fn);
 		return (FALSE);
 	}
-	modified = modflag;
+	curbp->b_modified = modflag;
 	msg(m_loaded, fn, len);
 	return (TRUE);
 }
@@ -196,19 +187,19 @@ int insert_file(char *fn, int modflag)
 /* Record a new undo location */
 void undoset()
 {
-	ubuf.u_point = point;
-	ubuf.u_gap = gap - buf;
-	ubuf.u_egap = egap - buf;
+	curbp->b_ubuf.u_point = curbp->b_point;
+	curbp->b_ubuf.u_gap = curbp->b_gap - curbp->b_buf;
+	curbp->b_ubuf.u_egap = curbp->b_egap - curbp->b_buf;
 }
 
 /* Undo */
 void undo()
 {
 	undo_t tmp;
-	memcpy(&tmp, &ubuf, sizeof (undo_t));
+	memcpy(&tmp, &(curbp->b_ubuf), sizeof (undo_t));
 	undoset();
-	point = tmp.u_point;
-	gap = buf + tmp.u_gap;
-	egap = buf + tmp.u_egap;
-	modified = TRUE;
+	curbp->b_point = tmp.u_point;
+	curbp->b_gap = curbp->b_buf + tmp.u_gap;
+	curbp->b_egap = curbp->b_buf + tmp.u_egap;
+	curbp->b_modified = TRUE;
 }

@@ -1,14 +1,13 @@
 /*
  * search.c
  *
- * AttoEmacs, Hugh Barney, November 2015, A single buffer, single screen Emacs
+ * AttoEmacs, Hugh Barney, November 2015
  * Simple forward and reverse search.
  */
 
 #include <ctype.h>
 #include <string.h>
 #include "header.h"
-#include "key.h"
 
 #define FWD_SEARCH 1
 #define REV_SEARCH 2
@@ -22,7 +21,7 @@ void dosearch(char *prompt, char *search, int nsize)
 {
 	int cpos = 0;	
 	int c;
-	point_t o_point = point;
+	point_t o_point = curbp->b_point;
 	point_t found;
 
 	update_search_prompt(prompt, search);
@@ -41,7 +40,7 @@ void dosearch(char *prompt, char *search, int nsize)
 			return;
 
 		case 0x07: /* ctrl-g */
-			point = o_point;
+			curbp->b_point = o_point;
 			return;
 
 		case 0x13: /* ctrl-s, do the search */
@@ -76,13 +75,13 @@ void dosearch(char *prompt, char *search, int nsize)
 void display_search_result(point_t found, int dir, char *prompt, char *search)
 {
 	if (found != -1 ) {
-		point = found;
+		curbp->b_point = found;
 		msg("%s%s",prompt, search);
 		display();
 	} else {
 		msg("Failing %s%s",prompt, search);
 		dispmsg();
-		point = (dir == FWD_SEARCH ? 0 : pos(ebuf));
+		curbp->b_point = (dir == FWD_SEARCH ? 0 : pos(curbp->b_ebuf));
 	}
 }
 
@@ -97,14 +96,14 @@ void update_search_prompt(char *prompt, char *response)
 
 point_t search_forward(char *stext)
 {
-	point_t end_p = pos(ebuf);
+	point_t end_p = pos(curbp->b_ebuf);
 	point_t p,pp;
 	char* s;
 
 	if (0 == strlen(stext))
-		return point;
+		return curbp->b_point;
 
-	for (p=point; p < end_p; p++) {
+	for (p=curbp->b_point; p < end_p; p++) {
 		for (s=stext, pp=p; *s == *(ptr(pp)) && *s !='\0' && pp < end_p; s++, pp++)
 			;
 
@@ -121,9 +120,9 @@ point_t search_backwards(char *stext)
 	char* s;
 	
 	if (0 == strlen(stext))
-		return point;
+		return curbp->b_point;
 
-	for (p=point; p > 0; p--) {
+	for (p=curbp->b_point; p > 0; p--) {
 		for (s=stext, pp=p; *s == *(ptr(pp)) && *s != '\0' && pp > 0; s++, pp++)
 			;
 		

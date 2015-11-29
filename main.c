@@ -1,7 +1,7 @@
 /*
  * main.c              
  *
- * AttoEmacs, Hugh Barney, November 2015, A single buffer, single screen Emacs
+ * AttoEmacs, Hugh Barney, November 2015
  * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
  */
 
@@ -29,13 +29,15 @@ int main(int argc, char **argv)
 	raw();
 	noecho();
 	idlok(stdscr, TRUE);
-	filename[0] = '\0';
 		
 	if (1 < argc) {
+		curbp = find_buffer(argv[1], TRUE);
 		(void) insert_file(argv[1], FALSE);
 		/* Save filename irregardless of load() success. */
-		strcpy(filename, argv[1]);
-		modified = FALSE;
+		strcpy(curbp->b_fname, argv[1]);
+	} else {
+		curbp = find_buffer(str_scratch, TRUE);
+		strcpy(curbp->b_bname, str_scratch);
 	}
 
 	if (!growgap(CHUNK))
@@ -112,5 +114,5 @@ void debug(char *format, ...)
 }
 
 void debug_stats(char *s) {
-	debug("%s bsz=%d gap=%d egap=%d\n", s, ebuf - buf, gap - buf, egap - buf);
+	debug("%s bsz=%d gap=%d egap=%d\n", s, curbp->b_ebuf - curbp->b_buf, curbp->b_gap - curbp->b_buf, curbp->b_egap - curbp->b_buf);
 }

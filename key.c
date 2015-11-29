@@ -1,7 +1,7 @@
 /*
  * key.c
  *
- * AttoEmacs, Hugh Barney, November 2015, A single buffer, single screen Emacs
+ * AttoEmacs, Hugh Barney, November 2015
  * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
  * 
  */
@@ -9,7 +9,6 @@
 #include <ctype.h>
 #include <string.h>
 #include "header.h"
-#include "key.h"
 
 /* desc, keys, func */
 keymap_t keymap[] = {
@@ -59,6 +58,10 @@ keymap_t keymap[] = {
 	
 	{"C-x = cursor-position    ", "\x18\x3D", showpos },
 	{"C-x i insert-file        ", "\x18\x69", insertfile },
+	{"C-x k kill-buffer        ", "\x18\x6B", killbuffer },
+	{"C-x C-n next-buffer      ", "\x18\x0E", next_buffer },
+	{"C-x C-p previous-buffer  ", "\x18\x10", prev_buffer },
+	
 	{"C-x C-f find-file        ", "\x18\x06", readfile },
 	{"C-x C-s save-buffer      ", "\x18\x13", savebuffer },  
 	{"C-x C-w write-file       ", "\x18\x17", writefile },  /* write and prompt for name */

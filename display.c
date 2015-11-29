@@ -1,7 +1,7 @@
 /*
  * display.c
  *
- * AttoEmacs, Hugh Barney, November 2015, A single buffer, single screen Emacs
+ * AttoEmacs, Hugh Barney, November 2015
  * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
  *
  */
@@ -16,8 +16,8 @@ point_t lnstart(register point_t off)
 	register char_t *p;
 	do
 		p = ptr(--off);
-	while (buf < p && *p != '\n');
-	return (buf < p ? ++off : 0);
+	while (curbp->b_buf < p && *p != '\n');
+	return (curbp->b_buf < p ? ++off : 0);
 
 }
 
@@ -53,14 +53,14 @@ point_t segnext(point_t start, point_t finish)
 	point_t scan = segstart(start, finish);
 	for (;;) {
 		p = ptr(scan);
-		if (ebuf <= p || COLS <= c)
+		if (curbp->b_ebuf <= p || COLS <= c)
 			break;
 		++scan;
 		if (*p == '\n')
 			break;
 		c += *p == '\t' ? 8 - (c & 7) : 1;
 	}
-	return (p < ebuf ? scan : pos(ebuf));
+	return (p < curbp->b_ebuf ? scan : pos(curbp->b_ebuf));
 }
 
 /* Move up one screen line */
@@ -86,7 +86,7 @@ point_t lncolumn(point_t offset, int column)
 {
 	int c = 0;
 	char_t *p;
-	while ((p = ptr(offset)) < ebuf && *p != '\n' && c < column) {
+	while ((p = ptr(offset)) < curbp->b_ebuf && *p != '\n' && c < column) {
 		c += *p == '\t' ? 8 - (c & 7) : 1;
 		++offset;
 	}
@@ -103,19 +103,19 @@ void display()
 	 * backward scroll or moving to the top of file.  pgup() will
 	 * move page relative to point so that page <= point < epage.
 	 */
-	if (point < page)
-		page = segstart(lnstart(point), point);
+	if (curbp->b_point < curbp->b_page)
+		curbp->b_page = segstart(lnstart(curbp->b_point), curbp->b_point);
 	/* Re-frame the whole screen when epage <= point.  Handles the
 	 * cases of a forward scroll or redraw.
 	 */
-	if (epage <= point) {
+	if (curbp->b_epage <= curbp->b_point) {
 		/* Find end of screen plus one. */
-		page = dndn(point);
+		curbp->b_page = dndn(curbp->b_point);
 		/* Number of lines on the screen depends if we are at the
 		 * EOF and how many lines are used for help and status.
 		 */
-		if (pos(ebuf) <= page) {
-			page = pos(ebuf);
+		if (pos(curbp->b_ebuf) <= curbp->b_page) {
+			curbp->b_page = pos(curbp->b_ebuf);
 			i = LINES - 3;
 		} else {
 			i = LINES - 2;
@@ -123,20 +123,20 @@ void display()
 		i -= FIRST_LINE;
 		/* Scan backwards the required number of lines. */
 		while (0 < i--)
-			page = upup(page);
+			curbp->b_page = upup(curbp->b_page);
 	}
 
 	move(FIRST_LINE, 0);
 	i = FIRST_LINE;
 	j = 0;
-	epage = page;
+	curbp->b_epage = curbp->b_page;
 	while (1) {
-		if (point == epage) {
+		if (curbp->b_point == curbp->b_epage) {
 			row = i;
 			col = j;
 		}
-		p = ptr(epage);
-		if ((MAXLINE) <= i || ebuf <= p)
+		p = ptr(curbp->b_epage);
+		if ((MAXLINE) <= i || curbp->b_ebuf <= p)
 			break;
 		if (*p != '\r') {
 			if (isprint(*p) || *p == '\t' || *p == '\n') {
@@ -154,7 +154,7 @@ void display()
 				j = 0;
 			++i;
 		}
-		++epage;
+		++curbp->b_epage;
 	}
 	standend();
 	clrtobot();
@@ -171,11 +171,11 @@ void modeline()
 	move(MODELINE, 0);
 	addch('=');
 		
-	addch(modified ? '*' : '=');
-	addstr(" Atto: == File: ");
-	addstr(filename);
+	addch(curbp->b_modified ? '*' : '=');
+	addstr(" Atto: == ");
+	addstr(get_buffer_name(curbp));
 	addch(' ');
-	i = 19 + strlen(filename);
+	i = 14 + strlen(get_buffer_name(curbp));
 		
 	for (; i<=COLS; i++)
 		addch('=');

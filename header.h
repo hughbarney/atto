@@ -1,7 +1,7 @@
 /*
  * header.h            
  *
- * AttoEmacs, Hugh Barney, November 2015, A single buffer, single screen Emacs
+ * AttoEmacs, Hugh Barney, November 2015
  * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
  *
  */
@@ -10,12 +10,13 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <curses.h>
-#include "key.h"
+#include <stdio.h>
+#include <sys/types.h>
 
 #undef _
 #define _(x)    x
 
-#define VERSION	 "Atto 1.1, Public Domain, November 2015, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.2, Public Domain, November 2015, by Hugh Barney,  No warranty."
 
 /* Exit status. */
 #define EXIT_OK         0               /* Success */
@@ -31,10 +32,44 @@
 
 #define NOMARK          -1
 #define CHUNK           8096L
+#define K_BUFFER_LENGTH 256
 
 typedef char *msg_t;
 typedef unsigned char char_t;
 typedef long point_t;
+
+typedef struct keymap_t {
+	char *key_bind;
+	char *lhs;              /* Left hand side invokes function or macro. */
+	void (*func) _((void));
+} keymap_t;
+
+typedef struct undo_t {
+	point_t u_point;
+	point_t u_gap;
+	point_t u_egap;
+
+} undo_t;
+
+typedef struct buffer_t
+{
+	struct buffer_t *b_next; /* Link to next buffer_t */
+	point_t b_mark;	     	  /* the mark */
+	point_t b_point;          /* the point */
+	point_t b_page;           /* start of page */
+	point_t b_epage;          /* end of page */
+	int b_modified;           /* modified ? */
+	char_t *b_buf;            /* start of buffer */
+	char_t *b_ebuf;           /* end of buffer */
+	char_t *b_gap;            /* start of gap */
+	char_t *b_egap;           /* end of gap */
+	char b_fname[BUFSIZ];	  /* filename */
+	char b_bname[BUFSIZ];     /* */
+	undo_t b_ubuf;            /* undoset */
+} buffer_t;
+
+extern buffer_t *curbp;			/* current buffer */
+extern buffer_t *bheadp;			/* head of list of buffers */
 
 /*
  * Some compilers define size_t as a unsigned 16 bit number while
@@ -46,29 +81,18 @@ typedef long point_t;
 #define MAX_SIZE_T      ((unsigned long) (size_t) ~0)
 
 extern int done;                /* Quit flag. */
-extern int modified;            /* Text buffer modified flag. */
+
 extern int msgflag;             /* True if msgline should be displayed. */
 extern int result;
 
 extern int row;                 /* Cursor screen row */
 extern int col;                 /* Cursor screen column. */
 
-extern point_t point;           /* Cursor offset in text buffer. */
-extern point_t page;            /* Top of screen page. */
-extern point_t epage;           /* End of screen page +1 */
-extern point_t marker;          /* Block anchor point. */
-
-extern char_t *buf;             /* Base of allocated text buffer. */
-extern char_t *ebuf;            /* End of text buffer +1 */
-extern char_t *gap;             /* Start of gap. */
-extern char_t *egap;            /* End of gap +1 */
-
 extern point_t nscrap;          /* Length of scrap buffer. */
 extern char_t *scrap;           /* Allocated scrap buffer. */
 
 extern int input;               /* Current input character. */
 extern char msgline[];          /* Message line input/output buffer. */
-extern char filename[];         /* Current filename for text buffer. */
 extern char temp[];             /* Temporary buffer. */
 extern char searchtext[];
 extern char *prog_name;         /* Name used to invoke editor. */
@@ -98,17 +122,19 @@ extern msg_t m_write;
 extern msg_t m_badname;
 extern msg_t m_saved;
 extern msg_t m_loaded;
+extern msg_t m_newfile;
 extern msg_t str_mark;
 extern msg_t str_pos;
 
 /* Prompts */
 extern msg_t str_notsaved;
-extern msg_t str_querysave;
+extern msg_t str_modified_buffers;
 extern msg_t str_read;
 extern msg_t str_insert_file;
 extern msg_t str_write;
 extern msg_t str_yes;
 extern msg_t str_no;
+extern msg_t str_scratch;
 
 extern void fatal _((msg_t));
 extern void msg _((msg_t, ...));
@@ -123,6 +149,8 @@ extern point_t segnext _((point_t, point_t));
 extern point_t upup _((point_t));
 extern point_t dndn _((point_t));
 
+extern int getkey _((keymap_t *, keymap_t **));
+extern int getinput _((char *, char *, int));
 extern int growgap _((point_t));
 extern point_t movegap _((point_t));
 extern point_t pos _((char_t *));
@@ -171,3 +199,13 @@ extern void killtoeol(void);
 
 extern void search(void);
 extern void dosearch(char *, char *, int);
+
+extern buffer_t* find_buffer (char *, int);
+extern void buffer_init(buffer_t *);
+extern int delete_buffer(buffer_t *);
+extern void next_buffer(void);
+extern void prev_buffer(void);
+extern int count_buffers(void);
+extern int modified_buffers(void);
+extern void killbuffer(void);
+extern char* get_buffer_name(buffer_t *);

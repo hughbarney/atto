@@ -13,7 +13,7 @@ Atto Emacs is inspired by MicroEmacs, Nano, Pico and my earlier project known as
 
 In Defining Atto as the lowest functional Emacs I have had to consider the essential feature set that makes Emacs, 'Emacs'.  I have defined this point as a basic Emacs command set plus the ability to edit multiple files (buffers) and (possibly) their display in multiple windows.  The proviso being that all this will fit in less than 2000 lines of C.
 
-As of Atto v1.0.0, these goal has been almost been achieved. So far we have a basic command set working on a single file in a single buffer.  However it will be a small matter to make the code generic to operate on multiple instances of buffers.  This will be a priority in the next release.
+As of Atto v1.2, these goal has been almost been achieved. So far we have a basic command set working on multiple buffers.
 
 ##Why the name Atto?
 The small Emacs naming scheme appears to use sub-unit prefixes in decending order with each further reduction of functionality.  Atto means 10 to the power of minus 18.   Femto (10^-15) comes after Pico (10^-12). However choosing Atto allows for the potential for Femto to be an Atto based Emacs with a scripting language.
@@ -21,6 +21,16 @@ The small Emacs naming scheme appears to use sub-unit prefixes in decending orde
 ##Derivation
 Atto is based on the public domain code of Anthony Howe's editor (commonly known as Anthony's Editor or AE, [2]).  Rather than representing a file as a linked list of lines, the AE Editor uses the concept of a Buffer-Gap [4,5,6].  A Buffer-Gap editor stores the file in a single piece of contiguous memory with some extra unused space known as the buffer gap.  On character insertion and deletion the gap is first moved to the current point.  A character deletion then extends the gap by moving the gap pointer back by 1 OR the gap is reduced by 1 when a character is inserted.  The Buffer-Gap technique is elegant and significantly reduces the amount of code required to load a file, modify it and redraw the display.  The proof of this is seen when you consider that Atto supports almost the same command set that Pico supports,  but Pico requires almost 17 times the amount of code.
 
+
+## Atto v1.2 29 November 2015
+* Implemented multibuffer support, added approx 180 lines of code
+* First buffer created is called *scatch*
+* Creates *scratch* buffer if you want to delete last buffer
+* Added C-x C-n next-buffer
+* Added C-x C-p prev-buffer
+* Added C-x k   delete-buffer
+* Consumed key.h into header.h
+* code footprint is 1586 lines !
 
 ## Atto v1.1 26 November 2015
 * Reduced code footprint by simplification of key code and the definition of keymap. This means I dont have to edit more than one map to add a function.
@@ -83,6 +93,9 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     ^X^W  Write current buffer to disk. Type in a new filename at the prompt to
     ^Xi   Insert file at point
     ^X=   Show Character at position
+	^X^N  next-buffer
+	^X^P  previous-buffer
+	^Xk   kill-buffer
 
     Home  Beginning-of-line
     End   End-of-line
@@ -134,22 +147,17 @@ $ sudo apt-get install libncurses5-dev
 
 
 ##Future Enhancements
-Atto currently only works on one file, one buffer, one window.  This will be a priority of the next release.   The ability to edit multiple files (single window view) could be added by modifying the code to encapsulate the buffer variables into a structure. It is expected this would add between 50-100 lines of code.  At least two additional key bindings will be required to manage multiple buffers.
 
-    ^XN   Next Buffer
-    ^X^B  Show buffer menu in a window
+As of Atto 1.2 we have about 400 lines of code before we reach the design limit of 2000 lines.  Features I would like to add in priority order are:
 
-The following key strokes could be added fairly cheaply
-
-    ^X(   Start recording a keyboard macro.
-    ^X)   Stop recording macro.
-    ^XE   Execute macro.
-
-It would be simple to add the following key-bindings
-
+    Search and Replace
+	Esc-g goto-line
+	Make show-position show current line / total line count
+	Multi-Window support (^X1, X2, ^Xo)
+	Shell command
+	Add record macro ^X(, ^X), ^Xe
     Esc-Left     Delete word left
     Esc-right    Delete word right
-	Esc-g        Goto Line
 
 ##Known Issues
    The arrow keys dont work properly when entering filenames on the prompt line

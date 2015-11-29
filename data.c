@@ -1,37 +1,24 @@
 /*
  * data.c              
  *
- * AttoEmacs, Hugh Barney, November 2015, A single buffer, single screen Emacs
+ * AttoEmacs, Hugh Barney, November 2015
  * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
  *
  */
 
 #include "header.h"
-#include "key.h"
 
 int done;
-int modified;
 int result;
-
-point_t point;
-point_t page;
-point_t epage;
-point_t marker = NOMARK;
-
 int row, col;
-
-char_t *buf;
-char_t *ebuf;
-char_t *gap;
-char_t *egap;
-
+buffer_t *curbp;			/* current buffer */
+buffer_t *bheadp;			/* head of list of buffers */
 point_t nscrap;
 char_t *scrap;
 
 int input;
 int msgflag;
 char msgline[BUFSIZ];
-char filename[BUFSIZ];
 char temp[BUFSIZ];
 char searchtext[BUFSIZ];
 char *prog_name;
@@ -57,8 +44,9 @@ msg_t m_badname = "Not a portable POSIX file name.";
 msg_t m_file = "File \"%s\" %ld bytes.";
 msg_t m_saved = "File \"%s\" %ld bytes saved.";
 msg_t m_loaded = "File \"%s\" %ld bytes read.";
+msg_t m_newfile = "New file %s";
 msg_t str_notsaved = "Discard changes (y/n) ?";
-msg_t str_querysave = "Save changes (y/n) ?";
+msg_t str_modified_buffers = "Modified buffers exist; really exit (y/n) ?";
 msg_t str_read = "Find file: ";
 msg_t str_insert_file ="Insert file: ";
 msg_t str_write = "Write file: ";
@@ -66,3 +54,4 @@ msg_t str_yes = " y\b";
 msg_t str_no = " n\b";
 msg_t str_mark = "Mark set";
 msg_t str_pos = "Char = %s 0x%x  Point = %d/%d";
+msg_t str_scratch = "*scratch*";
