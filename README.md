@@ -1,5 +1,5 @@
 #Atto Emacs
-The smallest fuctional Emacs in less than 2000 lines of C.
+The smallest functional Emacs in less than 2000 lines of C.
 
 Atto Emacs is inspired by MicroEmacs, Nano, Pico and my earlier project known as Perfect Emacs [1].
 
