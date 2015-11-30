@@ -159,7 +159,7 @@ void delete()
 void insertfile()
 {
 	temp[0] = '\0';
-	result = getinput(str_insert_file, (char*) temp, BUFSIZ);
+	result = getinput(str_insert_file, (char*) temp, STRBUF_L);
 	if (temp[0] != '\0' && result)
 		(void) insert_file(temp, TRUE);
 }
@@ -169,7 +169,7 @@ void readfile()
 	buffer_t *bp;
 	
 	temp[0] = '\0';
-	result = getinput(str_read, (char*) temp, BUFSIZ);
+	result = getinput(str_read, (char*) temp, STRBUF_L);
 	if (result) {
 		bp = find_buffer(temp, TRUE);
 		curbp = bp;
@@ -198,7 +198,7 @@ void savebuffer()
 void writefile()
 {
 	strcpy(temp, curbp->b_fname);
-	result = getinput(str_write, (char*)temp, BUFSIZ);
+	result = getinput(str_write, (char*)temp, STRBUF_L);
 	if (temp[0] != '\0' && result)
 		if (save(temp) == TRUE)
 			strcpy(curbp->b_fname, temp);
@@ -326,5 +326,5 @@ void version()
 
 void search()
 {
-	dosearch("Search: ", searchtext, BUFSIZ);
+	dosearch("Search: ", searchtext, STRBUF_M);
 }

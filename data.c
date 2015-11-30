@@ -18,9 +18,9 @@ char_t *scrap;
 
 int input;
 int msgflag;
-char msgline[BUFSIZ];
-char temp[BUFSIZ];
-char searchtext[BUFSIZ];
+char msgline[STRBUF_L];
+char temp[STRBUF_L];
+char searchtext[STRBUF_M];
 char *prog_name;
 
 keymap_t *key_return;

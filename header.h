@@ -25,14 +25,17 @@
 #define EXIT_FAIL       3               /* Known failure. */
 
 /* Screen partitioning. */
-#define MSGLINE          (LINES-1)
-#define MODELINE         (LINES-2)
-#define FIRST_LINE       0
-#define MAXLINE          (LINES-2)
+#define MSGLINE         (LINES-1)
+#define MODELINE        (LINES-2)
+#define FIRST_LINE      0
+#define MAXLINE         (LINES-2)
 
 #define NOMARK          -1
 #define CHUNK           8096L
 #define K_BUFFER_LENGTH 256
+#define STRBUF_L        256
+#define STRBUF_M        64
+#define STRBUF_S        16
 
 typedef char *msg_t;
 typedef unsigned char char_t;
@@ -63,8 +66,8 @@ typedef struct buffer_t
 	char_t *b_ebuf;           /* end of buffer */
 	char_t *b_gap;            /* start of gap */
 	char_t *b_egap;           /* end of gap */
-	char b_fname[BUFSIZ];	  /* filename */
-	char b_bname[BUFSIZ];     /* */
+	char b_fname[STRBUF_L];	  /* filename */
+	char b_bname[STRBUF_S];   /* buffer name */
 	undo_t b_ubuf;            /* undoset */
 } buffer_t;
 
