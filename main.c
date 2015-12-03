@@ -5,12 +5,8 @@
  * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
  */
 
-#include <ctype.h>
-#include <errno.h>
 #include <string.h>
-#include <signal.h>
 #include "header.h"
-#include <stdarg.h>
 
 int main(int argc, char **argv)
 {

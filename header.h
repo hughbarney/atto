@@ -12,11 +12,13 @@
 #include <curses.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include <ctype.h>
+#include <string.h>
 
 #undef _
 #define _(x)    x
 
-#define VERSION	 "Atto 1.2, Public Domain, November 2015, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.3, Public Domain, November 2015, by Hugh Barney,  No warranty."
 
 /* Exit status. */
 #define EXIT_OK         0               /* Success */
@@ -36,6 +38,7 @@
 #define STRBUF_L        256
 #define STRBUF_M        64
 #define STRBUF_S        16
+#define MIN_GAP_EXPAND  512
 
 typedef char *msg_t;
 typedef unsigned char char_t;
@@ -98,6 +101,7 @@ extern int input;               /* Current input character. */
 extern char msgline[];          /* Message line input/output buffer. */
 extern char temp[];             /* Temporary buffer. */
 extern char searchtext[];
+extern char replace[];
 extern char *prog_name;         /* Name used to invoke editor. */
 
 extern keymap_t *key_map;       /* Command key mappings. */
@@ -126,8 +130,17 @@ extern msg_t m_badname;
 extern msg_t m_saved;
 extern msg_t m_loaded;
 extern msg_t m_newfile;
+extern msg_t m_line;
+extern msg_t m_lnot_found;
+extern msg_t m_replace;
+extern msg_t m_with;
+extern msg_t m_sprompt;
+extern msg_t m_qreplace;
+extern msg_t m_rephelp;
+extern msg_t m_goto;
 extern msg_t str_mark;
 extern msg_t str_pos;
+extern msg_t str_endpos;
 
 /* Prompts */
 extern msg_t str_notsaved;
@@ -199,10 +212,15 @@ extern void debug_stats(char *);
 extern void modeline(void);
 extern void showpos(void);
 extern void killtoeol(void);
-
+extern void gotoline(void);
 extern void search(void);
-extern void dosearch(char *, char *, int);
+extern void query_replace(void);
+extern point_t line_to_point(int);
 
+extern point_t search_forward(char *);
+extern point_t search_backwards(char *);
+extern void update_search_prompt(char *, char *);
+extern void display_search_result(point_t, int, char *, char *);
 extern buffer_t* find_buffer (char *, int);
 extern void buffer_init(buffer_t *);
 extern int delete_buffer(buffer_t *);
@@ -212,3 +230,5 @@ extern int count_buffers(void);
 extern int modified_buffers(void);
 extern void killbuffer(void);
 extern char* get_buffer_name(buffer_t *);
+extern void get_line_stats(int *, int *);
+extern void query_replace(void);

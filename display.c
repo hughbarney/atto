@@ -6,8 +6,6 @@
  *
  */
 
-#include <ctype.h>
-#include <string.h>
 #include "header.h"
 
 /* Reverse scan for start of logical line containing offset */
@@ -18,7 +16,6 @@ point_t lnstart(register point_t off)
 		p = ptr(--off);
 	while (curbp->b_buf < p && *p != '\n');
 	return (curbp->b_buf < p ? ++off : 0);
-
 }
 
 /*
@@ -156,7 +153,6 @@ void display()
 		}
 		++curbp->b_epage;
 	}
-	standend();
 	clrtobot();
 	modeline();
 	dispmsg();

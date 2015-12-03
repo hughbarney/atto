@@ -5,27 +5,20 @@
  * Simple forward and reverse search.
  */
 
-#include <ctype.h>
-#include <string.h>
 #include "header.h"
 
 #define FWD_SEARCH 1
 #define REV_SEARCH 2
 
-point_t search_forward(char *);
-point_t search_backwards(char *);
-void update_search_prompt(char *, char *);
-void display_search_result(point_t, int, char *, char *);
-
-void dosearch(char *prompt, char *search, int nsize)
+void search()
 {
 	int cpos = 0;	
 	int c;
 	point_t o_point = curbp->b_point;
 	point_t found;
 
-	update_search_prompt(prompt, search);
-	cpos = strlen(search);
+	update_search_prompt(m_sprompt, searchtext);
+	cpos = strlen(searchtext);
 
 	for (;;)
 	{
@@ -36,7 +29,7 @@ void dosearch(char *prompt, char *search, int nsize)
 
 		switch(c) {
 		case 0x1b: /* esc */
-			search[cpos] = '\0';
+			searchtext[cpos] = '\0';
 			return;
 
 		case 0x07: /* ctrl-g */
@@ -44,28 +37,28 @@ void dosearch(char *prompt, char *search, int nsize)
 			return;
 
 		case 0x13: /* ctrl-s, do the search */
-			found = search_forward(search);
-			display_search_result(found, FWD_SEARCH, prompt, search);
+			found = search_forward(searchtext);
+			display_search_result(found, FWD_SEARCH, m_sprompt, searchtext);
 			break;
 
 		case 0x12: /* ctrl-r, do the search */
-			found = search_backwards(search);
-			display_search_result(found, REV_SEARCH, prompt, search);
+			found = search_backwards(searchtext);
+			display_search_result(found, REV_SEARCH, m_sprompt, searchtext);
 			break;
 			
 		case 0x7f: /* del, erase */
 		case 0x08: /* backspace */
 			if (cpos == 0)
 				continue;
-			search[--cpos] = '\0';
-			update_search_prompt(prompt, search);
+			searchtext[--cpos] = '\0';
+			update_search_prompt(m_sprompt, searchtext);
 			break;
 
 		default:	
-			if (cpos < nsize - 1) {
-				search[cpos++] = c;
-				search[cpos] = '\0';
-				update_search_prompt(prompt, search);
+			if (cpos < STRBUF_M - 1) {
+				searchtext[cpos++] = c;
+				searchtext[cpos] = '\0';
+				update_search_prompt(m_sprompt, searchtext);
 			}
 			break;
 		}

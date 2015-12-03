@@ -6,18 +6,10 @@
  *
  */
 
-#include <assert.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 #include "header.h"
 
-/*
- *      Enlarge the gap by n characters.  
- *      Note that the position of the gap cannot change.
- */
+/* Enlarge gap by n chars, position of gap cannot change */
 int growgap(point_t n)
 {
 	char_t *new;
@@ -30,6 +22,9 @@ int growgap(point_t n)
 	xgap = curbp->b_gap - curbp->b_buf;
 	xegap = curbp->b_egap - curbp->b_buf;
 	buflen = curbp->b_ebuf - curbp->b_buf;
+    
+    /* reduce number of reallocs by growing by a minimum amount */
+    n = (n < MIN_GAP_EXPAND ? MIN_GAP_EXPAND : n);
 	newlen = buflen + n * sizeof (char_t);
 
 	if (buflen == 0) {
@@ -91,9 +86,7 @@ char_t * ptr(register point_t offset)
 	return (curbp->b_buf+offset + (curbp->b_buf + offset < curbp->b_gap ? 0 : curbp->b_egap-curbp->b_gap));
 }
 
-/*
- *      Given a pointer into the buffer, convert it to a buffer offset.
- */
+/* Given a pointer into the buffer, convert it to a buffer offset */
 point_t pos(register char_t *cp)
 {
 	assert(curbp->b_buf <= cp && cp <= curbp->b_ebuf);
@@ -202,4 +195,47 @@ void undo()
 	curbp->b_gap = curbp->b_buf + tmp.u_gap;
 	curbp->b_egap = curbp->b_buf + tmp.u_egap;
 	curbp->b_modified = TRUE;
+}
+
+/* additional support funtions not in original gap.c */
+
+/* find the point for start of line ln */
+point_t line_to_point(int ln)
+{
+	point_t end_p = pos(curbp->b_ebuf);
+	point_t p, start;
+
+	for (p=0, start=0; p < end_p; p++) {
+        if ( *(ptr(p)) == '\n') {
+            if (--ln == 0)
+                return start;
+            if (p + 1 < end_p) 
+                start = p + 1;
+        }
+    }
+	return -1;
+}
+
+/* scan buffer and fill in curline and lastline */
+void get_line_stats(int *curline, int *lastline)
+{
+	point_t end_p = pos(curbp->b_ebuf);
+	point_t p;
+    int line;
+    
+    *curline = -1;
+    
+	for (p=0, line=0; p < end_p; p++) {
+        line += (*(ptr(p)) == '\n') ? 1 : 0;
+		*lastline = line;
+        
+        if (*curline == -1 && p == curbp->b_point) {
+            *curline = (*(ptr(p)) == '\n') ? line : line + 1;
+		}
+    }
+
+	*lastline = *lastline + 1;
+	
+	if (curbp->b_point == end_p)
+		*curline = *lastline;
 }

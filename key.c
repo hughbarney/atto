@@ -6,8 +6,6 @@
  * 
  */
 
-#include <ctype.h>
-#include <string.h>
 #include "header.h"
 
 /* desc, keys, func */
@@ -48,6 +46,9 @@ keymap_t keymap[] = {
  
 	{"esc b back-word          ", "\x1B\x62", wleft },
 	{"esc f forward-word       ", "\x1B\x66", wright },
+	{"esc g gotoline           ", "\x1B\x67", gotoline },
+	{"esc r query-replace      ", "\x1B\x72", query_replace },
+                
 	{"C-space set-mark         ", "\x00", iblock },  /* ctrl-space */
 	{"C-w kill-region          ", "\x17", cut},
 	{"C-y yank                 ", "\x19", paste},

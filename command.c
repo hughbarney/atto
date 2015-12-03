@@ -6,8 +6,6 @@
  *
  */
 
-#include <ctype.h>
-#include <string.h>
 #include "header.h"
 
 void top()
@@ -154,6 +152,25 @@ void delete()
 		curbp->b_point = pos(++curbp->b_egap);
 		curbp->b_modified = TRUE;
 	}
+}
+
+void gotoline()
+{
+	temp[0] = '\0';
+    int line;
+    point_t p;
+	result = getinput(m_goto, (char*)temp, STRBUF_S);
+    
+    if (temp[0] != '\0' && result) {
+		line = atoi(temp);
+        p = line_to_point(line);
+        if (p != -1) {
+            curbp->b_point = p;
+            msg(m_line, line);
+        } else {
+            msg(m_lnot_found, line);
+        }
+    }
 }
 
 void insertfile()
@@ -316,15 +333,22 @@ void paste()
 
 void showpos()
 {
-	msg(str_pos, unctrl(*(ptr(curbp->b_point))), *(ptr(curbp->b_point)), curbp->b_point, ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap)) );
+    int current, lastln;
+	point_t end_p = pos(curbp->b_ebuf);
+    
+    get_line_stats(&current, &lastln);
+
+	if (curbp->b_point == end_p) {
+		msg(str_endpos, current, lastln,
+			curbp->b_point, ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap)));
+	} else {
+		msg(str_pos, unctrl(*(ptr(curbp->b_point))), *(ptr(curbp->b_point)), 
+			current, lastln, 
+			curbp->b_point, ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap)));
+	}
 }
 
 void version()
 {
 	msg(m_version);
-}
-
-void search()
-{
-	dosearch("Search: ", searchtext, STRBUF_M);
 }

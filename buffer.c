@@ -145,7 +145,7 @@ int count_buffers()
 	buffer_t* bp;
 	int i;
 
-	for (i=1, bp=bheadp; bp->b_next != NULL; bp = bp->b_next)
+	for (i=1, bp=bheadp; bp != NULL; bp = bp->b_next)
 		i++;
 
 	return i;
@@ -154,11 +154,10 @@ int count_buffers()
 int modified_buffers()
 {
 	buffer_t* bp;
-	int i;
 
-	for (i=0, bp=bheadp; bp->b_next != NULL; bp = bp->b_next)
+	for (bp=bheadp; bp != NULL; bp = bp->b_next)
 		if (bp->b_modified)
-			i++;
+			return TRUE;
 
-	return i;
+	return FALSE;
 }
