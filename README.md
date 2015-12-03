@@ -26,7 +26,7 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
 * Added M-g goto-line
 * Updated show-pos with line/total_lines count
 * fixed bug introduced in 1.2 where last modified buffer would not trigger the prompt to save.
-* code footprint in 1775 lines !
+* code footprint is 1775 lines !
 
 ## Atto v1.2 29 November 2015
 * Implemented multibuffer support, added approx 180 lines of code
@@ -48,7 +48,7 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
 
     Editor         Binary   BinSize     KLOC  Files
 
-    atto           atto       33002     1.4k      9
+    atto           atto       33002     1.8k     10
     pEmacs         pe         59465     5.7K     16
     Esatz-Emacs    ee         59050     5.7K     14
 	GNOME          GNOME      55922     9.8k     13
@@ -58,6 +58,7 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     Pico           pico      438534    24.0k     29
     Nano           nano      192008    24.8K     17
 	jove           jove      248824    34.7k     94
+	Qemacs         qe        379968    36.9k     59
     ue3.10         uemacs    171664    52.4K     16
     GNUEmacs       emacs   14632920   358.0k    186
 
@@ -166,7 +167,7 @@ As of Atto 1.3 we have about 400 lines of code before we reach the design limit 
        
 ##Multiple Windows or Not?
 
-Atto does not currently support multiple windows. The lack of multiple windows will be quickly noticed as it is a very visible feature of the Emacs user interface.  It is very useful to be able to look at some code in one window whilst editing another section of the same file (or a different file) in another window.  As more than one window can access the same buffer the current point now has now to be associated with the window structure and updated back to the buffer structure whenever any gap or display code is called that accesses the point location.  I suspect it will take between 200-300 lines of code to implement multiple windows. The choice here is whether to theoretically allow an unlimited number of windows (up up to the point that no window could be split in two) or simply limit the windows to 1 full screen window or a split screen of one top half and one bottom half window.  In practice I harderly ever use more than two windows at a time.  The other major challenge will be beat the self imposed limit of 2000 lines, as of Atto 1.3 the line count is 1775.
+Atto does not currently support multiple windows. The lack of multiple windows will be quickly noticed as it is a very visible feature of the Emacs user interface.  It is very useful to be able to look at some code in one window whilst editing another section of the same file (or a different file) in another window.  As more than one window can access the same buffer the current point now has now to be associated with the window structure and updated back to the buffer structure whenever any gap or display code is called that accesses the point location.  I suspect it will take between 200-300 lines of code to implement multiple windows. The choice here is whether to theoretically allow an unlimited number of windows (up up to the point that no window could be split in two) or simply limit the windows to 1 full screen window or a split screen of one top half and one bottom half window.  In practice I harderly ever use more than two windows at a time.  The other major challenge will be to beat the self imposed limit of 2000 lines, as of Atto 1.3 the line count is 1775.
 
 
 ##Known Issues
