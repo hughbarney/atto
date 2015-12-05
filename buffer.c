@@ -108,9 +108,19 @@ int delete_buffer (buffer_t *bp)
 
 void next_buffer()
 {
+	//window_t *wp;
 	assert(curbp != NULL);
 	assert(bheadp != NULL);
+
+	// only do this if buffer not displayed elsewhere
+	if ((winp1->w_bufp == curwp->w_bufp && curwp != winp1) || (winp2->w_bufp == curwp->w_bufp && curwp != winp2)) {
+		debug("BUFFER NOT DISPLAYED ELSEWARE - Safe to save\n");
+        w2b(curwp);
+	}
+
 	curbp = (curbp->b_next != NULL ? curbp->b_next : bheadp);
+	curwp->w_bufp = curbp; // curwp to point to new buffer
+	b2w(curwp); // retrieve the buffer settings
 }
 
 void prev_buffer()
@@ -133,6 +143,8 @@ void prev_buffer()
 	}
 
 	curbp=bp;
+	curwp->w_bufp = curbp;
+	curwp->w_point = curbp->b_point;
 }
 
 char* get_buffer_name(buffer_t *bp)

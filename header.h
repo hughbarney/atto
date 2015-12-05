@@ -18,7 +18,7 @@
 #undef _
 #define _(x)    x
 
-#define VERSION	 "Atto 1.3, Public Domain, November 2015, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.4e, Public Domain, November 2015, by Hugh Barney,  No warranty."
 
 /* Exit status. */
 #define EXIT_OK         0               /* Success */
@@ -28,9 +28,9 @@
 
 /* Screen partitioning. */
 #define MSGLINE         (LINES-1)
-#define MODELINE        (LINES-2)
+//#define MODELINE        (LINES-2)
 #define FIRST_LINE      0
-#define MAXLINE         (LINES-2)
+//#define MAXLINE         (LINES-2)
 
 #define NOMARK          -1
 #define CHUNK           8096L
@@ -69,13 +69,38 @@ typedef struct buffer_t
 	char_t *b_ebuf;           /* end of buffer */
 	char_t *b_gap;            /* start of gap */
 	char_t *b_egap;           /* end of gap */
+	char b_col;
+	char b_row;
 	char b_fname[STRBUF_L];	  /* filename */
 	char b_bname[STRBUF_S];   /* buffer name */
 	undo_t b_ubuf;            /* undoset */
 } buffer_t;
 
+typedef struct window_t
+{
+	struct window_t *w_next;   /* Next window */
+	struct buffer_t *w_bufp;   /* Buffer displayed in window */
+	point_t w_point;
+	point_t w_mark;
+	point_t w_page;
+	point_t w_epage;
+	char w_top;	        /* Origin 0 top row of window */
+	char w_rows;        /* no. of rows of text in window */
+	char w_displayed;
+	int  w_col;
+	int  w_row;
+	char w_name[STRBUF_S];
+} window_t;
+
 extern buffer_t *curbp;			/* current buffer */
 extern buffer_t *bheadp;			/* head of list of buffers */
+
+extern window_t win1;
+extern window_t win2;
+extern window_t *curwp;
+extern window_t *wheadp;
+extern window_t *winp1;
+extern window_t *winp2;
 
 /*
  * Some compilers define size_t as a unsigned 16 bit number while
@@ -91,8 +116,8 @@ extern int done;                /* Quit flag. */
 extern int msgflag;             /* True if msgline should be displayed. */
 extern int result;
 
-extern int row;                 /* Cursor screen row */
-extern int col;                 /* Cursor screen column. */
+//extern int row;                 /* Cursor screen row */
+//extern int col;                 /* Cursor screen column. */
 
 extern point_t nscrap;          /* Length of scrap buffer. */
 extern char_t *scrap;           /* Allocated scrap buffer. */
@@ -154,23 +179,23 @@ extern msg_t str_scratch;
 
 extern void fatal _((msg_t));
 extern void msg _((msg_t, ...));
-extern void display _((void));
+extern void display (window_t *);
 extern void dispmsg(void);
-extern void modeline(void);
+extern void modeline(window_t *);
 
-extern point_t lnstart _((point_t));
-extern point_t lncolumn _((point_t, int));
-extern point_t segstart _((point_t, point_t));
-extern point_t segnext _((point_t, point_t));
-extern point_t upup _((point_t));
-extern point_t dndn _((point_t));
+extern point_t lnstart (buffer_t *, point_t);
+extern point_t lncolumn (buffer_t *, point_t, int);
+extern point_t segstart (buffer_t *, point_t, point_t);
+extern point_t segnext (buffer_t *, point_t, point_t);
+extern point_t upup (buffer_t *, point_t);
+extern point_t dndn (buffer_t *, point_t);
 
 extern int getkey _((keymap_t *, keymap_t **));
 extern int getinput _((char *, char *, int));
-extern int growgap _((point_t));
-extern point_t movegap _((point_t));
-extern point_t pos _((char_t *));
-extern char_t *ptr _((point_t));
+extern int growgap (buffer_t *, point_t);
+extern point_t movegap (buffer_t *, point_t);
+extern point_t pos (buffer_t *, char_t *);
+extern char_t *ptr (buffer_t *, point_t);
 extern int posix_file _((char *));
 extern int save _((char *));
 extern int load_file _((char *));
@@ -209,7 +234,7 @@ extern void writefile _((void));
 extern void savebuffer _((void));
 extern void debug(char *, ...);
 extern void debug_stats(char *);
-extern void modeline(void);
+
 extern void showpos(void);
 extern void killtoeol(void);
 extern void gotoline(void);
@@ -232,3 +257,12 @@ extern void killbuffer(void);
 extern char* get_buffer_name(buffer_t *);
 extern void get_line_stats(int *, int *);
 extern void query_replace(void);
+
+extern int one_window(window_t *);
+extern void init_window(window_t *);
+extern void split_window();
+extern void next_window();
+extern void update_display();
+
+extern void w2b(window_t *);
+extern void b2w(window_t *);
