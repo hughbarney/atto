@@ -43,7 +43,6 @@ int main(int argc, char **argv)
 	}
 
 	curwp->w_bufp = curbp;
-	b2w(curwp);
 
 	if (!growgap(curbp, CHUNK))
 		fatal(f_alloc);
@@ -52,20 +51,14 @@ int main(int argc, char **argv)
 	key_map = keymap;
 
 	while (!done) {
-		update_display();
+		display(curwp);
 		input = getkey(key_map, &key_return);
 
-		if (key_return != NULL) {
-			debug("\n\nI:%s: wp%d bp%d r%d c%d\n", curwp->w_name, curwp->w_point, curbp->b_point, curwp->w_row, curwp->w_col);
-			//curbp->b_point = curwp->w_point;
+		if (key_return != NULL)
 			(key_return->func)();
-			debug("O:%s: wp%d bp%d r%d c%d\n", curwp->w_name, curwp->w_point, curbp->b_point, curwp->w_row, curwp->w_col);
-			b2w(curwp);
-		}
 		else
 		  insert();
 		//debug_stats("main loop:");
-		//debug("main loop: row=%d,col=%d\n", row, col);
 	}
 	if (scrap != NULL)
 		free(scrap);

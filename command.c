@@ -70,20 +70,12 @@ void right()
 
 void up()
 {
-	curbp->b_point = curwp->w_point;
-	//curbp->b_point = lncolumn(upup(curbp->b_point), col);
-	curbp->b_point = lncolumn(curbp, upup(curbp, curbp->b_point), curwp->w_col);
-	curwp->w_point = curbp->b_point;
+	curbp->b_point = lncolumn(curbp, upup(curbp, curbp->b_point), col);
 }
 
 void down()
 {
-	debug("down() %s p=%d\n", curwp->w_name, curwp->w_bufp->b_point);
-	curbp->b_point = curwp->w_point;
-	//curbp->b_point = lncolumn(dndn(curbp->b_point), col);
-	curbp->b_point = lncolumn(curbp, dndn(curbp, curbp->b_point), curwp->w_col);
-	curwp->w_point = curbp->b_point;
-
+	curbp->b_point = lncolumn(curbp, dndn(curbp, curbp->b_point), col);
 }
 
 void lnbegin()
@@ -110,7 +102,7 @@ void pgdown()
 {
 	debug("**PGDN**\n");
 	curbp->b_page = curbp->b_point = upup(curbp, curbp->b_epage);
-	while (FIRST_LINE < curbp->b_row--)
+	while (FIRST_LINE < row--)
 		down();
 	curbp->b_epage = pos(curbp, curbp->b_ebuf);
 }

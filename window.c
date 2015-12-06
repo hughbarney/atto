@@ -43,7 +43,7 @@ void split_window()
 
 	//wp->w_row += wp->w_top; // correct row
 
-	//display(curwp);
+	update_display(curwp);
 	//curwp = wp;
 }
 
@@ -62,14 +62,10 @@ void init_window(window_t *wp)
 void next_window() {
 	window_t *old, *new;
 
-	b2w(curwp); /* save our buffer vars in the win */
-
 	old = curwp;
 	curwp = new = (curwp == winp1 ? winp2 : winp1);
 	curbp = curwp->w_bufp;
 
 	if (new->w_bufp == old->w_bufp)
 		w2b(curwp); /* push win vars to buffer */
-	else
-		b2w(curwp);
 }

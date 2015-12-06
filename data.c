@@ -10,7 +10,7 @@
 
 int done;
 int result;
-//int row, col;
+int row, col;
 buffer_t *curbp;			/* current buffer */
 buffer_t *bheadp;			/* head of list of buffers */
 point_t nscrap;

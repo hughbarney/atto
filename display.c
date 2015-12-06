@@ -103,11 +103,8 @@ void display(window_t *wp)
 {
 	char_t *p;
 	int i, j,z;
-
 	buffer_t *bp = wp->w_bufp;
 
-    w2b(wp);  /* update the buffer structure */
-	
 	/* Re-frame the screen with the screen line containing the point
 	 * as the first line, when point < page.  Handles the cases of a
 	 * backward scroll or moving to the top of file.  pgup() will
@@ -141,9 +138,12 @@ void display(window_t *wp)
 	j = 0;
 	bp->b_epage = bp->b_page;
 	while (1) {
+		// when we have drawn the page - store the final cursor position.
 		if (bp->b_point == bp->b_epage) {
-			bp->b_row = i;
-			bp->b_col = j;
+			// we should not store cursor on the buffer - but on the window !
+			// when switch window should reset them to 0,0
+			row = i;
+			col = j;
 		}
 		p = ptr(bp, bp->b_epage);
 		if (wp->w_top + wp->w_rows <= i || bp->b_ebuf <= p) /* maxline */
@@ -169,19 +169,18 @@ void display(window_t *wp)
 
 	//clrtobot(); // XXX needs replacement
 
-	debug("Display() %si=%d row=%d\n", wp->w_name, i, bp->b_row);
 	for (z=i; z < wp->w_top + wp->w_rows; z++) {
 		move(z, 0);
 		clrtoeol();
-		debug("*");
 	}
-	debug("Display() %si=%d row=%d\n", wp->w_name, i, bp->b_row);
 
 	b2w(wp); /* save buffer stuff on window */
 	modeline(wp);
-//	dispmsg();
-	//move(row, col); /* set cursor */
-	//refresh();
+	if (wp == curwp) {
+		dispmsg();
+		move(row, col); /* set cursor */
+	}
+	refresh();
 }
 
 void modeline(window_t *wp)
@@ -204,7 +203,7 @@ void modeline(window_t *wp)
 	addstr(get_buffer_name(wp->w_bufp));
 	addch(' ');
 
-	sprintf(temp, "T%dR%d Pt%d Pg%d Pe%d r%dc%d    ", wp->w_top, wp->w_rows, wp->w_point, wp->w_page, wp->w_epage, wp->w_bufp->b_row, wp->w_bufp->b_col);
+	sprintf(temp, "T%dR%d Pt%d Pg%d Pe%d r%dc%d    ", wp->w_top, wp->w_rows, wp->w_point, wp->w_bufp->b_page, wp->w_bufp->b_epage, row, col);
 	addstr(temp);
 	
     //i = 14 + strlen(get_buffer_name(wp->w_bufp));
@@ -226,7 +225,6 @@ void dispmsg()
 	clrtoeol();
 }
 
-
 void update_display()
 {   
     //window_t *wp;
@@ -239,36 +237,25 @@ void update_display()
     }
 	*/
 
-	if (winp1->w_displayed) {
-		debug("draw 1\n");
-		display(winp1);
-	}
-	
-	if (winp2->w_displayed) {
-		debug("draw 2\n");
-		display(winp2);
-	}
-	
-    dispmsg();	
-	//move(curwp->w_bufp->b_row, curwp->w_bufp->b_col); /* set cursor off the buffer */
-	move(curwp->w_row, curwp->w_col); /* set cursor off the window, saved from redraw */
+	display(winp1);
+	display(winp2);
 	refresh();
 }
 
 void w2b(window_t *w)
 {
 	w->w_bufp->b_point = w->w_point;
-	//w->w_bufp->b_page = w->w_page;
-	//w->w_bufp->b_epage = w->w_epage;
-	w->w_bufp->b_row = w->w_row;
-	w->w_bufp->b_col = w->w_col;
+	w->w_bufp->b_page = w->w_page;
+	w->w_bufp->b_epage = w->w_epage;
+	//w->w_bufp->b_row = w->w_row;
+	//w->w_bufp->b_col = w->w_col;
 }
 
 void b2w(window_t *w)
 {
 	w->w_point = w->w_bufp->b_point;
-	//	w->w_page = w->w_bufp->b_page;
-	//w->w_epage = w->w_bufp->b_epage;
-	w->w_row = w->w_bufp->b_row;
-	w->w_col = w->w_bufp->b_col;
+	w->w_page = w->w_bufp->b_page;
+	w->w_epage = w->w_bufp->b_epage;
+	//w->w_row = w->w_bufp->b_row;
+	//w->w_col = w->w_bufp->b_col;
 }

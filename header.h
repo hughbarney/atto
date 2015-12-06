@@ -69,8 +69,6 @@ typedef struct buffer_t
 	char_t *b_ebuf;           /* end of buffer */
 	char_t *b_gap;            /* start of gap */
 	char_t *b_egap;           /* end of gap */
-	char b_col;
-	char b_row;
 	char b_fname[STRBUF_L];	  /* filename */
 	char b_bname[STRBUF_S];   /* buffer name */
 	undo_t b_ubuf;            /* undoset */
@@ -87,8 +85,6 @@ typedef struct window_t
 	char w_top;	        /* Origin 0 top row of window */
 	char w_rows;        /* no. of rows of text in window */
 	char w_displayed;
-	int  w_col;
-	int  w_row;
 	char w_name[STRBUF_S];
 } window_t;
 
@@ -112,12 +108,10 @@ extern window_t *winp2;
 #define MAX_SIZE_T      ((unsigned long) (size_t) ~0)
 
 extern int done;                /* Quit flag. */
-
 extern int msgflag;             /* True if msgline should be displayed. */
 extern int result;
-
-//extern int row;                 /* Cursor screen row */
-//extern int col;                 /* Cursor screen column. */
+extern int row;                 /* Cursor screen row */
+extern int col;                 /* Cursor screen column. */
 
 extern point_t nscrap;          /* Length of scrap buffer. */
 extern char_t *scrap;           /* Allocated scrap buffer. */
