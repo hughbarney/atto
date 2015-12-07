@@ -91,13 +91,8 @@ typedef struct window_t
 
 extern buffer_t *curbp;			/* current buffer */
 extern buffer_t *bheadp;			/* head of list of buffers */
-
-//extern window_t win1;
-//extern window_t win2;
 extern window_t *curwp;
 extern window_t *wheadp;
-//extern window_t *winp1;
-//extern window_t *winp2;
 
 /*
  * Some compilers define size_t as a unsigned 16 bit number while

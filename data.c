@@ -11,8 +11,7 @@
 int done;
 int result;
 int row, col;
-buffer_t *curbp;			/* current buffer */
-buffer_t *bheadp;			/* head of list of buffers */
+
 point_t nscrap;
 char_t *scrap;
 
@@ -27,12 +26,10 @@ char *prog_name;
 keymap_t *key_return;
 keymap_t *key_map;
 
-//window_t win1;
-//window_t win2;
+buffer_t *curbp;			/* current buffer */
+buffer_t *bheadp;			/* head of list of buffers */
 window_t *curwp;
 window_t *wheadp;
-//window_t *winp1;
-//window_t *winp2;
 
 msg_t f_ok = "%s: Terminated successfully.\n";
 msg_t f_error = "%s: Unspecified error.\n";
