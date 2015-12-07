@@ -22,12 +22,6 @@ int main(int argc, char **argv)
 	if (initscr() == NULL)
 		fatal(f_initscr);
 
-	winp1= &win1;
-	winp2= &win2;
-	init_window(winp1);
-	one_window(winp1);
-	wheadp = curwp = winp1;
-	
 	raw();
 	noecho();
 	idlok(stdscr, TRUE);
@@ -42,7 +36,9 @@ int main(int argc, char **argv)
 		strcpy(curbp->b_bname, str_scratch);
 	}
 
-	curwp->w_bufp = curbp;
+	wheadp = curwp = new_window();
+	one_window(curwp);
+	associate_b2w(curbp, curwp);
 
 	if (!growgap(curbp, CHUNK))
 		fatal(f_alloc);

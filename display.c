@@ -167,8 +167,7 @@ void display(window_t *wp)
 		++bp->b_epage;
 	}
 
-	//clrtobot(); // XXX needs replacement
-
+	// replacement for clrtobot() to bottom of window
 	for (z=i; z < wp->w_top + wp->w_rows; z++) {
 		move(z, 0);
 		clrtoeol();
@@ -180,38 +179,26 @@ void display(window_t *wp)
 		dispmsg();
 		move(row, col); /* set cursor */
 	}
-	refresh();
+	//refresh();
 }
 
 void modeline(window_t *wp)
 {
 	int i;
-    char lch;
+    char lch, mch;
 	
     standout();
 	move(wp->w_top + wp->w_rows, 0);
-    
     lch = (wp == curwp ? '=' : '-');
-    addch(lch);
-	addch(wp->w_bufp->b_modified ? '*' : lch);
-	addstr(" Atto: ");
-    addch(lch);
-    addch(lch);
-    addch(' ');
-	addstr(wp->w_name);
-    addch(' ');
-	addstr(get_buffer_name(wp->w_bufp));
-	addch(' ');
+	mch = (wp->w_bufp->b_modified ? '*' : lch);
 
-	sprintf(temp, "T%dR%d Pt%d Pg%d Pe%d r%dc%d    ", wp->w_top, wp->w_rows, wp->w_point, wp->w_bufp->b_page, wp->w_bufp->b_epage, row, col);
+	// debug version
+	sprintf(temp, "%c%c Atto: %c%c %s %s  T%dR%d Pt%d Pg%d Pe%d r%dc%d B%d",  lch,mch,lch,lch, wp->w_name, get_buffer_name(wp->w_bufp), wp->w_top, wp->w_rows, wp->w_point, wp->w_bufp->b_page, wp->w_bufp->b_epage, row, col, wp->w_bufp->b_cnt);
+	//sprintf(temp, "%c%c Atto: %c%c %s",  lch,mch,lch,lch, wp->w_name, get_buffer_name(wp->w_buf));	
 	addstr(temp);
-	
-    //i = 14 + strlen(get_buffer_name(wp->w_bufp));
-	//	i = 40 + strlen(get_buffer_name(wp->w_bufp));
-	/*	
-	for (; i<=COLS; i++)
+
+	for (i = strlen(temp) + 1; i <= COLS; i++)
 		addch(lch);
-	*/	
 	standend();
 }
 
@@ -227,18 +214,18 @@ void dispmsg()
 
 void update_display()
 {   
-    //window_t *wp;
+    window_t *wp;
+	buffer_t *bp;
 
-	/*
+	bp = curwp->w_bufp;
+
     for (wp=wheadp; wp != NULL; wp = wp->w_next)
     {
-        if (wp->w_displayed)
+        if (wp != curwp) {
             display(wp);
+		}
     }
-	*/
-
-	display(winp1);
-	display(winp2);
+	display(curwp);
 	refresh();
 }
 
@@ -247,8 +234,6 @@ void w2b(window_t *w)
 	w->w_bufp->b_point = w->w_point;
 	w->w_bufp->b_page = w->w_page;
 	w->w_bufp->b_epage = w->w_epage;
-	//w->w_bufp->b_row = w->w_row;
-	//w->w_bufp->b_col = w->w_col;
 }
 
 void b2w(window_t *w)
@@ -256,6 +241,4 @@ void b2w(window_t *w)
 	w->w_point = w->w_bufp->b_point;
 	w->w_page = w->w_bufp->b_page;
 	w->w_epage = w->w_bufp->b_epage;
-	//w->w_row = w->w_bufp->b_row;
-	//w->w_col = w->w_bufp->b_col;
 }

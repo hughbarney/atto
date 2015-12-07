@@ -16,6 +16,7 @@ void buffer_init(buffer_t *bp)
 	bp->b_page = 0;
 	bp->b_epage = 0;
 	bp->b_modified = FALSE;
+	bp->b_cnt = 0;
 	bp->b_buf = NULL;
 	bp->b_ebuf = NULL;
 	bp->b_gap = NULL;
@@ -110,8 +111,9 @@ void next_buffer()
 {
 	assert(curbp != NULL);
 	assert(bheadp != NULL);
+    disassociate_b(curwp);	
 	curbp = (curbp->b_next != NULL ? curbp->b_next : bheadp);
-	curwp->w_bufp = curbp; // curwp to point to new buffer
+	associate_b2w(curbp,curwp);
 }
 
 void prev_buffer()

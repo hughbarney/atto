@@ -65,6 +65,7 @@ typedef struct buffer_t
 	point_t b_page;           /* start of page */
 	point_t b_epage;          /* end of page */
 	int b_modified;           /* modified ? */
+	int b_cnt;                /* count of windows referencing this buffer */
 	char_t *b_buf;            /* start of buffer */
 	char_t *b_ebuf;           /* end of buffer */
 	char_t *b_gap;            /* start of gap */
@@ -91,12 +92,12 @@ typedef struct window_t
 extern buffer_t *curbp;			/* current buffer */
 extern buffer_t *bheadp;			/* head of list of buffers */
 
-extern window_t win1;
-extern window_t win2;
+//extern window_t win1;
+//extern window_t win2;
 extern window_t *curwp;
 extern window_t *wheadp;
-extern window_t *winp1;
-extern window_t *winp2;
+//extern window_t *winp1;
+//extern window_t *winp2;
 
 /*
  * Some compilers define size_t as a unsigned 16 bit number while
@@ -252,11 +253,15 @@ extern char* get_buffer_name(buffer_t *);
 extern void get_line_stats(int *, int *);
 extern void query_replace(void);
 
-extern int one_window(window_t *);
-extern void init_window(window_t *);
+extern window_t *new_window();
+extern void one_window(window_t *);
 extern void split_window();
 extern void next_window();
+extern void delete_other_windows();
+extern void free_other_windows();
 extern void update_display();
 
 extern void w2b(window_t *);
 extern void b2w(window_t *);
+extern void associate_b2w(buffer_t *, window_t *);
+extern void disassociate_b(window_t *);

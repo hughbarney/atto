@@ -1,18 +1,31 @@
 #include "header.h"
 
-int one_window(window_t *wp)
+int win_cnt = 0;
+
+window_t* new_window()
+{
+	window_t *wp = (window_t *)malloc(sizeof(window_t));
+	
+	assert(wp != NULL); /* call fatal instead XXX */
+	wp->w_next = NULL;
+	wp->w_bufp = NULL;
+	wp->w_point = 0;
+	wp->w_mark = NOMARK;
+	wp->w_top = 0;	
+	wp->w_rows = 0;	
+	sprintf(wp->w_name, "W%d", ++win_cnt);
+	return wp;
+}
+
+void one_window(window_t *wp)
 {
 	wp->w_top = 0;
 	wp->w_rows = LINES - 2;
-	wp->w_bufp = curbp;
-	strcpy(wp->w_name, "W1:");
-	wp->w_displayed = TRUE;
-	return TRUE;
 }
 
 void split_window()
 {
-	window_t *wp;
+	window_t *wp, *wp2;
 	int ntru, ntrl;
 
 	if (curwp->w_rows < 3)
@@ -20,18 +33,11 @@ void split_window()
 		msg("Cannot split a %d line window", curwp->w_rows);
 		return;
     }
+	
+	wp = new_window();	
+	associate_b2w(curwp->w_bufp,wp);
 
-	/* malloc here */
-	wp = winp2;
-	init_window(wp);
-	wp->w_displayed = TRUE;
-	strcpy(wp->w_name, "W2:");
-	curwp->w_next = wp;
-
-	//++curbp->b_nwnd;		/* Displayed twice */
-	wp->w_bufp = winp1->w_bufp;
-
-	b2w(wp); /* inherit buffer settings, row will be wrong */
+	b2w(wp); /* inherit buffer settings */
   
 	ntru = (curwp->w_rows - 1) / 2; /* Upper size */
 	ntrl = (curwp->w_rows - 1) - ntru; /* Lower size */
@@ -41,31 +47,54 @@ void split_window()
 	wp->w_top = curwp->w_top + ntru + 1;
 	wp->w_rows = ntrl;
 
-	//wp->w_row += wp->w_top; // correct row
-
-	update_display(curwp);
-	//curwp = wp;
-}
-
-void init_window(window_t *wp)
-{
-	wp->w_next = NULL;
-	wp->w_bufp = NULL;
-	wp->w_point = 0;
-	wp->w_mark = NOMARK;
-	wp->w_top = 0;	
-	wp->w_rows = 0;
-	wp->w_displayed = FALSE;
-	wp->w_name[0] = '\0';
+	/* insert it in the chain */
+	wp2 = curwp->w_next;
+	curwp->w_next = wp;
+	wp->w_next = wp2;
+	update_display();
 }
 
 void next_window() {
-	window_t *old, *new;
-
-	old = curwp;
-	curwp = new = (curwp == winp1 ? winp2 : winp1);
+	curwp = (curwp->w_next == NULL ? wheadp : curwp->w_next);
 	curbp = curwp->w_bufp;
-
-	if (new->w_bufp == old->w_bufp)
+	
+	// this is not working XXXX - as our reference counting is astray.
+	if (curbp->b_cnt > 1)
 		w2b(curwp); /* push win vars to buffer */
+}
+
+void delete_other_windows()
+{
+	if (wheadp->w_next == NULL) {
+		msg("Only 1 window");
+		return;
+	}
+	free_other_windows(curwp);
+}
+	
+void free_other_windows(window_t *winp)
+{
+	window_t *wp;
+
+	for (wp = wheadp; wp != NULL; wp = wp->w_next)
+		if (wp != winp) {
+			disassociate_b(wp); /* this window no longer references its buffer */
+			free(wp);
+		}
+	
+	wheadp = curwp = winp;
+	one_window(winp);
+}
+
+void associate_b2w(buffer_t *bp, window_t *wp) {
+	assert(bp != NULL);
+	assert(wp != NULL);
+	wp->w_bufp = bp;
+	bp->b_cnt++;
+}
+
+void disassociate_b(window_t *wp) {
+	assert(wp != NULL);
+	assert(wp->w_bufp != NULL);
+	wp->w_bufp->b_cnt--;
 }

@@ -192,7 +192,9 @@ void readfile()
 	result = getinput(str_read, (char*) temp, STRBUF_L);
 	if (result) {
 		bp = find_buffer(temp, TRUE);
-		curwp->w_bufp = curbp = bp;
+		disassociate_b(curwp); // we are leaving the old buffer for a new one
+		curbp = bp;
+		associate_b2w(curbp, curwp);
 
 		/* load the file if not already loaded */
 		if (bp != NULL && bp->b_fname[0] == '\0') {
