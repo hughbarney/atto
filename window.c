@@ -21,6 +21,7 @@ void one_window(window_t *wp)
 {
 	wp->w_top = 0;
 	wp->w_rows = LINES - 2;
+	wp->w_next = NULL;
 }
 
 void split_window()
@@ -58,7 +59,6 @@ void next_window() {
 	curwp = (curwp->w_next == NULL ? wheadp : curwp->w_next);
 	curbp = curwp->w_bufp;
 	
-	// this is not working XXXX - as our reference counting is astray.
 	if (curbp->b_cnt > 1)
 		w2b(curwp); /* push win vars to buffer */
 }

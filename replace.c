@@ -57,7 +57,7 @@ void query_replace(void)
 			clrtoeol();
 			
 		qprompt:
-			display(curwp);
+			display(curwp, TRUE);
 			c = getch();
 
 			switch (c)

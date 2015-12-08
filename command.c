@@ -53,7 +53,8 @@ void quit()
 void redraw()
 {
 	clear();
-	display(curwp);
+	//display(curwp);
+	update_display();
 }
 
 void left()

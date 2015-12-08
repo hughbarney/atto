@@ -85,7 +85,7 @@ typedef struct window_t
 	point_t w_epage;
 	char w_top;	        /* Origin 0 top row of window */
 	char w_rows;        /* no. of rows of text in window */
-	char w_displayed;
+	//	char w_displayed;
 	char w_name[STRBUF_S];
 } window_t;
 
@@ -169,7 +169,7 @@ extern msg_t str_scratch;
 
 extern void fatal _((msg_t));
 extern void msg _((msg_t, ...));
-extern void display (window_t *);
+extern void display (window_t *, int);
 extern void dispmsg(void);
 extern void modeline(window_t *);
 

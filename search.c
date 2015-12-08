@@ -70,7 +70,7 @@ void display_search_result(point_t found, int dir, char *prompt, char *search)
 	if (found != -1 ) {
 		curbp->b_point = found;
 		msg("%s%s",prompt, search);
-		display(curwp);
+		display(curwp, TRUE);
 	} else {
 		msg("Failing %s%s",prompt, search);
 		dispmsg();

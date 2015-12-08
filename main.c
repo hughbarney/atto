@@ -47,7 +47,8 @@ int main(int argc, char **argv)
 	key_map = keymap;
 
 	while (!done) {
-		display(curwp);
+		//display(curwp);
+		update_display();
 		input = getkey(key_map, &key_return);
 
 		if (key_return != NULL)

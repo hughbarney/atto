@@ -28,7 +28,7 @@ point_t segstart(buffer_t *bp, point_t start, point_t finish)
 	int c = 0;
 	point_t scan = start;
 
-	debug("segstart() p=%d\n", bp->b_point);
+	//debug("segstart() p=%d\n", bp->b_point);
 
 	while (scan < finish) {
 		p = ptr(bp, scan);
@@ -51,7 +51,7 @@ point_t segnext(buffer_t *bp, point_t start, point_t finish)
 	char_t *p;
 	int c = 0;
 
-	debug("segnext() p=%d\n", bp->b_point);
+	//debug("segnext() p=%d\n", bp->b_point);
 
 	point_t scan = segstart(bp, start, finish);
 	for (;;) {
@@ -81,14 +81,14 @@ point_t upup(buffer_t *bp, point_t off)
 /* Move down one screen line */
 point_t dndn(buffer_t *bp, point_t off)
 {
-	debug("dndn() p=%d\n", bp->b_point);
+	//debug("dndn() p=%d\n", bp->b_point);
 	return (segnext(bp, lnstart(bp,off), off));
 }
 
 /* Return the offset of a column on the specified line */
 point_t lncolumn(buffer_t *bp, point_t offset, int column)
 {
-	debug("lncolumn() p=%d\n", bp->b_point);
+	//debug("lncolumn() p=%d\n", bp->b_point);
 
 	int c = 0;
 	char_t *p;
@@ -99,7 +99,7 @@ point_t lncolumn(buffer_t *bp, point_t offset, int column)
 	return (offset);
 }
 
-void display(window_t *wp)
+void display(window_t *wp, int flag)
 {
 	char_t *p;
 	int i, j,z;
@@ -175,7 +175,7 @@ void display(window_t *wp)
 
 	b2w(wp); /* save buffer stuff on window */
 	modeline(wp);
-	if (wp == curwp) {
+	if (wp == curwp && flag) {
 		dispmsg();
 		move(row, col); /* set cursor */
 	}
@@ -217,15 +217,30 @@ void update_display()
     window_t *wp;
 	buffer_t *bp;
 
+	// only one buffer
+	if (wheadp->w_next == NULL) {
+		display(curwp, TRUE);
+		refresh();
+		return;
+	}
+	
 	bp = curwp->w_bufp;
 
+	display(curwp, FALSE);
+	//b2w(curwp); // save state for later. happens anyway at end of display
+
+	// same buffer but different window
     for (wp=wheadp; wp != NULL; wp = wp->w_next)
     {
-        if (wp != curwp) {
-            display(wp);
+        if (wp != curwp && wp->w_bufp == bp) {
+			w2b(wp);
+            display(wp, FALSE);
+			debug("DIFFERENT WINDOW\n");
 		}
     }
-	display(curwp);
+
+	w2b(curwp);
+	display(curwp, TRUE);
 	refresh();
 }
 
