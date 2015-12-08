@@ -11,15 +11,22 @@ Atto Emacs is inspired by MicroEmacs, Nano, Pico and my earlier project known as
 * Provide a rich level of functionality in the smallest amount of code
 * Be easy to understand without extensive study (to encourage further experimentation).
 
-In Defining Atto as the lowest functional Emacs I have had to consider the essential feature set that makes Emacs, 'Emacs'.  I have defined this point as a basic Emacs command set and key bindings; the ability to edit multiple files (buffers), and switch between them; cut, copy and paste; forward and reverse searching and a replace function. The proviso being that all this will fit in less than 2000 lines of C.
+In Defining Atto as the lowest functional Emacs I have had to consider the essential feature set that makes Emacs, 'Emacs'.  I have defined this point as a basic Emacs command set and key bindings; the ability to edit multiple files (buffers), and switch between them; edit the buffers in mutliple windows, cut, copy and paste; forward and reverse searching and a replace function. The proviso being that all this will fit in less than 2000 lines of C.
 
-As of Atto v1.3, these goal has been achieved.
+As of Atto v1.4, these goal has been achieved !.
 
 ##Why the name Atto?
 The small Emacs naming scheme appears to use sub-unit prefixes in decending order with each further reduction of functionality.  Atto means 10 to the power of minus 18.   Logically Femto (10^-15) comes after Pico (10^-12). However choosing Atto allows for the potential for Femto to be an Atto based Emacs with a scripting language.
 
 ##Derivation
 Atto is based on the public domain code of Anthony Howe's editor (commonly known as Anthony's Editor or AE, [2]).  Rather than representing a file as a linked list of lines, the AE Editor uses the concept of a Buffer-Gap [4,5,6].  A Buffer-Gap editor stores the file in a single piece of contiguous memory with some extra unused space known as the buffer gap.  On character insertion and deletion the gap is first moved to the current point.  A character deletion then extends the gap by moving the gap pointer back by 1 OR the gap is reduced by 1 when a character is inserted.  The Buffer-Gap technique is elegant and significantly reduces the amount of code required to load a file, modify it and redraw the display.  The proof of this is seen when you consider that Atto supports almost the same command set that Pico supports,  but Pico requires almost 17 times the amount of code.
+
+## Atto v1.4 8 December 2015
+* Working Atto that supports multiple windows. It all fits in 1969 lines of C !
+* Fixed bug that meant that scrolling to end of file in other than the first window jumped off the screen.
+* Removed previous-buffer which was not going to get used.
+* Removed redundant definitions of FIRST_LINE
+* Corrected PgDn and PgUp to work with variable size windows.
 
 ## Atto V1.3.1 5 December 2015
 * Fixed bug with count_buffers causing kill-buffer to core dump
@@ -106,8 +113,12 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     ^Xi   Insert file at point
     ^X=   Show Character at position
 	^X^N  next-buffer
-	^X^P  previous-buffer
+	^Xn   next-buffer
 	^Xk   kill-buffer
+
+    ^X1   delete-other-windows
+	^X2   split-window
+	^Xo   other-window
 
     Home  Beginning-of-line
     End   End-of-line
@@ -160,9 +171,8 @@ $ sudo apt-get install libncurses5-dev
 
 ##Future Enhancements
 
-As of Atto 1.3 we have about 400 lines of code before we reach the design limit of 2000 lines.  Features I would like to add in priority order are:
+As of Atto 1.4 we have about 30 lines of code before we reach the design limit of 2000 lines.  Features I would like to add in priority order are:
 
-	Multi-Window support (^X1, X2, ^Xo)
 	Shell command
 	Add record macro ^X(, ^X), ^Xe
     Esc-Left     Delete word left
@@ -170,11 +180,11 @@ As of Atto 1.3 we have about 400 lines of code before we reach the design limit 
        
 ##Multiple Windows or Not?
 
-Atto does not currently support multiple windows. The lack of multiple windows will be quickly noticed as it is a very visible feature of the Emacs user interface.  It is very useful to be able to look at some code in one window whilst editing another section of the same file (or a different file) in another window.  As more than one window can access the same buffer the current point now has now to be associated with the window structure and updated back to the buffer structure whenever any gap or display code is called that accesses the point location.  I suspect it will take between 200-300 lines of code to implement multiple windows. The choice here is whether to theoretically allow an unlimited number of windows (up up to the point that no window could be split in two) or simply limit the windows to 1 full screen window or a split screen of one top half and one bottom half window.  In practice I harderly ever use more than two windows at a time.  The other major challenge will be to beat the self imposed limit of 2000 lines, as of Atto 1.3 the line count is 1775.
+Atto supports multiple windows !  This was the hardest part of the project to get working reliably.
 
+The lack of multiple windows would have been quickly noticed as it is a very visible feature of the Emacs user interface.  It is very useful to be able to look at some code in one window whilst editing another section of the same file (or a different file) in another window.  As more than one window can access the same buffer the current point now has now to be associated with the window structure and updated back to the buffer structure whenever any gap or display code is called that accesses the point location. The strategy I used in the end was to treat the buffer as the master and update the window structure with copies of the critical values (point, page, epage, cursor row & col) after each display update of that window.  This is because the display code does the calculations necessary to reframe the sceen when the point scrolls up off the screen or below the screen. Getting everthing to work correctly when displaying the same buffer in more that one winow was a reall challenge and took arpund 15-20 hours to get it working. 
 
 ##Known Issues
-    Currently does not implement multiple windows. See discussion on multiple windows.
 	Goto-line will fail to go to the very last line.  This is a special case taht could easily be fixed.
 
 ##Copying
