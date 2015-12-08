@@ -116,30 +116,6 @@ void next_buffer()
 	associate_b2w(curbp,curwp);
 }
 
-void prev_buffer()
-{
-	buffer_t *bp;
-	int i = 0;
-	assert(curbp != NULL);
-	assert(bheadp != NULL);
-
-	/* if current is the head find the end, otheriwse find bp where b_next == curbp */
-	if (curbp == bheadp)
-	{
-		for (bp=bheadp; bp->b_next != NULL; bp = bp->b_next)
-			assert(++i < 500);
-	}
-	else
-	{
-		for (bp=bheadp; bp->b_next != curbp; bp = bp->b_next)
-			assert(++i < 500);
-	}
-
-	curbp=bp;
-	curwp->w_bufp = curbp;
-	curwp->w_point = curbp->b_point;
-}
-
 char* get_buffer_name(buffer_t *bp)
 {
 	return (strlen(bp->b_fname) > 0) ? bp->b_fname : bp->b_bname;

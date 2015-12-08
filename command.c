@@ -52,8 +52,11 @@ void quit()
 
 void redraw()
 {
+	window_t *wp;
+	
 	clear();
-	//display(curwp);
+    for (wp=wheadp; wp != NULL; wp = wp->w_next)
+		wp->w_update = TRUE;
 	update_display();
 }
 
@@ -71,12 +74,12 @@ void right()
 
 void up()
 {
-	curbp->b_point = lncolumn(curbp, upup(curbp, curbp->b_point), col);
+	curbp->b_point = lncolumn(curbp, upup(curbp, curbp->b_point),curbp->b_col);
 }
 
 void down()
 {
-	curbp->b_point = lncolumn(curbp, dndn(curbp, curbp->b_point), col);
+	curbp->b_point = lncolumn(curbp, dndn(curbp, curbp->b_point),curbp->b_col);
 }
 
 void lnbegin()
@@ -101,17 +104,16 @@ void wleft()
 
 void pgdown()
 {
-	debug("**PGDN**\n");
 	curbp->b_page = curbp->b_point = upup(curbp, curbp->b_epage);
-	while (FIRST_LINE < row--)
+	while (0 < curbp->b_row--)
 		down();
 	curbp->b_epage = pos(curbp, curbp->b_ebuf);
 }
 
 void pgup()
 {
-	int i = LINES;
-	while (FIRST_LINE < --i) {
+	int i = curwp->w_rows;
+	while (0 < --i) {
 		curbp->b_page = upup(curbp, curbp->b_page);
 		up();
 	}
@@ -193,7 +195,7 @@ void readfile()
 	result = getinput(str_read, (char*) temp, STRBUF_L);
 	if (result) {
 		bp = find_buffer(temp, TRUE);
-		disassociate_b(curwp); // we are leaving the old buffer for a new one
+		disassociate_b(curwp); /* we are leaving the old buffer for a new one */
 		curbp = bp;
 		associate_b2w(curbp, curwp);
 

@@ -10,8 +10,6 @@
 
 int done;
 int result;
-int row, col;
-
 point_t nscrap;
 char_t *scrap;
 

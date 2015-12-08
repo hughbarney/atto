@@ -7,7 +7,7 @@
 #
 
 CC      = cc
-CFLAGS  = -g -O -Wall
+CFLAGS  = -O -Wall
 
 LD      = cc
 LDFLAGS =

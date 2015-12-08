@@ -1,3 +1,8 @@
+/*
+ * window.c              
+ * AttoEmacs, Hugh Barney, November 2015
+ */
+
 #include "header.h"
 
 int win_cnt = 0;
@@ -13,6 +18,7 @@ window_t* new_window()
 	wp->w_mark = NOMARK;
 	wp->w_top = 0;	
 	wp->w_rows = 0;	
+	wp->w_update = FALSE;
 	sprintf(wp->w_name, "W%d", ++win_cnt);
 	return wp;
 }
@@ -52,10 +58,11 @@ void split_window()
 	wp2 = curwp->w_next;
 	curwp->w_next = wp;
 	wp->w_next = wp2;
-	update_display();
+	redraw(); /* mark the lot for update */
 }
 
 void next_window() {
+	curwp->w_update = TRUE; /* make sure modeline gets updated */
 	curwp = (curwp->w_next == NULL ? wheadp : curwp->w_next);
 	curbp = curwp->w_bufp;
 	

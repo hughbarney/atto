@@ -28,8 +28,6 @@ point_t segstart(buffer_t *bp, point_t start, point_t finish)
 	int c = 0;
 	point_t scan = start;
 
-	//debug("segstart() p=%d\n", bp->b_point);
-
 	while (scan < finish) {
 		p = ptr(bp, scan);
 		if (*p == '\n') {
@@ -50,8 +48,6 @@ point_t segnext(buffer_t *bp, point_t start, point_t finish)
 {
 	char_t *p;
 	int c = 0;
-
-	//debug("segnext() p=%d\n", bp->b_point);
 
 	point_t scan = segstart(bp, start, finish);
 	for (;;) {
@@ -81,15 +77,12 @@ point_t upup(buffer_t *bp, point_t off)
 /* Move down one screen line */
 point_t dndn(buffer_t *bp, point_t off)
 {
-	//debug("dndn() p=%d\n", bp->b_point);
 	return (segnext(bp, lnstart(bp,off), off));
 }
 
 /* Return the offset of a column on the specified line */
 point_t lncolumn(buffer_t *bp, point_t offset, int column)
 {
-	//debug("lncolumn() p=%d\n", bp->b_point);
-
 	int c = 0;
 	char_t *p;
 	while ((p = ptr(bp, offset)) < bp->b_ebuf && *p != '\n' && c < column) {
@@ -118,32 +111,29 @@ void display(window_t *wp, int flag)
 	if (bp->b_epage <= bp->b_point) {
 		/* Find end of screen plus one. */
 		bp->b_page = dndn(bp, bp->b_point);
-		/* Number of lines on the screen depends if we are at the
-		 * EOF and how many lines are used for help and status.
-		 */
+		/* if we scoll to EOF we show 1 blank line at bottom of screen */
 		if (pos(bp, bp->b_ebuf) <= bp->b_page) {
 			bp->b_page = pos(bp, bp->b_ebuf);
 			i = wp->w_rows - 1;
 		} else {
 			i = wp->w_rows - 0;
 		}
-		i -= wp->w_top;
+		/* i -= wp->w_top; // bug, hard to figure, left it here to remind myself */
 		/* Scan backwards the required number of lines. */
 		while (0 < i--)
 			bp->b_page = upup(bp, bp->b_page);
 	}
 
-	move(wp->w_top, 0);
+	move(wp->w_top, 0); /* start from top of window */
 	i = wp->w_top;
 	j = 0;
 	bp->b_epage = bp->b_page;
+	/* paint screen from top of page until we hit maxline */ 
 	while (1) {
-		// when we have drawn the page - store the final cursor position.
+		/* reached point - store the cursor position */
 		if (bp->b_point == bp->b_epage) {
-			// we should not store cursor on the buffer - but on the window !
-			// when switch window should reset them to 0,0
-			row = i;
-			col = j;
+			bp->b_row = i;
+			bp->b_col = j;
 		}
 		p = ptr(bp, bp->b_epage);
 		if (wp->w_top + wp->w_rows <= i || bp->b_ebuf <= p) /* maxline */
@@ -167,7 +157,7 @@ void display(window_t *wp, int flag)
 		++bp->b_epage;
 	}
 
-	// replacement for clrtobot() to bottom of window
+	/* replacement for clrtobot() to bottom of window */
 	for (z=i; z < wp->w_top + wp->w_rows; z++) {
 		move(z, 0);
 		clrtoeol();
@@ -177,9 +167,10 @@ void display(window_t *wp, int flag)
 	modeline(wp);
 	if (wp == curwp && flag) {
 		dispmsg();
-		move(row, col); /* set cursor */
+		move(bp->b_row, bp->b_col); /* set cursor */
+		refresh();
 	}
-	//refresh();
+	wp->w_update = FALSE;
 }
 
 void modeline(window_t *wp)
@@ -192,9 +183,9 @@ void modeline(window_t *wp)
     lch = (wp == curwp ? '=' : '-');
 	mch = (wp->w_bufp->b_modified ? '*' : lch);
 
-	// debug version
-	sprintf(temp, "%c%c Atto: %c%c %s %s  T%dR%d Pt%d Pg%d Pe%d r%dc%d B%d",  lch,mch,lch,lch, wp->w_name, get_buffer_name(wp->w_bufp), wp->w_top, wp->w_rows, wp->w_point, wp->w_bufp->b_page, wp->w_bufp->b_epage, row, col, wp->w_bufp->b_cnt);
-	//sprintf(temp, "%c%c Atto: %c%c %s",  lch,mch,lch,lch, wp->w_name, get_buffer_name(wp->w_buf));	
+	/* debug version */
+	/* sprintf(temp, "%c%c Atto: %c%c %s %s  T%dR%d Pt%ld Pg%ld Pe%ld r%dc%d B%d",  lch,mch,lch,lch, wp->w_name, get_buffer_name(wp->w_bufp), wp->w_top, wp->w_rows, wp->w_point, wp->w_bufp->b_page, wp->w_bufp->b_epage, wp->w_bufp->b_row, wp->w_bufp->b_col, wp->w_bufp->b_cnt); */
+	sprintf(temp, "%c%c Atto: %c%c %s",  lch,mch,lch,lch, get_buffer_name(wp->w_bufp));	
 	addstr(temp);
 
 	for (i = strlen(temp) + 1; i <= COLS; i++)
@@ -217,29 +208,30 @@ void update_display()
     window_t *wp;
 	buffer_t *bp;
 
-	// only one buffer
+	/* only one window */
 	if (wheadp->w_next == NULL) {
 		display(curwp, TRUE);
 		refresh();
 		return;
 	}
-	
-	display(curwp, FALSE); /* call first to get accurate page and epage etc */
+
+	/* this is key we must call display on current (adjusted buffer) first */
+	display(curwp, FALSE); /* call our win first to get accurate page and epage etc */
     bp = curwp->w_bufp;
 	
-	// same buffer but different window
+	/* never curwp,  but same buffer in different window or update flag set*/
     for (wp=wheadp; wp != NULL; wp = wp->w_next)
     {
-        if (wp != curwp && wp->w_bufp == bp) {
+        if (wp != curwp && (wp->w_bufp == bp || wp->w_update)) {
 			w2b(wp);
             display(wp, FALSE);
-			debug("DIFFERENT WINDOW\n");
 		}
     }
 
-	// now display our window and buffer
+	/* now display our window and buffer */
 	w2b(curwp);
-	display(curwp, TRUE);
+	dispmsg();
+	move(curwp->w_row, curwp->w_col); /* set cursor for curwp */
 	refresh();
 }
 
@@ -248,6 +240,8 @@ void w2b(window_t *w)
 	w->w_bufp->b_point = w->w_point;
 	w->w_bufp->b_page = w->w_page;
 	w->w_bufp->b_epage = w->w_epage;
+	w->w_bufp->b_row = w->w_row;
+	w->w_bufp->b_col = w->w_col;
 }
 
 void b2w(window_t *w)
@@ -255,4 +249,6 @@ void b2w(window_t *w)
 	w->w_point = w->w_bufp->b_point;
 	w->w_page = w->w_bufp->b_page;
 	w->w_epage = w->w_bufp->b_epage;
+	w->w_row = w->w_bufp->b_row;
+	w->w_col = w->w_bufp->b_col;
 }

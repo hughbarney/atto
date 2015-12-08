@@ -18,7 +18,7 @@
 #undef _
 #define _(x)    x
 
-#define VERSION	 "Atto 1.4e, Public Domain, November 2015, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.4, Public Domain, December 2015, by Hugh Barney,  No warranty."
 
 /* Exit status. */
 #define EXIT_OK         0               /* Success */
@@ -26,12 +26,7 @@
 #define EXIT_USAGE      2               /* Usage */
 #define EXIT_FAIL       3               /* Known failure. */
 
-/* Screen partitioning. */
 #define MSGLINE         (LINES-1)
-//#define MODELINE        (LINES-2)
-#define FIRST_LINE      0
-//#define MAXLINE         (LINES-2)
-
 #define NOMARK          -1
 #define CHUNK           8096L
 #define K_BUFFER_LENGTH 256
@@ -59,7 +54,7 @@ typedef struct undo_t {
 
 typedef struct buffer_t
 {
-	struct buffer_t *b_next; /* Link to next buffer_t */
+	struct buffer_t *b_next;  /* Link to next buffer_t */
 	point_t b_mark;	     	  /* the mark */
 	point_t b_point;          /* the point */
 	point_t b_page;           /* start of page */
@@ -70,6 +65,8 @@ typedef struct buffer_t
 	char_t *b_ebuf;           /* end of buffer */
 	char_t *b_gap;            /* start of gap */
 	char_t *b_egap;           /* end of gap */
+	int b_row;                /* cursor row */
+	int b_col;                /* cursor col */
 	char b_fname[STRBUF_L];	  /* filename */
 	char b_bname[STRBUF_S];   /* buffer name */
 	undo_t b_ubuf;            /* undoset */
@@ -85,7 +82,9 @@ typedef struct window_t
 	point_t w_epage;
 	char w_top;	        /* Origin 0 top row of window */
 	char w_rows;        /* no. of rows of text in window */
-	//	char w_displayed;
+	int w_row;          /* cursor row */
+	int w_col;          /* cursor col */
+	int w_update;
 	char w_name[STRBUF_S];
 } window_t;
 
@@ -106,8 +105,6 @@ extern window_t *wheadp;
 extern int done;                /* Quit flag. */
 extern int msgflag;             /* True if msgline should be displayed. */
 extern int result;
-extern int row;                 /* Cursor screen row */
-extern int col;                 /* Cursor screen column. */
 
 extern point_t nscrap;          /* Length of scrap buffer. */
 extern char_t *scrap;           /* Allocated scrap buffer. */
@@ -240,7 +237,6 @@ extern buffer_t* find_buffer (char *, int);
 extern void buffer_init(buffer_t *);
 extern int delete_buffer(buffer_t *);
 extern void next_buffer(void);
-extern void prev_buffer(void);
 extern int count_buffers(void);
 extern int modified_buffers(void);
 extern void killbuffer(void);

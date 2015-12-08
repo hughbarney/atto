@@ -47,7 +47,6 @@ int main(int argc, char **argv)
 	key_map = keymap;
 
 	while (!done) {
-		//display(curwp);
 		update_display();
 		input = getkey(key_map, &key_return);
 
@@ -55,7 +54,7 @@ int main(int argc, char **argv)
 			(key_return->func)();
 		else
 		  insert();
-		//debug_stats("main loop:");
+		/* debug_stats("main loop:"); */
 	}
 	if (scrap != NULL)
 		free(scrap);
