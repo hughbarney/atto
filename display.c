@@ -9,26 +9,27 @@
 #include "header.h"
 
 /* Reverse scan for start of logical line containing offset */
-point_t lnstart(register point_t off)
+point_t lnstart(buffer_t *bp, register point_t off)
 {
 	register char_t *p;
 	do
-		p = ptr(--off);
-	while (curbp->b_buf < p && *p != '\n');
-	return (curbp->b_buf < p ? ++off : 0);
+		p = ptr(bp, --off);
+	while (bp->b_buf < p && *p != '\n');
+	return (bp->b_buf < p ? ++off : 0);
 }
 
 /*
  * Forward scan for start of logical line segment containing 'finish'.
  * A segment of a logical line corresponds to a physical screen line.
  */
-point_t segstart(point_t start, point_t finish)
+point_t segstart(buffer_t *bp, point_t start, point_t finish)
 {
 	char_t *p;
 	int c = 0;
 	point_t scan = start;
+
 	while (scan < finish) {
-		p = ptr(scan);
+		p = ptr(bp, scan);
 		if (*p == '\n') {
 			c = 0;
 			start = scan+1;
@@ -43,97 +44,99 @@ point_t segstart(point_t start, point_t finish)
 }
 
 /* Forward scan for start of logical line segment following 'finish' */
-point_t segnext(point_t start, point_t finish)
+point_t segnext(buffer_t *bp, point_t start, point_t finish)
 {
 	char_t *p;
 	int c = 0;
-	point_t scan = segstart(start, finish);
+
+	point_t scan = segstart(bp, start, finish);
 	for (;;) {
-		p = ptr(scan);
-		if (curbp->b_ebuf <= p || COLS <= c)
+		p = ptr(bp, scan);
+		if (bp->b_ebuf <= p || COLS <= c)
 			break;
 		++scan;
 		if (*p == '\n')
 			break;
 		c += *p == '\t' ? 8 - (c & 7) : 1;
 	}
-	return (p < curbp->b_ebuf ? scan : pos(curbp->b_ebuf));
+	return (p < bp->b_ebuf ? scan : pos(bp, bp->b_ebuf));
 }
 
 /* Move up one screen line */
-point_t upup(point_t off)
+point_t upup(buffer_t *bp, point_t off)
 {
-	point_t curr = lnstart(off);
-	point_t seg = segstart(curr, off);
+	point_t curr = lnstart(bp, off);
+	point_t seg = segstart(bp, curr, off);
 	if (curr < seg)
-		off = segstart(curr, seg-1);
+		off = segstart(bp, curr, seg-1);
 	else
-		off = segstart(lnstart(curr-1), curr-1);
+		off = segstart(bp, lnstart(bp,curr-1), curr-1);
 	return (off);
 }
 
 /* Move down one screen line */
-point_t dndn(point_t off)
+point_t dndn(buffer_t *bp, point_t off)
 {
-	return (segnext(lnstart(off), off));
+	return (segnext(bp, lnstart(bp,off), off));
 }
 
 /* Return the offset of a column on the specified line */
-point_t lncolumn(point_t offset, int column)
+point_t lncolumn(buffer_t *bp, point_t offset, int column)
 {
 	int c = 0;
 	char_t *p;
-	while ((p = ptr(offset)) < curbp->b_ebuf && *p != '\n' && c < column) {
+	while ((p = ptr(bp, offset)) < bp->b_ebuf && *p != '\n' && c < column) {
 		c += *p == '\t' ? 8 - (c & 7) : 1;
 		++offset;
 	}
 	return (offset);
 }
 
-void display()
+void display(window_t *wp, int flag)
 {
 	char_t *p;
-	int i, j;
+	int i, j,z;
+	buffer_t *bp = wp->w_bufp;
 
 	/* Re-frame the screen with the screen line containing the point
 	 * as the first line, when point < page.  Handles the cases of a
 	 * backward scroll or moving to the top of file.  pgup() will
 	 * move page relative to point so that page <= point < epage.
 	 */
-	if (curbp->b_point < curbp->b_page)
-		curbp->b_page = segstart(lnstart(curbp->b_point), curbp->b_point);
+	if (bp->b_point < bp->b_page)
+		bp->b_page = segstart(bp, lnstart(bp,bp->b_point), bp->b_point);
 	/* Re-frame the whole screen when epage <= point.  Handles the
 	 * cases of a forward scroll or redraw.
 	 */
-	if (curbp->b_epage <= curbp->b_point) {
+	if (bp->b_epage <= bp->b_point) {
 		/* Find end of screen plus one. */
-		curbp->b_page = dndn(curbp->b_point);
-		/* Number of lines on the screen depends if we are at the
-		 * EOF and how many lines are used for help and status.
-		 */
-		if (pos(curbp->b_ebuf) <= curbp->b_page) {
-			curbp->b_page = pos(curbp->b_ebuf);
-			i = LINES - 3;
+		bp->b_page = dndn(bp, bp->b_point);
+		/* if we scoll to EOF we show 1 blank line at bottom of screen */
+		if (pos(bp, bp->b_ebuf) <= bp->b_page) {
+			bp->b_page = pos(bp, bp->b_ebuf);
+			i = wp->w_rows - 1;
 		} else {
-			i = LINES - 2;
+			i = wp->w_rows - 0;
 		}
-		i -= FIRST_LINE;
+		/* i -= wp->w_top; // bug, hard to figure, left it here to remind myself */
 		/* Scan backwards the required number of lines. */
 		while (0 < i--)
-			curbp->b_page = upup(curbp->b_page);
+			bp->b_page = upup(bp, bp->b_page);
 	}
 
-	move(FIRST_LINE, 0);
-	i = FIRST_LINE;
+	move(wp->w_top, 0); /* start from top of window */
+	i = wp->w_top;
 	j = 0;
-	curbp->b_epage = curbp->b_page;
+	bp->b_epage = bp->b_page;
+	/* paint screen from top of page until we hit maxline */ 
 	while (1) {
-		if (curbp->b_point == curbp->b_epage) {
-			row = i;
-			col = j;
+		/* reached point - store the cursor position */
+		if (bp->b_point == bp->b_epage) {
+			bp->b_row = i;
+			bp->b_col = j;
 		}
-		p = ptr(curbp->b_epage);
-		if ((MAXLINE) <= i || curbp->b_ebuf <= p)
+		p = ptr(bp, bp->b_epage);
+		if (wp->w_top + wp->w_rows <= i || bp->b_ebuf <= p) /* maxline */
 			break;
 		if (*p != '\r') {
 			if (isprint(*p) || *p == '\t' || *p == '\n') {
@@ -151,31 +154,42 @@ void display()
 				j = 0;
 			++i;
 		}
-		++curbp->b_epage;
+		++bp->b_epage;
 	}
-	clrtobot();
-	modeline();
-	dispmsg();
-	move(row, col);
-	refresh();
+
+	/* replacement for clrtobot() to bottom of window */
+	for (z=i; z < wp->w_top + wp->w_rows; z++) {
+		move(z, 0);
+		clrtoeol();
+	}
+
+	b2w(wp); /* save buffer stuff on window */
+	modeline(wp);
+	if (wp == curwp && flag) {
+		dispmsg();
+		move(bp->b_row, bp->b_col); /* set cursor */
+		refresh();
+	}
+	wp->w_update = FALSE;
 }
 
-void modeline()
+void modeline(window_t *wp)
 {
 	int i;
-	standout();
-	move(MODELINE, 0);
-	addch('=');
-		
-	addch(curbp->b_modified ? '*' : '=');
-	addstr(" Atto: == ");
-	addstr(get_buffer_name(curbp));
-	addch(' ');
-	i = 14 + strlen(get_buffer_name(curbp));
-		
-	for (; i<=COLS; i++)
-		addch('=');
-		
+    char lch, mch;
+	
+    standout();
+	move(wp->w_top + wp->w_rows, 0);
+    lch = (wp == curwp ? '=' : '-');
+	mch = (wp->w_bufp->b_modified ? '*' : lch);
+
+	/* debug version */
+	/* sprintf(temp, "%c%c Atto: %c%c %s %s  T%dR%d Pt%ld Pg%ld Pe%ld r%dc%d B%d",  lch,mch,lch,lch, wp->w_name, get_buffer_name(wp->w_bufp), wp->w_top, wp->w_rows, wp->w_point, wp->w_bufp->b_page, wp->w_bufp->b_epage, wp->w_bufp->b_row, wp->w_bufp->b_col, wp->w_bufp->b_cnt); */
+	sprintf(temp, "%c%c Atto: %c%c %s",  lch,mch,lch,lch, get_buffer_name(wp->w_bufp));	
+	addstr(temp);
+
+	for (i = strlen(temp) + 1; i <= COLS; i++)
+		addch(lch);
 	standend();
 }
 
@@ -187,4 +201,54 @@ void dispmsg()
 		msgflag = FALSE;
 	}
 	clrtoeol();
+}
+
+void update_display()
+{   
+    window_t *wp;
+	buffer_t *bp;
+
+	/* only one window */
+	if (wheadp->w_next == NULL) {
+		display(curwp, TRUE);
+		refresh();
+		return;
+	}
+
+	/* this is key we must call display on current (adjusted buffer) first */
+	display(curwp, FALSE); /* call our win first to get accurate page and epage etc */
+    bp = curwp->w_bufp;
+	
+	/* never curwp,  but same buffer in different window or update flag set*/
+    for (wp=wheadp; wp != NULL; wp = wp->w_next)
+    {
+        if (wp != curwp && (wp->w_bufp == bp || wp->w_update)) {
+			w2b(wp);
+            display(wp, FALSE);
+		}
+    }
+
+	/* now display our window and buffer */
+	w2b(curwp);
+	dispmsg();
+	move(curwp->w_row, curwp->w_col); /* set cursor for curwp */
+	refresh();
+}
+
+void w2b(window_t *w)
+{
+	w->w_bufp->b_point = w->w_point;
+	w->w_bufp->b_page = w->w_page;
+	w->w_bufp->b_epage = w->w_epage;
+	w->w_bufp->b_row = w->w_row;
+	w->w_bufp->b_col = w->w_col;
+}
+
+void b2w(window_t *w)
+{
+	w->w_point = w->w_bufp->b_point;
+	w->w_page = w->w_bufp->b_page;
+	w->w_epage = w->w_bufp->b_epage;
+	w->w_row = w->w_bufp->b_row;
+	w->w_col = w->w_bufp->b_col;
 }

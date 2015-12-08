@@ -56,12 +56,16 @@ keymap_t keymap[] = {
 	{"C-k kill-to-eol          ", "\x0B", killtoeol },
 	{"C-s search               ", "\x13", search },
 	{"C-r search               ", "\x12", search },
-	
+
+	{"C-x 1 delete-other-window", "\x18\x31", delete_other_windows },
+	{"C-x 2 split-window       ", "\x18\x32", split_window },
+	{"C-x o other-window       ", "\x18\x6F", next_window },
+
 	{"C-x = cursor-position    ", "\x18\x3D", showpos },
 	{"C-x i insert-file        ", "\x18\x69", insertfile },
 	{"C-x k kill-buffer        ", "\x18\x6B", killbuffer },
 	{"C-x C-n next-buffer      ", "\x18\x0E", next_buffer },
-	{"C-x C-p previous-buffer  ", "\x18\x10", prev_buffer },
+	{"C-x n next-buffer        ", "\x18\x6E", next_buffer },
 	
 	{"C-x C-f find-file        ", "\x18\x06", readfile },
 	{"C-x C-s save-buffer      ", "\x18\x13", savebuffer },  

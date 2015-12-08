@@ -16,6 +16,7 @@ void buffer_init(buffer_t *bp)
 	bp->b_page = 0;
 	bp->b_epage = 0;
 	bp->b_modified = FALSE;
+	bp->b_cnt = 0;
 	bp->b_buf = NULL;
 	bp->b_ebuf = NULL;
 	bp->b_gap = NULL;
@@ -110,29 +111,9 @@ void next_buffer()
 {
 	assert(curbp != NULL);
 	assert(bheadp != NULL);
+    disassociate_b(curwp);	
 	curbp = (curbp->b_next != NULL ? curbp->b_next : bheadp);
-}
-
-void prev_buffer()
-{
-	buffer_t *bp;
-	int i = 0;
-	assert(curbp != NULL);
-	assert(bheadp != NULL);
-
-	/* if current is the head find the end, otheriwse find bp where b_next == curbp */
-	if (curbp == bheadp)
-	{
-		for (bp=bheadp; bp->b_next != NULL; bp = bp->b_next)
-			assert(++i < 500);
-	}
-	else
-	{
-		for (bp=bheadp; bp->b_next != curbp; bp = bp->b_next)
-			assert(++i < 500);
-	}
-
-	curbp=bp;
+	associate_b2w(curbp,curwp);
 }
 
 char* get_buffer_name(buffer_t *bp)

@@ -1,0 +1,40 @@
+5 DEC 2015
+==========
+
+MULTIWINDOW SUPPORT
+
+The state is stored on the window 
+For buffers that only have 1 dsiplay window the state can stay on the buffer
+
+
+The current window does not change unless:
+
+  split-window - stay in same window but smaller, same buffer
+  next-buffer - we switch to a new buffer, unassociate the old and associate the new with the current window
+  other-window = we store state on the window
+                 move to next window
+
+The case where the same buffer is split across 2 or more displayed windows does ones head in !
+
+Not sure of we need to store page and epage on the window structure.
+does not appear to be needed when just associating 1 buffer with 1 window
+
+All display code was written to take a buffer_t pointer otherwise
+can not update other windows.
+This forces other code to be written to take buffer_t args rather than use curbp.
+
+
+PROBLEMS:
+
+1) screwed insert. Point is not advancing after insert?
+   This is serious defect - cant release like this, the editor is broken.
+   going to have to backout all changes and re-apply one by one
+
+2) Lower window scrolls funny at end of file when point=endp the whole file scrolls off the screen.
+   The top window behaves as you would expect
+   The display code framing code at the top of display() probably only works if you are a single window.
+   Should work.  But need to think it through fully.
+
+
+
+

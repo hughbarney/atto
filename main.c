@@ -36,21 +36,25 @@ int main(int argc, char **argv)
 		strcpy(curbp->b_bname, str_scratch);
 	}
 
-	if (!growgap(CHUNK))
+	wheadp = curwp = new_window();
+	one_window(curwp);
+	associate_b2w(curbp, curwp);
+
+	if (!growgap(curbp, CHUNK))
 		fatal(f_alloc);
 
 	top();
 	key_map = keymap;
 
 	while (!done) {
-		display();
+		update_display();
 		input = getkey(key_map, &key_return);
 
 		if (key_return != NULL)
-		  (key_return->func)();
+			(key_return->func)();
 		else
 		  insert();
-		//debug_stats("main loop:");
+		/* debug_stats("main loop:"); */
 	}
 	if (scrap != NULL)
 		free(scrap);

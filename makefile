@@ -20,7 +20,7 @@ RM      = rm
 E       =
 O       = .o
 
-OBJ     = command$(O) data$(O) display$(O) gap$(O) key$(O) search$(O) buffer$(O) replace$(O) main$(O)
+OBJ     = command$(O) data$(O) display$(O) gap$(O) key$(O) search$(O) buffer$(O) replace$(O) window$(O) main$(O)
 
 atto$(E) : $(OBJ)
 	$(LD) $(LDFLAGS) -o atto$(E) $(OBJ) $(LIBS)
@@ -45,6 +45,9 @@ search$(O): search.c header.h
 
 replace$(O): replace.c header.h
 	$(CC) $(CFLAGS) -c replace.c
+
+window$(O): window.c header.h
+	$(CC) $(CFLAGS) -c window.c
 
 buffer$(O): buffer.c header.h
 	$(CC) $(CFLAGS) -c buffer.c

@@ -11,11 +11,13 @@
 void top()
 {
 	curbp->b_point = 0;
+	curwp->w_point = curbp->b_point;
 }
 
 void bottom()
 {
-	curbp->b_epage = curbp->b_point = pos(curbp->b_ebuf);
+	curbp->b_epage = curbp->b_point = pos(curbp, curbp->b_ebuf);
+	curwp->w_point = curbp->b_point;
 }
 
 void quit_ask()
@@ -50,8 +52,12 @@ void quit()
 
 void redraw()
 {
+	window_t *wp;
+	
 	clear();
-	display();
+    for (wp=wheadp; wp != NULL; wp = wp->w_next)
+		wp->w_update = TRUE;
+	update_display();
 }
 
 void left()
@@ -62,53 +68,53 @@ void left()
 
 void right()
 {
-	if (curbp->b_point < pos(curbp->b_ebuf))
+	if (curbp->b_point < pos(curbp, curbp->b_ebuf))
 		++curbp->b_point;
 }
 
 void up()
 {
-	curbp->b_point = lncolumn(upup(curbp->b_point), col);
+	curbp->b_point = lncolumn(curbp, upup(curbp, curbp->b_point),curbp->b_col);
 }
 
 void down()
 {
-	curbp->b_point = lncolumn(dndn(curbp->b_point), col);
+	curbp->b_point = lncolumn(curbp, dndn(curbp, curbp->b_point),curbp->b_col);
 }
 
 void lnbegin()
 {
-	curbp->b_point = segstart(lnstart(curbp->b_point), curbp->b_point);
+	curbp->b_point = segstart(curbp, lnstart(curbp,curbp->b_point), curbp->b_point);
 }
 
 void lnend()
 {
-	curbp->b_point = dndn(curbp->b_point);
+	curbp->b_point = dndn(curbp, curbp->b_point);
 	left();
 }
 
 void wleft()
 {
 	char_t *p;
-	while (!isspace(*(p = ptr(curbp->b_point))) && curbp->b_buf < p)
+	while (!isspace(*(p = ptr(curbp, curbp->b_point))) && curbp->b_buf < p)
 		--curbp->b_point;
-	while (isspace(*(p = ptr(curbp->b_point))) && curbp->b_buf < p)
+	while (isspace(*(p = ptr(curbp, curbp->b_point))) && curbp->b_buf < p)
 		--curbp->b_point;
 }
 
 void pgdown()
 {
-	curbp->b_page = curbp->b_point = upup(curbp->b_epage);
-	while (FIRST_LINE < row--)
+	curbp->b_page = curbp->b_point = upup(curbp, curbp->b_epage);
+	while (0 < curbp->b_row--)
 		down();
-	curbp->b_epage = pos(curbp->b_ebuf);
+	curbp->b_epage = pos(curbp, curbp->b_ebuf);
 }
 
 void pgup()
 {
-	int i = LINES;
-	while (FIRST_LINE < --i) {
-		curbp->b_page = upup(curbp->b_page);
+	int i = curwp->w_rows;
+	while (0 < --i) {
+		curbp->b_page = upup(curbp, curbp->b_page);
 		up();
 	}
 }
@@ -116,40 +122,40 @@ void pgup()
 void wright()
 {
 	char_t *p;
-	while (!isspace(*(p = ptr(curbp->b_point))) && p < curbp->b_ebuf)
+	while (!isspace(*(p = ptr(curbp, curbp->b_point))) && p < curbp->b_ebuf)
 		++curbp->b_point;
-	while (isspace(*(p = ptr(curbp->b_point))) && p < curbp->b_ebuf)
+	while (isspace(*(p = ptr(curbp, curbp->b_point))) && p < curbp->b_ebuf)
 		++curbp->b_point;
 }
 
 void insert()
 {
 	assert(curbp->b_gap <= curbp->b_egap);
-	if (curbp->b_gap == curbp->b_egap && !growgap(CHUNK))
+	if (curbp->b_gap == curbp->b_egap && !growgap(curbp, CHUNK))
 		return;
-	curbp->b_point = movegap(curbp->b_point);
+	curbp->b_point = movegap(curbp, curbp->b_point);
 	*curbp->b_gap++ = input == '\r' ? '\n' : input;
 	curbp->b_modified = TRUE;
-	curbp->b_point = pos(curbp->b_egap);
+	curbp->b_point = pos(curbp, curbp->b_egap);
 }
 
 void backsp()
 {
-	curbp->b_point = movegap(curbp->b_point);
+	curbp->b_point = movegap(curbp, curbp->b_point);
 	undoset();
 	if (curbp->b_buf < curbp->b_gap) {
 		--curbp->b_gap;
 		curbp->b_modified = TRUE;
 	}
-	curbp->b_point = pos(curbp->b_egap);
+	curbp->b_point = pos(curbp, curbp->b_egap);
 }
 
 void delete()
 {
-	curbp->b_point = movegap(curbp->b_point);
+	curbp->b_point = movegap(curbp, curbp->b_point);
 	undoset();
 	if (curbp->b_egap < curbp->b_ebuf) {
-		curbp->b_point = pos(++curbp->b_egap);
+		curbp->b_point = pos(curbp, ++curbp->b_egap);
 		curbp->b_modified = TRUE;
 	}
 }
@@ -189,7 +195,9 @@ void readfile()
 	result = getinput(str_read, (char*) temp, STRBUF_L);
 	if (result) {
 		bp = find_buffer(temp, TRUE);
+		disassociate_b(curwp); /* we are leaving the old buffer for a new one */
 		curbp = bp;
+		associate_b2w(curbp, curwp);
 
 		/* load the file if not already loaded */
 		if (bp != NULL && bp->b_fname[0] == '\0') {
@@ -263,7 +271,7 @@ void block()
 void killtoeol()
 {
 	/* point = start of empty line or last char in file */
-	if (*(ptr(curbp->b_point)) == 0xa || (curbp->b_point + 1 == ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap))) ) {
+	if (*(ptr(curbp, curbp->b_point)) == 0xa || (curbp->b_point + 1 == ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap))) ) {
 		delete();
 	} else {
 		curbp->b_mark = curbp->b_point;
@@ -292,13 +300,13 @@ void copy_cut(int cut)
 	}
 	if (curbp->b_point < curbp->b_mark) {
 		/* point above marker: move gap under point, region = marker - point */
-		p = ptr(curbp->b_point);
-		(void) movegap(curbp->b_point);
+		p = ptr(curbp, curbp->b_point);
+		(void) movegap(curbp, curbp->b_point);
 		nscrap = curbp->b_mark - curbp->b_point;
 	} else {
 		/* if point below marker: move gap under marker, region = point - marker */
-		p = ptr(curbp->b_mark);
-		(void) movegap(curbp->b_mark);
+		p = ptr(curbp, curbp->b_mark);
+		(void) movegap(curbp, curbp->b_mark);
 		nscrap = curbp->b_point - curbp->b_mark;
 	}
 	if ((scrap = (char_t*) malloc(nscrap)) == NULL) {
@@ -309,7 +317,7 @@ void copy_cut(int cut)
 		if (cut) {
 			curbp->b_egap += nscrap; /* if cut expand gap down */
 			block();
-			curbp->b_point = pos(curbp->b_egap); /* set point to after region */
+			curbp->b_point = pos(curbp, curbp->b_egap); /* set point to after region */
 			curbp->b_modified = TRUE;
 		} else {
 			block(); /* can maybe do without */
@@ -321,12 +329,12 @@ void paste()
 {
 	if (nscrap <= 0) {
 		msg(m_scrap);
-	} else if (nscrap < curbp->b_egap - curbp->b_gap || growgap(nscrap)) {
-		curbp->b_point = movegap(curbp->b_point);
+	} else if (nscrap < curbp->b_egap - curbp->b_gap || growgap(curbp, nscrap)) {
+		curbp->b_point = movegap(curbp, curbp->b_point);
 		undoset();
 		memcpy(curbp->b_gap, scrap, nscrap * sizeof (char_t));
 		curbp->b_gap += nscrap;
-		curbp->b_point = pos(curbp->b_egap);
+		curbp->b_point = pos(curbp, curbp->b_egap);
 		curbp->b_modified = TRUE;
 	}
 }
@@ -334,7 +342,7 @@ void paste()
 void showpos()
 {
     int current, lastln;
-	point_t end_p = pos(curbp->b_ebuf);
+	point_t end_p = pos(curbp, curbp->b_ebuf);
     
     get_line_stats(&current, &lastln);
 
@@ -342,7 +350,7 @@ void showpos()
 		msg(str_endpos, current, lastln,
 			curbp->b_point, ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap)));
 	} else {
-		msg(str_pos, unctrl(*(ptr(curbp->b_point))), *(ptr(curbp->b_point)), 
+		msg(str_pos, unctrl(*(ptr(curbp, curbp->b_point))), *(ptr(curbp, curbp->b_point)), 
 			current, lastln, 
 			curbp->b_point, ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap)));
 	}
