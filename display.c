@@ -224,11 +224,9 @@ void update_display()
 		return;
 	}
 	
-	bp = curwp->w_bufp;
-
-	display(curwp, FALSE);
-	//b2w(curwp); // save state for later. happens anyway at end of display
-
+	display(curwp, FALSE); /* call first to get accurate page and epage etc */
+    bp = curwp->w_bufp;
+	
 	// same buffer but different window
     for (wp=wheadp; wp != NULL; wp = wp->w_next)
     {
@@ -239,6 +237,7 @@ void update_display()
 		}
     }
 
+	// now display our window and buffer
 	w2b(curwp);
 	display(curwp, TRUE);
 	refresh();

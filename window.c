@@ -48,7 +48,7 @@ void split_window()
 	wp->w_top = curwp->w_top + ntru + 1;
 	wp->w_rows = ntrl;
 
-	/* insert it in the chain */
+	/* insert it in the list */
 	wp2 = curwp->w_next;
 	curwp->w_next = wp;
 	wp->w_next = wp2;
