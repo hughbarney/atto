@@ -50,6 +50,8 @@ keymap_t keymap[] = {
 	{"esc r query-replace      ", "\x1B\x72", query_replace },
                 
 	{"C-space set-mark         ", "\x00", iblock },  /* ctrl-space */
+	{"esc @ set-mark           ", "\x1B\x40", iblock },  /* esc-@ */
+
 	{"C-w kill-region          ", "\x17", cut},
 	{"C-y yank                 ", "\x19", paste},
 	{"esc w copy-region        ", "\x1B\x77", copy},
@@ -173,4 +175,3 @@ int getinput(char *prompt, char *buf, int nbuf)
 		}
 	}
 }
-
