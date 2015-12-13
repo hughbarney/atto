@@ -176,11 +176,11 @@ void display(window_t *wp, int flag)
 void modeline(window_t *wp)
 {
 	int i;
-    char lch, mch;
+	char lch, mch;
 	
-    standout();
+	standout();
 	move(wp->w_top + wp->w_rows, 0);
-    lch = (wp == curwp ? '=' : '-');
+	lch = (wp == curwp ? '=' : '-');
 	mch = (wp->w_bufp->b_modified ? '*' : lch);
 
 	/* debug version */
@@ -205,7 +205,7 @@ void dispmsg()
 
 void update_display()
 {   
-    window_t *wp;
+	window_t *wp;
 	buffer_t *bp;
 
 	/* only one window */
@@ -217,16 +217,15 @@ void update_display()
 
 	/* this is key we must call display on current (adjusted buffer) first */
 	display(curwp, FALSE); /* call our win first to get accurate page and epage etc */
-    bp = curwp->w_bufp;
+	bp = curwp->w_bufp;
 	
 	/* never curwp,  but same buffer in different window or update flag set*/
-    for (wp=wheadp; wp != NULL; wp = wp->w_next)
-    {
-        if (wp != curwp && (wp->w_bufp == bp || wp->w_update)) {
+	for (wp=wheadp; wp != NULL; wp = wp->w_next) {
+		if (wp != curwp && (wp->w_bufp == bp || wp->w_update)) {
 			w2b(wp);
-            display(wp, FALSE);
+			display(wp, FALSE);
 		}
-    }
+	}
 
 	/* now display our window and buffer */
 	w2b(curwp);

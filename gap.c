@@ -23,17 +23,16 @@ int growgap(buffer_t *bp, point_t n)
 	xegap = bp->b_egap - bp->b_buf;
 	buflen = bp->b_ebuf - bp->b_buf;
     
-    /* reduce number of reallocs by growing by a minimum amount */
-    n = (n < MIN_GAP_EXPAND ? MIN_GAP_EXPAND : n);
+	/* reduce number of reallocs by growing by a minimum amount */
+	n = (n < MIN_GAP_EXPAND ? MIN_GAP_EXPAND : n);
 	newlen = buflen + n * sizeof (char_t);
 
 	if (buflen == 0) {
 		if (newlen < 0 || MAX_SIZE_T < newlen)
 			fatal(f_alloc);
 		new = (char_t*) malloc((size_t) newlen);
-		if (new == NULL)
-			/* Cannot edit a file without a buffer. */
-			fatal(f_alloc);
+		if (new == NULL)			
+			fatal(f_alloc);	/* Cannot edit a file without a buffer. */
 	} else {
 		if (newlen < 0 || MAX_SIZE_T < newlen) {
 			msg(m_alloc);
@@ -41,8 +40,7 @@ int growgap(buffer_t *bp, point_t n)
 		}
 		new = (char_t*) realloc(bp->b_buf, (size_t) newlen);
 		if (new == NULL) {
-			/* Report non-fatal error. */
-			msg(m_alloc);
+			msg(m_alloc); /* Report non-fatal error. */
 			return (FALSE);
 		}
 	}
@@ -206,13 +204,13 @@ point_t line_to_point(int ln)
 	point_t p, start;
 
 	for (p=0, start=0; p < end_p; p++) {
-        if ( *(ptr(curbp, p)) == '\n') {
-            if (--ln == 0)
-                return start;
-            if (p + 1 < end_p) 
-                start = p + 1;
-        }
-    }
+		if ( *(ptr(curbp, p)) == '\n') {
+			if (--ln == 0)
+				return start;
+			if (p + 1 < end_p) 
+				start = p + 1;
+		}
+	}
 	return -1;
 }
 
@@ -221,18 +219,18 @@ void get_line_stats(int *curline, int *lastline)
 {
 	point_t end_p = pos(curbp, curbp->b_ebuf);
 	point_t p;
-    int line;
+	int line;
     
-    *curline = -1;
+	*curline = -1;
     
 	for (p=0, line=0; p < end_p; p++) {
-        line += (*(ptr(curbp,p)) == '\n') ? 1 : 0;
+		line += (*(ptr(curbp,p)) == '\n') ? 1 : 0;
 		*lastline = line;
         
-        if (*curline == -1 && p == curbp->b_point) {
-            *curline = (*(ptr(curbp,p)) == '\n') ? line : line + 1;
+		if (*curline == -1 && p == curbp->b_point) {
+			*curline = (*(ptr(curbp,p)) == '\n') ? line : line + 1;
 		}
-    }
+	}
 
 	*lastline = *lastline + 1;
 	

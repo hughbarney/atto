@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 		if (key_return != NULL)
 			(key_return->func)();
 		else
-		  insert();
+			insert();
 		/* debug_stats("main loop:"); */
 	}
 	if (scrap != NULL)
@@ -96,21 +96,21 @@ void msg(msg_t m, ...)
 
 void debug(char *format, ...)
 {
-    char buffer[256];
-    va_list args;
-    va_start (args, format);
+	char buffer[256];
+	va_list args;
+	va_start (args, format);
 
-    static FILE *debug_fp = NULL;
+	static FILE *debug_fp = NULL;
 
-    if (debug_fp == NULL) {
-        debug_fp = fopen("debug.out","w");
-    }
+	if (debug_fp == NULL) {
+		debug_fp = fopen("debug.out","w");
+	}
 
-    vsprintf (buffer, format, args);
-    va_end(args);
+	vsprintf (buffer, format, args);
+	va_end(args);
 
-    fprintf(debug_fp,"%s", buffer);
-    fflush(debug_fp);
+	fprintf(debug_fp,"%s", buffer);
+	fflush(debug_fp);
 }
 
 void debug_stats(char *s) {

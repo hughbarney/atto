@@ -36,16 +36,14 @@ buffer_t* find_buffer (char *fname, int cflag)
 	buffer_t *sb = NULL;
 	
 	bp = bheadp;
-	while (bp != NULL)
-    {
+	while (bp != NULL) {
 		if (strcmp (fname, bp->b_fname) == 0 || strcmp(fname, bp->b_bname) == 0) {
 			return (bp);
 		}
 		bp = bp->b_next;
-    }
+	}
 
-	if (cflag != FALSE)
-    {
+	if (cflag != FALSE) {
 		if ((bp = (buffer_t *) malloc (sizeof (buffer_t))) == NULL)
 			return (0);
 
@@ -55,15 +53,11 @@ buffer_t* find_buffer (char *fname, int cflag)
 		/* find the place in the list to insert this buffer */
 		if (bheadp == NULL) {
 			bheadp = bp;
-		}
-        else if (strcmp (bheadp->b_fname, fname) > 0)
-		{
+		} else if (strcmp (bheadp->b_fname, fname) > 0) {
 			/* insert at the begining */
 			bp->b_next = bheadp;
 			bheadp = bp;
-		}
-		else
-		{
+		} else {
 			for (sb = bheadp; sb->b_next != NULL; sb = sb->b_next)
 				if (strcmp (sb->b_next->b_fname, fname) > 0)
 					break;
@@ -72,7 +66,7 @@ buffer_t* find_buffer (char *fname, int cflag)
 			bp->b_next = sb->b_next;
 			sb->b_next = bp;
 		}
-    }
+	}
 	return bp;
 }
 
@@ -91,9 +85,7 @@ int delete_buffer (buffer_t *bp)
 	/* if buffer is the head buffer */
 	if (bp == bheadp) {
 		bheadp = bp->b_next;
-	}
-	else
-	{
+	} else {
 		/* find place where the bp buffer is next */
 		for (sb = bheadp; sb->b_next != bp && sb->b_next != NULL; sb = sb->b_next)
 			;
@@ -111,7 +103,7 @@ void next_buffer()
 {
 	assert(curbp != NULL);
 	assert(bheadp != NULL);
-    disassociate_b(curwp);	
+	disassociate_b(curwp);	
 	curbp = (curbp->b_next != NULL ? curbp->b_next : bheadp);
 	associate_b2w(curbp,curwp);
 }

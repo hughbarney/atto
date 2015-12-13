@@ -55,7 +55,7 @@ void redraw()
 	window_t *wp;
 	
 	clear();
-    for (wp=wheadp; wp != NULL; wp = wp->w_next)
+	for (wp=wheadp; wp != NULL; wp = wp->w_next)
 		wp->w_update = TRUE;
 	update_display();
 }
@@ -163,20 +163,20 @@ void delete()
 void gotoline()
 {
 	temp[0] = '\0';
-    int line;
-    point_t p;
+	int line;
+	point_t p;
 	result = getinput(m_goto, (char*)temp, STRBUF_S);
-    
-    if (temp[0] != '\0' && result) {
+
+	if (temp[0] != '\0' && result) {
 		line = atoi(temp);
-        p = line_to_point(line);
-        if (p != -1) {
-            curbp->b_point = p;
-            msg(m_line, line);
-        } else {
-            msg(m_lnot_found, line);
-        }
-    }
+		p = line_to_point(line);
+		if (p != -1) {
+			curbp->b_point = p;
+			msg(m_line, line);
+		} else {
+			msg(m_lnot_found, line);
+		}
+	}
 }
 
 void insertfile()
@@ -341,17 +341,17 @@ void paste()
 
 void showpos()
 {
-    int current, lastln;
+	int current, lastln;
 	point_t end_p = pos(curbp, curbp->b_ebuf);
     
-    get_line_stats(&current, &lastln);
+	get_line_stats(&current, &lastln);
 
 	if (curbp->b_point == end_p) {
 		msg(str_endpos, current, lastln,
 			curbp->b_point, ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap)));
 	} else {
 		msg(str_pos, unctrl(*(ptr(curbp, curbp->b_point))), *(ptr(curbp, curbp->b_point)), 
-			current, lastln, 
+			current, lastln,
 			curbp->b_point, ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap)));
 	}
 }

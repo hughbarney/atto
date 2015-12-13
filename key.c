@@ -137,8 +137,7 @@ int getinput(char *prompt, char *buf, int nbuf)
 		cpos = strlen(buf);
 	}
 
-	for (;;)
-	{
+	for (;;) {
 		refresh();
 		c = getch();
 		/* ignore control keys other than backspace, cr, lf */
