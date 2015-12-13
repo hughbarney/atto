@@ -35,21 +35,19 @@ void split_window()
 	window_t *wp, *wp2;
 	int ntru, ntrl;
 
-	if (curwp->w_rows < 3)
-    {
+	if (curwp->w_rows < 3) {
 		msg("Cannot split a %d line window", curwp->w_rows);
 		return;
-    }
+	}
 	
 	wp = new_window();	
 	associate_b2w(curwp->w_bufp,wp);
-
 	b2w(wp); /* inherit buffer settings */
   
 	ntru = (curwp->w_rows - 1) / 2; /* Upper size */
 	ntrl = (curwp->w_rows - 1) - ntru; /* Lower size */
 
-    /* Old is upper window */
+	/* Old is upper window */
 	curwp->w_rows = ntru;
 	wp->w_top = curwp->w_top + ntru + 1;
 	wp->w_rows = ntrl;
@@ -81,13 +79,15 @@ void delete_other_windows()
 	
 void free_other_windows(window_t *winp)
 {
-	window_t *wp;
+	window_t *wp, *next;
 
-	for (wp = wheadp; wp != NULL; wp = wp->w_next)
+	for (wp = next = wheadp; next != NULL; wp = next) {
+		next = wp->w_next; /* get next before a call to free() makes wp undefined */
 		if (wp != winp) {
 			disassociate_b(wp); /* this window no longer references its buffer */
 			free(wp);
 		}
+	}
 	
 	wheadp = curwp = winp;
 	one_window(winp);
