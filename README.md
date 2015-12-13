@@ -21,6 +21,11 @@ The small Emacs naming scheme appears to use sub-unit prefixes in decending orde
 ##Derivation
 Atto is based on the public domain code of Anthony Howe's editor (commonly known as Anthony's Editor or AE, [2]).  Rather than representing a file as a linked list of lines, the AE Editor uses the concept of a Buffer-Gap [4,5,6].  A Buffer-Gap editor stores the file in a single piece of contiguous memory with some extra unused space known as the buffer gap.  On character insertion and deletion the gap is first moved to the current point.  A character deletion then extends the gap by moving the gap pointer back by 1 OR the gap is reduced by 1 when a character is inserted.  The Buffer-Gap technique is elegant and significantly reduces the amount of code required to load a file, modify it and redraw the display.  The proof of this is seen when you consider that Atto supports almost the same command set that Pico supports,  but Pico requires almost 17 times the amount of code.
 
+## Atto v1.4.2, 13 December 2015
+* Fixed crash bug with free_windows on MS windows, thanks to Ed Davies for reporting
+* went through all files and ensure correct indentation and tabstops, ensured if (foo) { opening brace style
+* line count is 1955
+
 ## Atto v1.4.1, 12 December 2015
 * Added esc-@ as alternative to C-space for set-mark
 
@@ -174,12 +179,11 @@ $ sudo apt-get install libncurses5-dev
 
 ##Future Enhancements
 
-As of Atto 1.4 we have about 30 lines of code before we reach the design limit of 2000 lines.  Features I would like to add in priority order are:
+As of Atto 1.4 we have about 45 lines of code before we reach the design limit of 2000 lines.  The priority will be bug fixes and keeping the code count below 2000 lines but features I would like to add in priority order are:
 
-	Shell command
+    Overwite mode
+    Shell command
 	Add record macro ^X(, ^X), ^Xe
-    Esc-Left     Delete word left
-    Esc-right    Delete word right
        
 ##Multiple Windows or Not?
 
@@ -192,7 +196,7 @@ The lack of multiple windows would have been quickly noticed as it is a very vis
 
 ##Copying
   Atto code is released to the public domain.
-  hughbarney@gmail.com November 2015
+  hughbarney@gmail.com December 2015
 
 ##References
     [1] Perfect Emacs - https://github.com/hughbarney/pEmacs
