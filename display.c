@@ -95,7 +95,7 @@ point_t lncolumn(buffer_t *bp, point_t offset, int column)
 void display(window_t *wp, int flag)
 {
 	char_t *p;
-	int i, j,z;
+	int i, j, k;
 	buffer_t *bp = wp->w_bufp;
 
 	/* Re-frame the screen with the screen line containing the point
@@ -158,9 +158,10 @@ void display(window_t *wp, int flag)
 	}
 
 	/* replacement for clrtobot() to bottom of window */
-	for (z=i; z < wp->w_top + wp->w_rows; z++) {
-		move(z, 0);
+	for (k=i; k < wp->w_top + wp->w_rows; k++) {
+		move(k, j); /* clear from very last char not start of line */
 		clrtoeol();
+		j = 0; /* thereafter start of line */
 	}
 
 	b2w(wp); /* save buffer stuff on window */
@@ -185,7 +186,7 @@ void modeline(window_t *wp)
 
 	/* debug version */
 	/* sprintf(temp, "%c%c Atto: %c%c %s %s  T%dR%d Pt%ld Pg%ld Pe%ld r%dc%d B%d",  lch,mch,lch,lch, wp->w_name, get_buffer_name(wp->w_bufp), wp->w_top, wp->w_rows, wp->w_point, wp->w_bufp->b_page, wp->w_bufp->b_epage, wp->w_bufp->b_row, wp->w_bufp->b_col, wp->w_bufp->b_cnt); */
-	sprintf(temp, "%c%c Atto: %c%c %s",  lch,mch,lch,lch, get_buffer_name(wp->w_bufp));	
+	sprintf(temp, "%c%c Atto: %c%c %s",  lch,mch,lch,lch, get_buffer_name(wp->w_bufp));
 	addstr(temp);
 
 	for (i = strlen(temp) + 1; i <= COLS; i++)

@@ -21,6 +21,9 @@ The small Emacs naming scheme appears to use sub-unit prefixes in decending orde
 ##Derivation
 Atto is based on the public domain code of Anthony Howe's editor (commonly known as Anthony's Editor or AE, [2]).  Rather than representing a file as a linked list of lines, the AE Editor uses the concept of a Buffer-Gap [4,5,6].  A Buffer-Gap editor stores the file in a single piece of contiguous memory with some extra unused space known as the buffer gap.  On character insertion and deletion the gap is first moved to the current point.  A character deletion then extends the gap by moving the gap pointer back by 1 OR the gap is reduced by 1 when a character is inserted.  The Buffer-Gap technique is elegant and significantly reduces the amount of code required to load a file, modify it and redraw the display.  The proof of this is seen when you consider that Atto supports almost the same command set that Pico supports,  but Pico requires almost 17 times the amount of code.
 
+## Atto v1.4.3, 15 December 2015
+* fixed bug with display of last line
+
 ## Atto v1.4.2, 13 December 2015
 * Fixed crash bug with free_windows on MS windows, thanks to Ed Davies for reporting
 * went through all files and ensure correct indentation and tabstops, ensured if (foo) { opening brace style
