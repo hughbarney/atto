@@ -41,8 +41,7 @@ int yesno(int flag)
 	ch = getch();
 	if (ch == '\r' || ch == '\n')
 		return (flag);
-	return (ch == str_yes[1]);
-
+	return (tolower(ch) == str_yes[1]);
 }
 
 void quit()
@@ -134,9 +133,17 @@ void insert()
 	if (curbp->b_gap == curbp->b_egap && !growgap(curbp, CHUNK))
 		return;
 	curbp->b_point = movegap(curbp, curbp->b_point);
-	*curbp->b_gap++ = input == '\r' ? '\n' : input;
-	curbp->b_modified = TRUE;
-	curbp->b_point = pos(curbp, curbp->b_egap);
+
+	/* overwrite if mid line, not EOL or EOF, CR will insert as normal */
+	if ((curbp->b_flags & B_OVERWRITE) && input != '\r' && *(ptr(curbp, curbp->b_point)) != '\n' && curbp->b_point < pos(curbp,curbp->b_ebuf) ) {
+		*(ptr(curbp, curbp->b_point)) = input;
+		if (curbp->b_point < pos(curbp, curbp->b_ebuf))
+			++curbp->b_point;
+	} else {
+		*curbp->b_gap++ = input == '\r' ? '\n' : input;
+		curbp->b_point = pos(curbp, curbp->b_egap);
+	}
+	curbp->b_flags |= B_MODIFIED;
 }
 
 void backsp()
@@ -145,7 +152,7 @@ void backsp()
 	undoset();
 	if (curbp->b_buf < curbp->b_gap) {
 		--curbp->b_gap;
-		curbp->b_modified = TRUE;
+		curbp->b_flags |= B_MODIFIED;
 	}
 	curbp->b_point = pos(curbp, curbp->b_egap);
 }
@@ -156,7 +163,7 @@ void delete()
 	undoset();
 	if (curbp->b_egap < curbp->b_ebuf) {
 		curbp->b_point = pos(curbp, ++curbp->b_egap);
-		curbp->b_modified = TRUE;
+		curbp->b_flags |= B_MODIFIED;
 	}
 }
 
@@ -239,7 +246,7 @@ void killbuffer()
 	if (bcount == 1 && 0 == strcmp(get_buffer_name(curbp), str_scratch))
 		return;
 	
-	if (curbp->b_modified) {
+	if (curbp->b_flags & B_MODIFIED) {
 		mvaddstr(MSGLINE, 0, str_notsaved);
 		clrtoeol();
 		if (!yesno(FALSE))
@@ -266,6 +273,13 @@ void iblock()
 void block()
 {
 	curbp->b_mark = curbp->b_mark == NOMARK ? curbp->b_point : NOMARK;
+}
+
+void toggle_overwrite_mode() {
+	if (curbp->b_flags & B_OVERWRITE)
+		curbp->b_flags &= ~B_OVERWRITE;
+	else
+		curbp->b_flags |= B_OVERWRITE;
 }
 
 void killtoeol()
@@ -318,7 +332,7 @@ void copy_cut(int cut)
 			curbp->b_egap += nscrap; /* if cut expand gap down */
 			block();
 			curbp->b_point = pos(curbp, curbp->b_egap); /* set point to after region */
-			curbp->b_modified = TRUE;
+			curbp->b_flags |= B_MODIFIED;
 		} else {
 			block(); /* can maybe do without */
 		}
@@ -327,6 +341,8 @@ void copy_cut(int cut)
 
 void paste()
 {
+	if(curbp->b_flags & B_OVERWRITE)
+		return;
 	if (nscrap <= 0) {
 		msg(m_scrap);
 	} else if (nscrap < curbp->b_egap - curbp->b_gap || growgap(curbp, nscrap)) {
@@ -335,7 +351,7 @@ void paste()
 		memcpy(curbp->b_gap, scrap, nscrap * sizeof (char_t));
 		curbp->b_gap += nscrap;
 		curbp->b_point = pos(curbp, curbp->b_egap);
-		curbp->b_modified = TRUE;
+		curbp->b_flags |= B_MODIFIED;
 	}
 }
 

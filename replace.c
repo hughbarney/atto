@@ -72,6 +72,7 @@ void query_replace(void)
 				break;
 			
 			case 0x1B: /* esc */
+				flushinp(); /* discard any escape sequence without writing in buffer */
 			case 'q': /* controlled exit */
 				return;
 
@@ -99,7 +100,7 @@ void query_replace(void)
 		/* now just overwrite the chars at point in the buffer */
 		l_point = curbp->b_point;
 		memcpy(ptr(curbp, curbp->b_point), replace, rlen * sizeof (char_t));
-		curbp->b_modified = TRUE;
+		curbp->b_flags |= B_MODIFIED;
 		curbp->b_point = found - (slen - rlen); /* end of replcement */
 		numsub++;
 	}

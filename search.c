@@ -29,6 +29,7 @@ void search()
 		switch(c) {
 		case 0x1b: /* esc */
 			searchtext[cpos] = '\0';
+			flushinp(); /* discard any escape sequence without writing in buffer */
 			return;
 
 		case 0x07: /* ctrl-g */

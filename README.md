@@ -21,6 +21,13 @@ The small Emacs naming scheme appears to use sub-unit prefixes in decending orde
 ##Derivation
 Atto is based on the public domain code of Anthony Howe's editor (commonly known as Anthony's Editor or AE, [2]).  Rather than representing a file as a linked list of lines, the AE Editor uses the concept of a Buffer-Gap [4,5,6].  A Buffer-Gap editor stores the file in a single piece of contiguous memory with some extra unused space known as the buffer gap.  On character insertion and deletion the gap is first moved to the current point.  A character deletion then extends the gap by moving the gap pointer back by 1 OR the gap is reduced by 1 when a character is inserted.  The Buffer-Gap technique is elegant and significantly reduces the amount of code required to load a file, modify it and redraw the display.  The proof of this is seen when you consider that Atto supports almost the same command set that Pico supports,  but Pico requires almost 17 times the amount of code.
 
+## Atto v1.5,  20 December 2015
+* Added INS = toggle-overwrite-mode
+* flushed keyboard on detection of Esc in search and replace, which means if you touch the arrow keys you exit cleanly without writing the rest of an escape sequence into the buffer.
+* Added entries for escape key binding (eg esc-v and esc-V) to handle when CAPSLOCK is active.
+* Handled CAPSLOCK when prompted y/n to exit.
+* Line count is 1987.
+
 ## Atto v1.4.3, 15 December 2015
 * fixed bug with display of last line
 
@@ -134,6 +141,7 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     Home  Beginning-of-line
     End   End-of-line
     Del   Delete character under cursor
+	Ins   Toggle Overwrite Mode
     Left  Move left
     Right Move point right
     Up    Move to the previous line
@@ -182,11 +190,7 @@ $ sudo apt-get install libncurses5-dev
 
 ##Future Enhancements
 
-As of Atto 1.4 we have about 45 lines of code before we reach the design limit of 2000 lines.  The priority will be bug fixes and keeping the code count below 2000 lines but features I would like to add in priority order are:
-
-    Overwite mode
-    Shell command
-	Add record macro ^X(, ^X), ^Xe
+As of Atto 1.5 we have about 13 lines of code before we reach the design limit of 2000 lines.  Whilst I would have liked to have added a few other features the priority will now be bug fixes and keeping the code count below 2000 lines.
        
 ##Multiple Windows or Not?
 
@@ -195,7 +199,7 @@ Atto supports multiple windows !  This was the hardest part of the project to ge
 The lack of multiple windows would have been quickly noticed as it is a very visible feature of the Emacs user interface.  It is very useful to be able to look at some code in one window whilst editing another section of the same file (or a different file) in another window.  As more than one window can access the same buffer the current point now has now to be associated with the window structure and updated back to the buffer structure whenever any gap or display code is called that accesses the point location. The strategy I used in the end was to treat the buffer as the master and update the window structure with copies of the critical values (point, page, epage, cursor row & col) after each display update of that window.  This is because the display code does the calculations necessary to reframe the sceen when the point scrolls up off the screen or below the screen. Getting everthing to work correctly when displaying the same buffer in more that one winow was a reall challenge and took arpund 15-20 hours to get it working. 
 
 ##Known Issues
-	Goto-line will fail to go to the very last line.  This is a special case taht could easily be fixed.
+	Goto-line will fail to go to the very last line.  This is a special case that could easily be fixed.
 
 ##Copying
   Atto code is released to the public domain.

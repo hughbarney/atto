@@ -177,16 +177,17 @@ void display(window_t *wp, int flag)
 void modeline(window_t *wp)
 {
 	int i;
-	char lch, mch;
+	char lch, mch, och;
 	
 	standout();
 	move(wp->w_top + wp->w_rows, 0);
 	lch = (wp == curwp ? '=' : '-');
-	mch = (wp->w_bufp->b_modified ? '*' : lch);
+	mch = ((wp->w_bufp->b_flags & B_MODIFIED) ? '*' : lch);
+	och = ((wp->w_bufp->b_flags & B_OVERWRITE) ? 'O' : lch);
 
 	/* debug version */
-	/* sprintf(temp, "%c%c Atto: %c%c %s %s  T%dR%d Pt%ld Pg%ld Pe%ld r%dc%d B%d",  lch,mch,lch,lch, wp->w_name, get_buffer_name(wp->w_bufp), wp->w_top, wp->w_rows, wp->w_point, wp->w_bufp->b_page, wp->w_bufp->b_epage, wp->w_bufp->b_row, wp->w_bufp->b_col, wp->w_bufp->b_cnt); */
-	sprintf(temp, "%c%c Atto: %c%c %s",  lch,mch,lch,lch, get_buffer_name(wp->w_bufp));
+	/* sprintf(temp, "%c%c%c Atto: %c%c %s %s  T%dR%d Pt%ld Pg%ld Pe%ld r%dc%d B%d",  lch,och,mch,lch,lch, wp->w_name, get_buffer_name(wp->w_bufp), wp->w_top, wp->w_rows, wp->w_point, wp->w_bufp->b_page, wp->w_bufp->b_epage, wp->w_bufp->b_row, wp->w_bufp->b_col, wp->w_bufp->b_cnt); */
+	sprintf(temp, "%c%c%c Atto: %c%c %s",  lch,och,mch,lch,lch, get_buffer_name(wp->w_bufp));
 	addstr(temp);
 
 	for (i = strlen(temp) + 1; i <= COLS; i++)

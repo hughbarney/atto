@@ -127,7 +127,7 @@ int save(char *fn)
 		msg(m_close, fn);
 		return (FALSE);
 	}
-	curbp->b_modified = FALSE;
+	curbp->b_flags &= ~B_MODIFIED;
 	msg(m_saved, fn, pos(curbp, curbp->b_ebuf));
 	return (TRUE);
 }
@@ -170,7 +170,7 @@ int insert_file(char *fn, int modflag)
 		msg(m_close, fn);
 		return (FALSE);
 	}
-	curbp->b_modified = modflag;
+	curbp->b_flags &= (modflag ? B_MODIFIED : ~B_MODIFIED);
 	msg(m_loaded, fn, len);
 	return (TRUE);
 }
@@ -192,7 +192,7 @@ void undo()
 	curbp->b_point = tmp.u_point;
 	curbp->b_gap = curbp->b_buf + tmp.u_gap;
 	curbp->b_egap = curbp->b_buf + tmp.u_egap;
-	curbp->b_modified = TRUE;
+	curbp->b_flags |= B_MODIFIED;
 }
 
 /* additional support funtions not in original gap.c */

@@ -26,6 +26,7 @@ keymap_t keymap[] = {
 	{"C-p                      ", "\x10", up },
  
 	{"C-d forward-delete-char  ", "\x04", delete },
+	{"INS toggle-overwrite-mode", "\x1B\x5B\x32\x7E", toggle_overwrite_mode }, /* Ins key */
 	{"DEL forward-delete-char  ", "\x1B\x5B\x33\x7E", delete }, /* Del key */
 	{"backspace delete-left    ", "\x7f", backsp },
 	{"C-h backspace            ", "\x08", backsp },
@@ -33,6 +34,7 @@ keymap_t keymap[] = {
 
 	{"C-u                      ", "\x15", undo },
 	{"esc v                    ", "\x1B\x76", pgup },
+	{"esc V                    ", "\x1B\x56", pgup },
 	{"C-v                      ", "\x16", pgdown },
 	{"PgUp                     ", "\x1B\x5B\x35\x7E",pgup }, /* PgUp key */
 	{"PgDn                     ", "\x1B\x5B\x36\x7E", pgdown }, /* PgDn key */
@@ -48,6 +50,11 @@ keymap_t keymap[] = {
 	{"esc f forward-word       ", "\x1B\x66", wright },
 	{"esc g gotoline           ", "\x1B\x67", gotoline },
 	{"esc r query-replace      ", "\x1B\x72", query_replace },
+
+	{"esc B back-word          ", "\x1B\x42", wleft },
+	{"esc F forward-word       ", "\x1B\x46", wright },
+	{"esc G gotoline           ", "\x1B\x47", gotoline },
+	{"esc R query-replace      ", "\x1B\x52", query_replace },
                 
 	{"C-space set-mark         ", "\x00", iblock },  /* ctrl-space */
 	{"esc @ set-mark           ", "\x1B\x40", iblock },  /* esc-@ */
@@ -55,6 +62,7 @@ keymap_t keymap[] = {
 	{"C-w kill-region          ", "\x17", cut},
 	{"C-y yank                 ", "\x19", paste},
 	{"esc w copy-region        ", "\x1B\x77", copy},
+	{"esc W copy-region        ", "\x1B\x57", copy},
 	{"C-k kill-to-eol          ", "\x0B", killtoeol },
 	{"C-s search               ", "\x13", search },
 	{"C-r search               ", "\x12", search },

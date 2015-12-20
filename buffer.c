@@ -15,7 +15,7 @@ void buffer_init(buffer_t *bp)
 	bp->b_point = 0;
 	bp->b_page = 0;
 	bp->b_epage = 0;
-	bp->b_modified = FALSE;
+	bp->b_flags = 0;
 	bp->b_cnt = 0;
 	bp->b_buf = NULL;
 	bp->b_ebuf = NULL;
@@ -129,7 +129,7 @@ int modified_buffers()
 	buffer_t* bp;
 
 	for (bp=bheadp; bp != NULL; bp = bp->b_next)
-		if (bp->b_modified)
+		if (bp->b_flags & B_MODIFIED)
 			return TRUE;
 
 	return FALSE;

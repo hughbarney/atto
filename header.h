@@ -18,13 +18,16 @@
 #undef _
 #define _(x)    x
 
-#define VERSION	 "Atto 1.4.3, Public Domain, December 2015, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.5, Public Domain, December 2015, by Hugh Barney,  No warranty."
 
 /* Exit status. */
 #define EXIT_OK         0               /* Success */
 #define EXIT_ERROR      1               /* Unknown error. */
 #define EXIT_USAGE      2               /* Usage */
 #define EXIT_FAIL       3               /* Known failure. */
+
+#define B_MODIFIED	0x01		/* modified buffer */
+#define B_OVERWRITE	0x02		/* overwite mode */
 
 #define MSGLINE         (LINES-1)
 #define NOMARK          -1
@@ -59,7 +62,6 @@ typedef struct buffer_t
 	point_t b_point;          /* the point */
 	point_t b_page;           /* start of page */
 	point_t b_epage;          /* end of page */
-	int b_modified;           /* modified ? */
 	int b_cnt;                /* count of windows referencing this buffer */
 	char_t *b_buf;            /* start of buffer */
 	char_t *b_ebuf;           /* end of buffer */
@@ -69,6 +71,7 @@ typedef struct buffer_t
 	int b_col;                /* cursor col */
 	char b_fname[STRBUF_L];	  /* filename */
 	char b_bname[STRBUF_S];   /* buffer name */
+	char b_flags;             /* buffer flags */
 	undo_t b_ubuf;            /* undoset */
 } buffer_t;
 
@@ -197,6 +200,7 @@ extern void cut _((void));
 extern void copy _((void));
 extern void copy_cut _((int));
 extern void delete _((void));
+extern void toggle_overwrite_mode(void);
 extern void down _((void));
 extern void insert _((void));
 extern void left _((void));
