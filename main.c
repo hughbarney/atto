@@ -1,7 +1,5 @@
 /*
- * main.c              
- *
- * AttoEmacs, Hugh Barney, November 2015
+ * main.c, Atto Emacs, Hugh Barney, Public Domain, 2015
  * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
  */
 
@@ -30,10 +28,11 @@ int main(int argc, char **argv)
 		curbp = find_buffer(argv[1], TRUE);
 		(void) insert_file(argv[1], FALSE);
 		/* Save filename irregardless of load() success. */
-		strcpy(curbp->b_fname, argv[1]);
+		strncpy(curbp->b_fname, argv[1], NAME_MAX);
+		curbp->b_fname[NAME_MAX] = '\0'; /* force truncation */
 	} else {
 		curbp = find_buffer(str_scratch, TRUE);
-		strcpy(curbp->b_bname, str_scratch);
+		strncpy(curbp->b_bname, str_scratch, STRBUF_S);
 	}
 
 	wheadp = curwp = new_window();

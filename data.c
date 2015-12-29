@@ -1,9 +1,6 @@
 /*
- * data.c              
- *
- * AttoEmacs, Hugh Barney, November 2015
+ * data.c, Atto Emacs, Hugh Barney, Public Domain, 2015
  * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
- *
  */
 
 #include "header.h"
@@ -15,8 +12,8 @@ char_t *scrap;
 
 int input;
 int msgflag;
-char msgline[STRBUF_L];
-char temp[STRBUF_L];
+char msgline[TEMPBUF];
+char temp[TEMPBUF];
 char searchtext[STRBUF_M];
 char replace[STRBUF_M];
 char *prog_name;

@@ -1,7 +1,5 @@
 /*
- * search.c
- *
- * AttoEmacs, Hugh Barney, November 2015
+ * search.c, Atto Emacs, Hugh Barney, Public Domain, 2015
  * Simple forward and reverse search.
  */
 

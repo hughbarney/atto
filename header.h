@@ -1,9 +1,6 @@
 /*
- * header.h            
- *
- * AttoEmacs, Hugh Barney, November 2015
+ * header.h, Atto Emacs, Hugh Barney, 2015
  * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
- *
  */
 
 #include <stdlib.h>
@@ -13,26 +10,24 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <ctype.h>
+#include <limits.h>
 #include <string.h>
 
 #undef _
 #define _(x)    x
 
-#define VERSION	 "Atto 1.5, Public Domain, December 2015, by Hugh Barney,  No warranty."
-
-/* Exit status. */
+#define VERSION	 "Atto 1.6, Public Domain, December 2015, by Hugh Barney,  No warranty."
 #define EXIT_OK         0               /* Success */
 #define EXIT_ERROR      1               /* Unknown error. */
 #define EXIT_USAGE      2               /* Usage */
 #define EXIT_FAIL       3               /* Known failure. */
-
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwite mode */
-
 #define MSGLINE         (LINES-1)
 #define NOMARK          -1
 #define CHUNK           8096L
 #define K_BUFFER_LENGTH 256
+#define TEMPBUF         512
 #define STRBUF_L        256
 #define STRBUF_M        64
 #define STRBUF_S        16
@@ -60,16 +55,19 @@ typedef struct buffer_t
 	struct buffer_t *b_next;  /* Link to next buffer_t */
 	point_t b_mark;	     	  /* the mark */
 	point_t b_point;          /* the point */
+	point_t b_cpoint;         /* the original current point, used for mutliple window displaying */
 	point_t b_page;           /* start of page */
 	point_t b_epage;          /* end of page */
 	int b_cnt;                /* count of windows referencing this buffer */
+	int b_size;               /* current size of text being edited (not including gap) */
+	int b_psize;              /* previous size */
 	char_t *b_buf;            /* start of buffer */
 	char_t *b_ebuf;           /* end of buffer */
 	char_t *b_gap;            /* start of gap */
 	char_t *b_egap;           /* end of gap */
 	int b_row;                /* cursor row */
 	int b_col;                /* cursor col */
-	char b_fname[STRBUF_L];	  /* filename */
+	char b_fname[NAME_MAX + 1]; /* filename */
 	char b_bname[STRBUF_S];   /* buffer name */
 	char b_flags;             /* buffer flags */
 	undo_t b_ubuf;            /* undoset */
@@ -108,17 +106,14 @@ extern window_t *wheadp;
 extern int done;                /* Quit flag. */
 extern int msgflag;             /* True if msgline should be displayed. */
 extern int result;
-
 extern point_t nscrap;          /* Length of scrap buffer. */
 extern char_t *scrap;           /* Allocated scrap buffer. */
-
 extern int input;               /* Current input character. */
 extern char msgline[];          /* Message line input/output buffer. */
 extern char temp[];             /* Temporary buffer. */
 extern char searchtext[];
 extern char replace[];
 extern char *prog_name;         /* Name used to invoke editor. */
-
 extern keymap_t *key_map;       /* Command key mappings. */
 extern keymap_t keymap[];
 extern keymap_t *key_return;    /* Command key return */
@@ -172,14 +167,12 @@ extern void msg _((msg_t, ...));
 extern void display (window_t *, int);
 extern void dispmsg(void);
 extern void modeline(window_t *);
-
 extern point_t lnstart (buffer_t *, point_t);
 extern point_t lncolumn (buffer_t *, point_t, int);
 extern point_t segstart (buffer_t *, point_t, point_t);
 extern point_t segnext (buffer_t *, point_t, point_t);
 extern point_t upup (buffer_t *, point_t);
 extern point_t dndn (buffer_t *, point_t);
-
 extern int getkey _((keymap_t *, keymap_t **));
 extern int getinput _((char *, char *, int));
 extern int growgap (buffer_t *, point_t);
@@ -225,14 +218,12 @@ extern void writefile _((void));
 extern void savebuffer _((void));
 extern void debug(char *, ...);
 extern void debug_stats(char *);
-
 extern void showpos(void);
 extern void killtoeol(void);
 extern void gotoline(void);
 extern void search(void);
 extern void query_replace(void);
 extern point_t line_to_point(int);
-
 extern point_t search_forward(char *);
 extern point_t search_backwards(char *);
 extern void update_search_prompt(char *, char *);
@@ -247,7 +238,6 @@ extern void killbuffer(void);
 extern char* get_buffer_name(buffer_t *);
 extern void get_line_stats(int *, int *);
 extern void query_replace(void);
-
 extern window_t *new_window();
 extern void one_window(window_t *);
 extern void split_window();
@@ -255,7 +245,6 @@ extern void next_window();
 extern void delete_other_windows();
 extern void free_other_windows();
 extern void update_display();
-
 extern void w2b(window_t *);
 extern void b2w(window_t *);
 extern void associate_b2w(buffer_t *, window_t *);

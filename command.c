@@ -1,9 +1,6 @@
 /*
- * command.c            
- *
- * AttoEmacs, Hugh Barney, November 2015
+ * command.c, Atto Emacs, Hugh Barney, Public Domain, 2015
  * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
- *
  */
 
 #include "header.h"
@@ -189,7 +186,7 @@ void gotoline()
 void insertfile()
 {
 	temp[0] = '\0';
-	result = getinput(str_insert_file, (char*) temp, STRBUF_L);
+	result = getinput(str_insert_file, (char*) temp, NAME_MAX);
 	if (temp[0] != '\0' && result)
 		(void) insert_file(temp, TRUE);
 }
@@ -199,7 +196,7 @@ void readfile()
 	buffer_t *bp;
 	
 	temp[0] = '\0';
-	result = getinput(str_read, (char*) temp, STRBUF_L);
+	result = getinput(str_read, (char*) temp, NAME_MAX);
 	if (result) {
 		bp = find_buffer(temp, TRUE);
 		disassociate_b(curwp); /* we are leaving the old buffer for a new one */
@@ -211,7 +208,8 @@ void readfile()
 			if (!load_file(temp)) {
 				msg(m_newfile, temp);
 			}
-			strcpy(curbp->b_fname, temp);
+			strncpy(curbp->b_fname, temp, NAME_MAX);
+			curbp->b_fname[NAME_MAX] = '\0'; /* truncate if required */
 		}
 	}
 }
@@ -229,11 +227,11 @@ void savebuffer()
 
 void writefile()
 {
-	strcpy(temp, curbp->b_fname);
-	result = getinput(str_write, (char*)temp, STRBUF_L);
+	strncpy(temp, curbp->b_fname, NAME_MAX);
+	result = getinput(str_write, (char*)temp, NAME_MAX);
 	if (temp[0] != '\0' && result)
 		if (save(temp) == TRUE)
-			strcpy(curbp->b_fname, temp);
+			strncpy(curbp->b_fname, temp, NAME_MAX);
 }
 
 void killbuffer()

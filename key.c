@@ -1,9 +1,6 @@
 /*
- * key.c
- *
- * AttoEmacs, Hugh Barney, November 2015
+ * key.c, Atto Emacs, Hugh Barney, Public Domain, 2015
  * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
- * 
  */
 
 #include "header.h"

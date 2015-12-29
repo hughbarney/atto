@@ -1,7 +1,4 @@
-/*
- * window.c              
- * AttoEmacs, Hugh Barney, November 2015
- */
+/* window.c, Atto Emacs, Hugh Barney, Public Domain, 2015 */
 
 #include "header.h"
 

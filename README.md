@@ -21,6 +21,11 @@ The small Emacs naming scheme appears to use sub-unit prefixes in decending orde
 ##Derivation
 Atto is based on the public domain code of Anthony Howe's editor (commonly known as Anthony's Editor or AE, [2]).  Rather than representing a file as a linked list of lines, the AE Editor uses the concept of a Buffer-Gap [4,5,6].  A Buffer-Gap editor stores the file in a single piece of contiguous memory with some extra unused space known as the buffer gap.  On character insertion and deletion the gap is first moved to the current point.  A character deletion then extends the gap by moving the gap pointer back by 1 OR the gap is reduced by 1 when a character is inserted.  The Buffer-Gap technique is elegant and significantly reduces the amount of code required to load a file, modify it and redraw the display.  The proof of this is seen when you consider that Atto supports almost the same command set that Pico supports,  but Pico requires almost 17 times the amount of code.
 
+## Atto v1.6,  29 December 2015
+* Fixed display problem when editing same buffer in multiple windows.
+* Fixed overflow of filename variable when a large filename is supplied at the command line
+* Reformatted comments at top of source files to claw back 30 more lines for defect fixes
+
 ## Atto v1.5,  20 December 2015
 * Added INS = toggle-overwrite-mode
 * flushed keyboard on detection of Esc in search and replace, which means if you touch the arrow keys you exit cleanly without writing the rest of an escape sequence into the buffer.
@@ -76,7 +81,7 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
 
     Editor         Binary   BinSize     KLOC  Files
 
-    atto           atto       33002     1.8k     10
+    atto           atto       33002     1.9k     10
     pEmacs         pe         59465     5.7K     16
     Esatz-Emacs    ee         59050     5.7K     14
 	GNOME          GNOME      55922     9.8k     13
@@ -190,13 +195,16 @@ $ sudo apt-get install libncurses5-dev
 
 ##Future Enhancements
 
-As of Atto 1.5 we have about 13 lines of code before we reach the design limit of 2000 lines.  Whilst I would have liked to have added a few other features the priority will now be bug fixes and keeping the code count below 2000 lines.
+As of Atto 1.6 we have about 46 lines of code before we reach the design limit of 2000 lines.  Whilst I would have liked to have added a few other features the priority will now be bug fixes and keeping the code count below 2000 lines.
        
 ##Multiple Windows or Not?
 
 Atto supports multiple windows !  This was the hardest part of the project to get working reliably.
 
-The lack of multiple windows would have been quickly noticed as it is a very visible feature of the Emacs user interface.  It is very useful to be able to look at some code in one window whilst editing another section of the same file (or a different file) in another window.  As more than one window can access the same buffer the current point now has now to be associated with the window structure and updated back to the buffer structure whenever any gap or display code is called that accesses the point location. The strategy I used in the end was to treat the buffer as the master and update the window structure with copies of the critical values (point, page, epage, cursor row & col) after each display update of that window.  This is because the display code does the calculations necessary to reframe the sceen when the point scrolls up off the screen or below the screen. Getting everthing to work correctly when displaying the same buffer in more that one winow was a reall challenge and took arpund 15-20 hours to get it working. 
+The lack of multiple windows would have been quickly noticed as it is a very visible feature of the Emacs user interface.  It is very useful to be able to look at some code in one window whilst editing another section of the same file (or a different file) in another window.  As more than one window can access the same buffer the current point now has now to be associated with the window structure and updated back to the buffer structure whenever any gap or display code is called that accesses the point location. The strategy I used in the end was to treat the buffer as the master and update the window structure with copies of the critical values (point, page, epage, cursor row & col) after each display update of that window.  This is because the display code does the calculations necessary to reframe the sceen when the point scrolls up off the screen or below the screen. Getting everthing to work correctly when displaying the same buffer in more that one winow was a reall challenge and took arpund 15-20 hours to get it working.
+
+A multi-window display issue (specifically evident in a buffer-gap editor) was resolved in Atto 1.6.  This is where you are editing a file that is displayed in more than one window.  Say you are in window1 and delete 3 lines, the current point in the other windows (if the point is below the point in window1) have to be adjusted to take into account that thier relative positions in the buffer have now shifted up. We do this by tracking the size of the text in the buffer before and after each command.  At the start of the display function we can work out the difference and adjust the other windows when they are updated. This mechanism works well even when inserting a text file that means that the gap has to be re-allocated.
+
 
 ##Known Issues
 	Goto-line will fail to go to the very last line.  This is a special case that could easily be fixed.

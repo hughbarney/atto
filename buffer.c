@@ -1,9 +1,4 @@
-/*
- * buffer.c                
- *
- * AttoEmacs, Hugh Barney, November 2015
- *
- */
+/* buffer.c, Atto Emacs, Hugh Barney, Public Domain, 2015 */
 
 #include <assert.h>
 #include <string.h>
@@ -13,8 +8,11 @@ void buffer_init(buffer_t *bp)
 {
 	bp->b_mark = 0;
 	bp->b_point = 0;
+	bp->b_cpoint = 0;
 	bp->b_page = 0;
 	bp->b_epage = 0;
+	bp->b_size = 0;
+	bp->b_psize = 0;	
 	bp->b_flags = 0;
 	bp->b_cnt = 0;
 	bp->b_buf = NULL;

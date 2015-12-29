@@ -1,9 +1,6 @@
 /*
- * display.c
- *
- * AttoEmacs, Hugh Barney, November 2015
+ * display.c, Atto Emacs, Hugh Barney, Public Domain, 2015
  * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
- *
  */
 
 #include "header.h"
@@ -98,16 +95,12 @@ void display(window_t *wp, int flag)
 	int i, j, k;
 	buffer_t *bp = wp->w_bufp;
 
-	/* Re-frame the screen with the screen line containing the point
-	 * as the first line, when point < page.  Handles the cases of a
-	 * backward scroll or moving to the top of file.  pgup() will
-	 * move page relative to point so that page <= point < epage.
-	 */
+	/* find start of screen, handle scroll up off page or top of file  */
+	/* point is always within b_page and b_epage */
 	if (bp->b_point < bp->b_page)
 		bp->b_page = segstart(bp, lnstart(bp,bp->b_point), bp->b_point);
-	/* Re-frame the whole screen when epage <= point.  Handles the
-	 * cases of a forward scroll or redraw.
-	 */
+
+	/* reframe when scrolled off bottom */
 	if (bp->b_epage <= bp->b_point) {
 		/* Find end of screen plus one. */
 		bp->b_page = dndn(bp, bp->b_point);
@@ -118,7 +111,6 @@ void display(window_t *wp, int flag)
 		} else {
 			i = wp->w_rows - 0;
 		}
-		/* i -= wp->w_top; // bug, hard to figure, left it here to remind myself */
 		/* Scan backwards the required number of lines. */
 		while (0 < i--)
 			bp->b_page = upup(bp, bp->b_page);
@@ -210,16 +202,18 @@ void update_display()
 	window_t *wp;
 	buffer_t *bp;
 
+	bp = curwp->w_bufp;
+	bp->b_cpoint = bp->b_point; /* cpoint only ever set here */
+	
 	/* only one window */
 	if (wheadp->w_next == NULL) {
 		display(curwp, TRUE);
 		refresh();
+		bp->b_psize = bp->b_size;
 		return;
 	}
 
-	/* this is key we must call display on current (adjusted buffer) first */
-	display(curwp, FALSE); /* call our win first to get accurate page and epage etc */
-	bp = curwp->w_bufp;
+	display(curwp, FALSE); /* this is key, we must call our win first to get accurate page and epage etc */
 	
 	/* never curwp,  but same buffer in different window or update flag set*/
 	for (wp=wheadp; wp != NULL; wp = wp->w_next) {
@@ -234,6 +228,7 @@ void update_display()
 	dispmsg();
 	move(curwp->w_row, curwp->w_col); /* set cursor for curwp */
 	refresh();
+	bp->b_psize = bp->b_size;  /* now safe to save previous size for next time */
 }
 
 void w2b(window_t *w)
@@ -243,6 +238,13 @@ void w2b(window_t *w)
 	w->w_bufp->b_epage = w->w_epage;
 	w->w_bufp->b_row = w->w_row;
 	w->w_bufp->b_col = w->w_col;
+	
+	/* fixup pointers in other windows of the same buffer, if size of edit text changed */
+	if (w->w_bufp->b_point > w->w_bufp->b_cpoint) {
+		w->w_bufp->b_point += (w->w_bufp->b_size - w->w_bufp->b_psize);
+		w->w_bufp->b_page += (w->w_bufp->b_size - w->w_bufp->b_psize);
+		w->w_bufp->b_epage += (w->w_bufp->b_size - w->w_bufp->b_psize);
+	}
 }
 
 void b2w(window_t *w)
@@ -252,4 +254,5 @@ void b2w(window_t *w)
 	w->w_epage = w->w_bufp->b_epage;
 	w->w_row = w->w_bufp->b_row;
 	w->w_col = w->w_bufp->b_col;
+	w->w_bufp->b_size = (w->w_bufp->b_ebuf - w->w_bufp->b_buf) - (w->w_bufp->b_egap - w->w_bufp->b_gap);
 }
