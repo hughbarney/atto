@@ -12,15 +12,10 @@
 #include <ctype.h>
 #include <limits.h>
 #include <string.h>
+#include <unistd.h>
 
-#undef _
-#define _(x)    x
-
-#define VERSION	 "Atto 1.6, Public Domain, December 2015, by Hugh Barney,  No warranty."
-#define EXIT_OK         0               /* Success */
-#define EXIT_ERROR      1               /* Unknown error. */
-#define EXIT_USAGE      2               /* Usage */
-#define EXIT_FAIL       3               /* Known failure. */
+#define VERSION	 "Atto 1.7, Public Domain, December 2015, by Hugh Barney,  No warranty."
+#define PROG_NAME "atto"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwite mode */
 #define MSGLINE         (LINES-1)
@@ -32,15 +27,15 @@
 #define STRBUF_M        64
 #define STRBUF_S        16
 #define MIN_GAP_EXPAND  512
+#define TEMPFILE        "/tmp/feXXXXXX"
 
-typedef char *msg_t;
 typedef unsigned char char_t;
 typedef long point_t;
 
 typedef struct keymap_t {
 	char *key_bind;
 	char *lhs;              /* Left hand side invokes function or macro. */
-	void (*func) _((void));
+	void (*func)(void);
 } keymap_t;
 
 typedef struct undo_t {
@@ -81,7 +76,7 @@ typedef struct window_t
 	point_t w_mark;
 	point_t w_page;
 	point_t w_epage;
-	char w_top;	        /* Origin 0 top row of window */
+	char w_top;	    /* Origin 0 top row of window */
 	char w_rows;        /* no. of rows of text in window */
 	int w_row;          /* cursor row */
 	int w_col;          /* cursor col */
@@ -90,7 +85,7 @@ typedef struct window_t
 } window_t;
 
 extern buffer_t *curbp;			/* current buffer */
-extern buffer_t *bheadp;			/* head of list of buffers */
+extern buffer_t *bheadp;		/* head of list of buffers */
 extern window_t *curwp;
 extern window_t *wheadp;
 
@@ -113,109 +108,66 @@ extern char msgline[];          /* Message line input/output buffer. */
 extern char temp[];             /* Temporary buffer. */
 extern char searchtext[];
 extern char replace[];
-extern char *prog_name;         /* Name used to invoke editor. */
 extern keymap_t *key_map;       /* Command key mappings. */
 extern keymap_t keymap[];
 extern keymap_t *key_return;    /* Command key return */
 
-/* fatal() messages. */
-extern msg_t f_ok;              /* EXIT_OK */
-extern msg_t f_error;           /* EXIT_ERROR */
-extern msg_t f_usage;           /* EXIT_USAGE */
-extern msg_t f_initscr;         /* EXIT_FAILURE ... */
-extern msg_t f_alloc;
-
-/* Messages. */
-extern msg_t m_ok;
-extern msg_t m_version;
-extern msg_t m_alloc;
-extern msg_t m_toobig;
-extern msg_t m_scrap;
-extern msg_t m_stat;
-extern msg_t m_open;
-extern msg_t m_close;
-extern msg_t m_read;
-extern msg_t m_write;
-extern msg_t m_badname;
-extern msg_t m_saved;
-extern msg_t m_loaded;
-extern msg_t m_newfile;
-extern msg_t m_line;
-extern msg_t m_lnot_found;
-extern msg_t m_replace;
-extern msg_t m_with;
-extern msg_t m_sprompt;
-extern msg_t m_qreplace;
-extern msg_t m_rephelp;
-extern msg_t m_goto;
-extern msg_t str_mark;
-extern msg_t str_pos;
-extern msg_t str_endpos;
-
-/* Prompts */
-extern msg_t str_notsaved;
-extern msg_t str_modified_buffers;
-extern msg_t str_read;
-extern msg_t str_insert_file;
-extern msg_t str_write;
-extern msg_t str_yes;
-extern msg_t str_no;
-extern msg_t str_scratch;
-
-extern void fatal _((msg_t));
-extern void msg _((msg_t, ...));
-extern void display (window_t *, int);
+extern void fatal(char *);
+extern void msg(char *, ...);
+extern void display(window_t *, int);
 extern void dispmsg(void);
 extern void modeline(window_t *);
-extern point_t lnstart (buffer_t *, point_t);
-extern point_t lncolumn (buffer_t *, point_t, int);
-extern point_t segstart (buffer_t *, point_t, point_t);
-extern point_t segnext (buffer_t *, point_t, point_t);
-extern point_t upup (buffer_t *, point_t);
-extern point_t dndn (buffer_t *, point_t);
-extern int getkey _((keymap_t *, keymap_t **));
-extern int getinput _((char *, char *, int));
-extern int growgap (buffer_t *, point_t);
-extern point_t movegap (buffer_t *, point_t);
-extern point_t pos (buffer_t *, char_t *);
-extern char_t *ptr (buffer_t *, point_t);
-extern int posix_file _((char *));
-extern int save _((char *));
-extern int load_file _((char *));
-extern int insert_file (char *, int);
-extern void undoset _((void));
-extern void undo _((void));
-extern void backsp _((void));
-extern void block _((void));
-extern void iblock _((void));
-extern void bottom _((void));
-extern void cut _((void));
-extern void copy _((void));
-extern void copy_cut _((int));
-extern void delete _((void));
+extern point_t lnstart(buffer_t *, point_t);
+extern point_t lncolumn(buffer_t *, point_t, int);
+extern point_t segstart(buffer_t *, point_t, point_t);
+extern point_t segnext(buffer_t *, point_t, point_t);
+extern point_t upup(buffer_t *, point_t);
+extern point_t dndn(buffer_t *, point_t);
+extern int getkey(keymap_t *, keymap_t **);
+extern int getinput(char *, char *, int);
+extern int getfilename(char *, char *, int);
+extern void display_prompt_and_response(char *, char *);
+extern int growgap(buffer_t *, point_t);
+extern point_t movegap(buffer_t *, point_t);
+extern point_t pos(buffer_t *, char_t *);
+extern char_t *ptr(buffer_t *, point_t);
+extern int posix_file(char *);
+extern int save(char *);
+extern int load_file(char *);
+extern int insert_file(char *, int);
+extern void undoset(void);
+extern void undo(void);
+extern void backsp(void);
+extern void block(void);
+extern void iblock(void);
+extern void bottom(void);
+extern void cut(void);
+extern void copy(void);
+extern void copy_cut(int);
+extern void delete(void);
 extern void toggle_overwrite_mode(void);
-extern void down _((void));
-extern void insert _((void));
-extern void left _((void));
-extern void lnbegin _((void));
-extern void lnend _((void));
-extern void paste _((void));
-extern void pgdown _((void));
-extern void pgup _((void));
-extern void quit _((void));
-extern int yesno _((int));
-extern void quit_ask _((void));
-extern void redraw _((void));
-extern void readfile _((void));
-extern void insertfile _((void));
-extern void right _((void));
-extern void top _((void));
-extern void up _((void));
-extern void version _((void));
-extern void wleft _((void));
-extern void wright _((void));
-extern void writefile _((void));
-extern void savebuffer _((void));
+extern void down(void);
+extern void insert(void);
+extern void left(void);
+extern void lnbegin(void);
+extern void lnend(void);
+extern void paste(void);
+extern void pgdown(void);
+extern void pgup(void);
+extern void quit(void);
+extern int yesno(int);
+extern void quit_ask(void);
+extern void redraw(void);
+extern void readfile(void);
+extern void insertfile(void);
+extern void right(void);
+extern void top(void);
+extern void up(void);
+extern void version(void);
+extern void wleft(void);
+extern void wright(void);
+extern void writefile(void);
+extern void savebuffer(void);
 extern void debug(char *, ...);
 extern void debug_stats(char *);
 extern void showpos(void);
@@ -228,7 +180,8 @@ extern point_t search_forward(char *);
 extern point_t search_backwards(char *);
 extern void update_search_prompt(char *, char *);
 extern void display_search_result(point_t, int, char *, char *);
-extern buffer_t* find_buffer (char *, int);
+extern char* get_temp_file(void);
+extern buffer_t* find_buffer(char *, int);
 extern void buffer_init(buffer_t *);
 extern int delete_buffer(buffer_t *);
 extern void next_buffer(void);

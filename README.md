@@ -21,6 +21,10 @@ The small Emacs naming scheme appears to use sub-unit prefixes in decending orde
 ##Derivation
 Atto is based on the public domain code of Anthony Howe's editor (commonly known as Anthony's Editor or AE, [2]).  Rather than representing a file as a linked list of lines, the AE Editor uses the concept of a Buffer-Gap [4,5,6].  A Buffer-Gap editor stores the file in a single piece of contiguous memory with some extra unused space known as the buffer gap.  On character insertion and deletion the gap is first moved to the current point.  A character deletion then extends the gap by moving the gap pointer back by 1 OR the gap is reduced by 1 when a character is inserted.  The Buffer-Gap technique is elegant and significantly reduces the amount of code required to load a file, modify it and redraw the display.  The proof of this is seen when you consider that Atto supports almost the same command set that Pico supports,  but Pico requires almost 17 times the amount of code.
 
+## Atto v1.7,  12 October 2016
+* Added filename completion
+NOTE: If this creates a problem on windows the change can be backed out by uncommenting the line in command.c readfile() and using the getinput() instead of getfilename() functions.
+
 ## Atto v1.6,  29 December 2015
 * Fixed display problem when editing same buffer in multiple windows.
 * Fixed overflow of filename variable when a large filename is supplied at the command line
@@ -101,20 +105,20 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     C-D   delete-char
     C-E   end-of-line
     C-F   forward Character
-	C-G	  Abort (at prompts)
+    C-G	  Abort (at prompts)
     C-H   backspace
-	C-I   handle-tab
+    C-I   handle-tab
     C-J   newline
     C-K   kill-to-eol
     C-L   refresh display
     C-M   Carrage Return
     C-N   next line
     C-P   previous line
-	C-R   search-backwards
-	C-S	  search-forwards
+    C-R   search-backwards
+    C-S	  search-forwards
     C-U   Undo
     C-V   Page Down
-	C-W   Kill Region (Cut)
+    C-W   Kill Region (Cut)
     C-X   CTRL-X command prefix
     C-Y   Yank (Paste)
 
@@ -135,18 +139,17 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     ^X^W  Write current buffer to disk. Type in a new filename at the prompt to
     ^Xi   Insert file at point
     ^X=   Show Character at position
-	^X^N  next-buffer
-	^Xn   next-buffer
-	^Xk   kill-buffer
-
+    ^X^N  next-buffer
+    ^Xn   next-buffer
+    ^Xk   kill-buffer
     ^X1   delete-other-windows
-	^X2   split-window
-	^Xo   other-window
+    ^X2   split-window
+    ^Xo   other-window
 
     Home  Beginning-of-line
     End   End-of-line
     Del   Delete character under cursor
-	Ins   Toggle Overwrite Mode
+    Ins   Toggle Overwrite Mode
     Left  Move left
     Right Move point right
     Up    Move to the previous line
@@ -211,7 +214,7 @@ A multi-window display issue (specifically evident in a buffer-gap editor) was r
 
 ##Copying
   Atto code is released to the public domain.
-  hughbarney@gmail.com December 2015
+  hughbarney AT gmail.com 2016
 
 ##References
     [1] Perfect Emacs - https://github.com/hughbarney/pEmacs

@@ -197,6 +197,15 @@ void dispmsg()
 	clrtoeol();
 }
 
+void display_prompt_and_response(char *prompt, char *response)
+{
+	mvaddstr(MSGLINE, 0, prompt);
+	/* if we have a value print it and go to end of it */
+	if (response[0] != '\0')
+		addstr(response);
+	clrtoeol();
+}
+
 void update_display()
 {   
 	window_t *wp;

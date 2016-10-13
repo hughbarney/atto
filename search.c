@@ -15,7 +15,7 @@ void search()
 	point_t o_point = curbp->b_point;
 	point_t found;
 
-	update_search_prompt(m_sprompt, searchtext);
+	display_prompt_and_response("Search: ", searchtext);
 	cpos = strlen(searchtext);
 
 	for (;;) {
@@ -36,12 +36,12 @@ void search()
 
 		case 0x13: /* ctrl-s, do the search */
 			found = search_forward(searchtext);
-			display_search_result(found, FWD_SEARCH, m_sprompt, searchtext);
+			display_search_result(found, FWD_SEARCH, "Search: ", searchtext);
 			break;
 
 		case 0x12: /* ctrl-r, do the search */
 			found = search_backwards(searchtext);
-			display_search_result(found, REV_SEARCH, m_sprompt, searchtext);
+			display_search_result(found, REV_SEARCH, "Search: ", searchtext);
 			break;
 			
 		case 0x7f: /* del, erase */
@@ -49,14 +49,14 @@ void search()
 			if (cpos == 0)
 				continue;
 			searchtext[--cpos] = '\0';
-			update_search_prompt(m_sprompt, searchtext);
+			display_prompt_and_response("Search: ", searchtext);
 			break;
 
 		default:	
 			if (cpos < STRBUF_M - 1) {
 				searchtext[cpos++] = c;
 				searchtext[cpos] = '\0';
-				update_search_prompt(m_sprompt, searchtext);
+				display_prompt_and_response("Search: ", searchtext);
 			}
 			break;
 		}
@@ -74,15 +74,6 @@ void display_search_result(point_t found, int dir, char *prompt, char *search)
 		dispmsg();
 		curbp->b_point = (dir == FWD_SEARCH ? 0 : pos(curbp, curbp->b_ebuf));
 	}
-}
-
-void update_search_prompt(char *prompt, char *response)
-{
-	mvaddstr(MSGLINE, 0, prompt);
-	/* if we have a value print it and go to end of it */
-	if (response[0] != '\0')
-		addstr(response);
-	clrtoeol();
 }
 
 point_t search_forward(char *stext)

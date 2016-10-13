@@ -26,18 +26,18 @@ int growgap(buffer_t *bp, point_t n)
 
 	if (buflen == 0) {
 		if (newlen < 0 || MAX_SIZE_T < newlen)
-			fatal(f_alloc);
+			fatal("%s: Failed to allocate required memory.\n");
 		new = (char_t*) malloc((size_t) newlen);
 		if (new == NULL)			
-			fatal(f_alloc);	/* Cannot edit a file without a buffer. */
+			fatal("%s: Failed to allocate required memory.\n");	/* Cannot edit a file without a buffer. */
 	} else {
 		if (newlen < 0 || MAX_SIZE_T < newlen) {
-			msg(m_alloc);
+			msg("Failed to allocate required memory");
 			return (FALSE);
 		}
 		new = (char_t*) realloc(bp->b_buf, (size_t) newlen);
 		if (new == NULL) {
-			msg(m_alloc); /* Report non-fatal error. */
+			msg("Failed to allocate required memory");    /* Report non-fatal error. */
 			return (FALSE);
 		}
 	}
@@ -106,26 +106,26 @@ int save(char *fn)
 	point_t length;
 		
 	if (!posix_file(fn)) {
-		msg(m_badname);
+		msg("Not a portable POSIX file name.");
 		return (FALSE);
 	}
 	fp = fopen(fn, "w");
 	if (fp == NULL) {
-		msg(m_open, fn);
+		msg("Failed to open file \"%s\".", fn);
 		return (FALSE);
 	}
 	(void) movegap(curbp, (point_t) 0);
 	length = (point_t) (curbp->b_ebuf - curbp->b_egap);
 	if (fwrite(curbp->b_egap, sizeof (char), (size_t) length, fp) != length) {
-		msg(m_write, fn);
+		msg("Failed to write file \"%s\".", fn);
 		return (FALSE);
 	}
 	if (fclose(fp) != 0) {
-		msg(m_close, fn);
+		msg("Failed to close file \"%s\".", fn);
 		return (FALSE);
 	}
 	curbp->b_flags &= ~B_MODIFIED;
-	msg(m_saved, fn, pos(curbp, curbp->b_ebuf));
+	msg("File \"%s\" %ld bytes saved.", fn, pos(curbp, curbp->b_ebuf));
 	return (TRUE);
 }
 
@@ -146,17 +146,17 @@ int insert_file(char *fn, int modflag)
 	struct stat sb;
 
 	if (stat(fn, &sb) < 0) {
-		msg(m_stat, fn);
+		msg("Failed to find file \"%s\".", fn);
 		return (FALSE);
 	}
 	if (MAX_SIZE_T < sb.st_size) {
-		msg(m_toobig, fn);
+		msg("File \"%s\" is too big to load.", fn);
 		return (FALSE);
 	}
 	if (curbp->b_egap - curbp->b_gap < sb.st_size * sizeof (char_t) && !growgap(curbp, sb.st_size))
 		return (FALSE);
 	if ((fp = fopen(fn, "r")) == NULL) {
-		msg(m_open, fn);
+		msg("Failed to open file \"%s\".", fn);
 		return (FALSE);
 	}
 	curbp->b_point = movegap(curbp, curbp->b_point);
@@ -164,11 +164,11 @@ int insert_file(char *fn, int modflag)
 	curbp->b_gap += len = fread(curbp->b_gap, sizeof (char), (size_t) sb.st_size, fp);
 
 	if (fclose(fp) != 0) {
-		msg(m_close, fn);
+		msg("Failed to close file \"%s\".", fn);
 		return (FALSE);
 	}
 	curbp->b_flags &= (modflag ? B_MODIFIED : ~B_MODIFIED);
-	msg(m_loaded, fn, len);
+	msg("File \"%s\" %ld bytes read.", fn, len);
 	return (TRUE);
 }
 

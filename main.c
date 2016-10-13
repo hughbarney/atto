@@ -3,22 +3,31 @@
  * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
  */
 
-#include <string.h>
 #include "header.h"
+
+int done;
+int result;
+point_t nscrap;
+char_t *scrap;
+
+int input;
+int msgflag;
+char msgline[TEMPBUF];
+char temp[TEMPBUF];
+char searchtext[STRBUF_M];
+char replace[STRBUF_M];
+
+keymap_t *key_return;
+keymap_t *key_map;
+buffer_t *curbp;			/* current buffer */
+buffer_t *bheadp;			/* head of list of buffers */
+window_t *curwp;
+window_t *wheadp;
 
 int main(int argc, char **argv)
 {
-	int i;
-		
-	/* Find basename. */
-	prog_name = *argv;
-	i = strlen(prog_name);
-	while (0 <= i && prog_name[i] != '\\' && prog_name[i] != '/')
-		--i;
-	prog_name += i+1;
-
 	if (initscr() == NULL)
-		fatal(f_initscr);
+		fatal("%s: Failed to initialize the screen.\n");
 
 	raw();
 	noecho();
@@ -31,8 +40,8 @@ int main(int argc, char **argv)
 		strncpy(curbp->b_fname, argv[1], NAME_MAX);
 		curbp->b_fname[NAME_MAX] = '\0'; /* force truncation */
 	} else {
-		curbp = find_buffer(str_scratch, TRUE);
-		strncpy(curbp->b_bname, str_scratch, STRBUF_S);
+		curbp = find_buffer("*scratch*", TRUE);
+		strncpy(curbp->b_bname, "*scratch*", STRBUF_S);
 	}
 
 	wheadp = curwp = new_window();
@@ -40,7 +49,7 @@ int main(int argc, char **argv)
 	associate_b2w(curbp, curwp);
 
 	if (!growgap(curbp, CHUNK))
-		fatal(f_alloc);
+		fatal("%s: Failed to allocate required memory.\n");
 
 	top();
 	key_map = keymap;
@@ -63,10 +72,10 @@ int main(int argc, char **argv)
 	noraw();
 	endwin();
 
-	return (EXIT_OK);
+	return 0;
 }
 
-void fatal(msg_t m)
+void fatal(char *msg)
 {
 	if (curscr != NULL) {
 		move(LINES-1, 0);
@@ -74,21 +83,15 @@ void fatal(msg_t m)
 		endwin();
 		putchar('\n');
 	}
-	fprintf(stderr, m, prog_name);
-	if (m == f_ok)
-		exit(EXIT_OK);
-	if (m == f_error)
-		exit(EXIT_ERROR);
-	if (m == f_usage)
-		exit(EXIT_USAGE);
-	exit(EXIT_FAIL);
+	fprintf(stderr, msg, PROG_NAME);
+	exit(1);
 }
 
-void msg(msg_t m, ...)
+void msg(char *msg, ...)
 {
 	va_list args;
-	va_start(args, m);
-	(void) vsprintf(msgline, m, args);
+	va_start(args, msg);
+	(void)vsprintf(msgline, msg, args);
 	va_end(args);
 	msgflag = TRUE;
 }

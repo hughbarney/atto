@@ -10,8 +10,7 @@ CC      = cc
 CFLAGS  = -O -Wall
 
 LD      = cc
-LDFLAGS =
-LIBS    = -lcurses -ltermcap
+LIBS    = -lcurses
 
 CP      = cp
 MV      = mv
@@ -20,16 +19,16 @@ RM      = rm
 E       =
 O       = .o
 
-OBJ     = command$(O) data$(O) display$(O) gap$(O) key$(O) search$(O) buffer$(O) replace$(O) window$(O) main$(O)
+OBJ     = command$(O) display$(O) gap$(O) key$(O) search$(O) buffer$(O) replace$(O) window$(O) complete$(O) main$(O)
 
 atto$(E) : $(OBJ)
-	$(LD) $(LDFLAGS) -o atto$(E) $(OBJ) $(LIBS)
+	$(LD) -o atto$(E) $(OBJ) $(LIBS)
 
 command$(O): command.c header.h
 	$(CC) $(CFLAGS) -c command.c
 
-data$(O): data.c header.h
-	$(CC) $(CFLAGS) -c data.c
+complete$(O): complete.c header.h
+	$(CC) $(CFLAGS) -c complete.c
 
 display$(O): display.c header.h
 	$(CC) $(CFLAGS) -c display.c

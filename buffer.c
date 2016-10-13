@@ -6,7 +6,7 @@
 
 void buffer_init(buffer_t *bp)
 {
-	bp->b_mark = 0;
+	bp->b_mark = NOMARK;
 	bp->b_point = 0;
 	bp->b_cpoint = 0;
 	bp->b_page = 0;

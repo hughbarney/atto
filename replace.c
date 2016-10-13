@@ -18,17 +18,17 @@ void query_replace(void)
 	searchtext[0] = '\0';
 	replace[0] = '\0';
 	
-	if (!getinput(m_replace, (char*)searchtext, STRBUF_M))
+	if (!getinput("Query replace: ", (char*)searchtext, STRBUF_M))
 		return;
 
-	if (!getinput(m_with, (char*)replace, STRBUF_M))
+	if (!getinput("With: ", (char*)replace, STRBUF_M))
 		return;
 
 	slen = strlen(searchtext);
 	rlen = strlen(replace);
 	
 	/* build query replace question string */
-	sprintf(question, m_qreplace, searchtext, replace);
+	sprintf(question, "Replace '%s' with '%s' ? ", searchtext, replace);
 
 	/* scan through the file, from point */
 	numsub = 0;
@@ -71,7 +71,7 @@ void query_replace(void)
 				return;
 
 			default: /* help me */
-				msg(m_rephelp);
+				msg("(y)es, (n)o, (!)do the rest, (q)uit");
 				goto qprompt;
 			}
 		}

@@ -20,7 +20,7 @@ void bottom()
 void quit_ask()
 {
 	if (modified_buffers() > 0) {
-		mvaddstr(MSGLINE, 0, str_modified_buffers);
+		mvaddstr(MSGLINE, 0, "Modified buffers exist; really exit (y/n) ?");
 		clrtoeol();
 		if (!yesno(FALSE))
 			return;
@@ -33,12 +33,12 @@ int yesno(int flag)
 {
 	int ch;
 
-	addstr(flag ? str_yes : str_no);
+	addstr(flag ? " y\b" : " n\b");
 	refresh();
 	ch = getch();
 	if (ch == '\r' || ch == '\n')
 		return (flag);
-	return (tolower(ch) == str_yes[1]);
+	return (tolower(ch) == 'y');
 }
 
 void quit()
@@ -169,16 +169,16 @@ void gotoline()
 	temp[0] = '\0';
 	int line;
 	point_t p;
-	result = getinput(m_goto, (char*)temp, STRBUF_S);
+	result = getinput("Goto line: ", (char*)temp, STRBUF_S);
 
 	if (temp[0] != '\0' && result) {
 		line = atoi(temp);
 		p = line_to_point(line);
 		if (p != -1) {
 			curbp->b_point = p;
-			msg(m_line, line);
+			msg("Line %d", line);
 		} else {
-			msg(m_lnot_found, line);
+			msg("Line %d, not found", line);
 		}
 	}
 }
@@ -186,7 +186,7 @@ void gotoline()
 void insertfile()
 {
 	temp[0] = '\0';
-	result = getinput(str_insert_file, (char*) temp, NAME_MAX);
+	result = getinput("Insert file: ", (char*) temp, NAME_MAX);
 	if (temp[0] != '\0' && result)
 		(void) insert_file(temp, TRUE);
 }
@@ -196,7 +196,10 @@ void readfile()
 	buffer_t *bp;
 	
 	temp[0] = '\0';
-	result = getinput(str_read, (char*) temp, NAME_MAX);
+
+	result = getfilename("Find file: ", (char*)temp, NAME_MAX);
+	/* result = getinput("Find file: ", (char*)temp, NAME_MAX); */
+
 	if (result) {
 		bp = find_buffer(temp, TRUE);
 		disassociate_b(curwp); /* we are leaving the old buffer for a new one */
@@ -206,7 +209,7 @@ void readfile()
 		/* load the file if not already loaded */
 		if (bp != NULL && bp->b_fname[0] == '\0') {
 			if (!load_file(temp)) {
-				msg(m_newfile, temp);
+				msg("New file %s", temp);
 			}
 			strncpy(curbp->b_fname, temp, NAME_MAX);
 			curbp->b_fname[NAME_MAX] = '\0'; /* truncate if required */
@@ -228,7 +231,7 @@ void savebuffer()
 void writefile()
 {
 	strncpy(temp, curbp->b_fname, NAME_MAX);
-	result = getinput(str_write, (char*)temp, NAME_MAX);
+	result = getinput("Write file: ", (char*)temp, NAME_MAX);
 	if (temp[0] != '\0' && result)
 		if (save(temp) == TRUE)
 			strncpy(curbp->b_fname, temp, NAME_MAX);
@@ -241,11 +244,11 @@ void killbuffer()
 	int bcount = count_buffers();
 
 	/* do nothing if only buffer left is the scratch buffer */
-	if (bcount == 1 && 0 == strcmp(get_buffer_name(curbp), str_scratch))
+	if (bcount == 1 && 0 == strcmp(get_buffer_name(curbp), "*scratch*"))
 		return;
 	
 	if (curbp->b_flags & B_MODIFIED) {
-		mvaddstr(MSGLINE, 0, str_notsaved);
+		mvaddstr(MSGLINE, 0, "Discard changes (y/n) ?");
 		clrtoeol();
 		if (!yesno(FALSE))
 			return;
@@ -253,8 +256,8 @@ void killbuffer()
 
 	if (bcount == 1) {
 		/* create a scratch buffer */
-		bp = find_buffer(str_scratch, TRUE);
-		strcpy(bp->b_bname, str_scratch);
+		bp = find_buffer("*scratch*", TRUE);
+		strcpy(bp->b_bname, "*scratch*");
 	}
 
 	next_buffer();
@@ -265,12 +268,12 @@ void killbuffer()
 void iblock()
 {
 	block();
-	msg(str_mark);
+	msg("Mark set");
 }
 
 void block()
 {
-	curbp->b_mark = curbp->b_mark == NOMARK ? curbp->b_point : NOMARK;
+	curbp->b_mark = curbp->b_point;
 }
 
 void toggle_overwrite_mode() {
@@ -322,18 +325,19 @@ void copy_cut(int cut)
 		nscrap = curbp->b_point - curbp->b_mark;
 	}
 	if ((scrap = (char_t*) malloc(nscrap)) == NULL) {
-		msg(m_alloc);
+		msg("No more memory available.");
 	} else {
 		undoset();
 		(void) memcpy(scrap, p, nscrap * sizeof (char_t));
 		if (cut) {
 			curbp->b_egap += nscrap; /* if cut expand gap down */
-			block();
 			curbp->b_point = pos(curbp, curbp->b_egap); /* set point to after region */
 			curbp->b_flags |= B_MODIFIED;
+			msg("%ld bytes cut.", nscrap);
 		} else {
-			block(); /* can maybe do without */
+			msg("%ld bytes copied.", nscrap);
 		}
+		curbp->b_mark = NOMARK;  /* unmark */
 	}
 }
 
@@ -342,7 +346,7 @@ void paste()
 	if(curbp->b_flags & B_OVERWRITE)
 		return;
 	if (nscrap <= 0) {
-		msg(m_scrap);
+		msg("Scrap is empty.  Nothing to paste.");
 	} else if (nscrap < curbp->b_egap - curbp->b_gap || growgap(curbp, nscrap)) {
 		curbp->b_point = movegap(curbp, curbp->b_point);
 		undoset();
@@ -361,10 +365,10 @@ void showpos()
 	get_line_stats(&current, &lastln);
 
 	if (curbp->b_point == end_p) {
-		msg(str_endpos, current, lastln,
+		msg("[EOB] Line = %d/%d  Point = %d/%d", current, lastln,
 			curbp->b_point, ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap)));
 	} else {
-		msg(str_pos, unctrl(*(ptr(curbp, curbp->b_point))), *(ptr(curbp, curbp->b_point)), 
+		msg("Char = %s 0x%x  Line = %d/%d  Point = %d/%d", unctrl(*(ptr(curbp, curbp->b_point))), *(ptr(curbp, curbp->b_point)), 
 			current, lastln,
 			curbp->b_point, ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap)));
 	}
@@ -372,5 +376,16 @@ void showpos()
 
 void version()
 {
-	msg(m_version);
+	msg(VERSION);
+}
+
+char* get_temp_file()
+{
+	static char temp_file[] = TEMPFILE;
+	strcpy(temp_file, TEMPFILE);
+
+	if (-1 == mkstemp(temp_file))
+		fatal("%s: Failed to create temp file\n");
+
+	return temp_file;
 }
