@@ -23,11 +23,7 @@ void buffer_init(buffer_t *bp)
 	bp->b_fname[0] = '\0';
 }
 
-/*
- * Find a buffer, by filename. Return a pointer to the buffer_t
- * structure associated with it. If the buffer is not found and the
- * "cflag" is TRUE, create it.
- */
+/* Find a buffer by filename or create if requested */
 buffer_t* find_buffer (char *fname, int cflag)
 {
 	buffer_t *bp = NULL;
@@ -68,11 +64,7 @@ buffer_t* find_buffer (char *fname, int cflag)
 	return bp;
 }
 
-/*
- * Unlink from the list of buffers
- * Free the memory associated with the buffer
- * assumes that buffer has been saved if modified
- */
+/* unlink from the list of buffers, free associated memory, assumes buffer has been saved if modified */
 int delete_buffer (buffer_t *bp)
 {
 	buffer_t *sb = NULL;

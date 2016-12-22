@@ -1,7 +1,4 @@
-/*
- * display.c, Atto Emacs, Hugh Barney, Public Domain, 2015
- * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
- */
+/* display.c, Atto Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
 
 #include "header.h"
 
@@ -94,7 +91,8 @@ void display(window_t *wp, int flag)
 	char_t *p;
 	int i, j, k;
 	buffer_t *bp = wp->w_bufp;
-
+	int token_type = ID_DEFAULT;
+	
 	/* find start of screen, handle scroll up off page or top of file  */
 	/* point is always within b_page and b_epage */
 	if (bp->b_point < bp->b_page)
@@ -120,6 +118,8 @@ void display(window_t *wp, int flag)
 	i = wp->w_top;
 	j = 0;
 	bp->b_epage = bp->b_page;
+	set_parse_state(bp, bp->b_epage); /* are we in a multline comment ? */
+
 	/* paint screen from top of page until we hit maxline */ 
 	while (1) {
 		/* reached point - store the cursor position */
@@ -133,6 +133,8 @@ void display(window_t *wp, int flag)
 		if (*p != '\r') {
 			if (isprint(*p) || *p == '\t' || *p == '\n') {
 				j += *p == '\t' ? 8-(j&7) : 1;
+				token_type = parse_text(bp, bp->b_epage);
+				attron(COLOR_PAIR(token_type));
 				addch(*p);
 			} else {
 				const char *ctrl = unctrl(*p);
@@ -177,8 +179,6 @@ void modeline(window_t *wp)
 	mch = ((wp->w_bufp->b_flags & B_MODIFIED) ? '*' : lch);
 	och = ((wp->w_bufp->b_flags & B_OVERWRITE) ? 'O' : lch);
 
-	/* debug version */
-	/* sprintf(temp, "%c%c%c Atto: %c%c %s %s  T%dR%d Pt%ld Pg%ld Pe%ld r%dc%d B%d",  lch,och,mch,lch,lch, wp->w_name, get_buffer_name(wp->w_bufp), wp->w_top, wp->w_rows, wp->w_point, wp->w_bufp->b_page, wp->w_bufp->b_epage, wp->w_bufp->b_row, wp->w_bufp->b_col, wp->w_bufp->b_cnt); */
 	sprintf(temp, "%c%c%c Atto: %c%c %s",  lch,och,mch,lch,lch, get_buffer_name(wp->w_bufp));
 	addstr(temp);
 

@@ -6,11 +6,11 @@
 # Public Domain 1991, 1993 by Anthony Howe.  No warranty.
 #
 
-CC      = cc
+CC      = cc -g
 CFLAGS  = -O -Wall
 
 LD      = cc
-LIBS    = -lcurses
+LIBS    = -lncurses
 
 CP      = cp
 MV      = mv
@@ -19,7 +19,7 @@ RM      = rm
 E       =
 O       = .o
 
-OBJ     = command$(O) display$(O) gap$(O) key$(O) search$(O) buffer$(O) replace$(O) window$(O) complete$(O) main$(O)
+OBJ     = command$(O) display$(O) gap$(O) key$(O) search$(O) buffer$(O) replace$(O) window$(O) complete$(O) hilite$(O) main$(O)
 
 atto$(E) : $(OBJ)
 	$(LD) -o atto$(E) $(OBJ) $(LIBS)
@@ -51,6 +51,9 @@ window$(O): window.c header.h
 buffer$(O): buffer.c header.h
 	$(CC) $(CFLAGS) -c buffer.c
 
+hilite$(O): hilite.c header.h
+	$(CC) $(CFLAGS) -c hilite.c
+
 main$(O): main.c header.h
 	$(CC) $(CFLAGS) -c main.c
 
@@ -58,5 +61,5 @@ clean:
 	-$(RM) $(OBJ) atto$(E)
 
 install:
-	-$(MV) atto$(E) $(HOME)/$(HOSTNAME)/bin
+	-$(MV) atto$(E) $(HOME)/bin
 

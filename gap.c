@@ -1,7 +1,4 @@
-/*
- * gap.c, Atto Emacs, Hugh Barney, Public Domain, 2015
- * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
- */
+/* gap.c, Atto Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
 
 #include <sys/stat.h>
 #include "header.h"
@@ -160,7 +157,6 @@ int insert_file(char *fn, int modflag)
 		return (FALSE);
 	}
 	curbp->b_point = movegap(curbp, curbp->b_point);
-	undoset();
 	curbp->b_gap += len = fread(curbp->b_gap, sizeof (char), (size_t) sb.st_size, fp);
 
 	if (fclose(fp) != 0) {
@@ -171,28 +167,6 @@ int insert_file(char *fn, int modflag)
 	msg("File \"%s\" %ld bytes read.", fn, len);
 	return (TRUE);
 }
-
-/* Record a new undo location */
-void undoset()
-{
-	curbp->b_ubuf.u_point = curbp->b_point;
-	curbp->b_ubuf.u_gap = curbp->b_gap - curbp->b_buf;
-	curbp->b_ubuf.u_egap = curbp->b_egap - curbp->b_buf;
-}
-
-/* Undo */
-void undo()
-{
-	undo_t tmp;
-	memcpy(&tmp, &(curbp->b_ubuf), sizeof (undo_t));
-	undoset();
-	curbp->b_point = tmp.u_point;
-	curbp->b_gap = curbp->b_buf + tmp.u_gap;
-	curbp->b_egap = curbp->b_buf + tmp.u_egap;
-	curbp->b_flags |= B_MODIFIED;
-}
-
-/* additional support funtions not in original gap.c */
 
 /* find the point for start of line ln */
 point_t line_to_point(int ln)

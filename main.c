@@ -1,12 +1,8 @@
-/*
- * main.c, Atto Emacs, Hugh Barney, Public Domain, 2015
- * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
- */
+/* main.c, Atto Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
 
 #include "header.h"
 
 int done;
-int result;
 point_t nscrap;
 char_t *scrap;
 
@@ -32,7 +28,17 @@ int main(int argc, char **argv)
 	raw();
 	noecho();
 	idlok(stdscr, TRUE);
-		
+
+	start_color();
+	init_pair(ID_DEFAULT, COLOR_CYAN, COLOR_BLACK);          /* alpha */
+	init_pair(ID_SYMBOL, COLOR_WHITE, COLOR_BLACK);          /* non alpha, non digit */
+	init_pair(ID_MODELINE, COLOR_BLACK, COLOR_WHITE);        /* modeline */
+	init_pair(ID_DIGITS, COLOR_YELLOW, COLOR_BLACK);         /* digits */
+	init_pair(ID_BLOCK_COMMENT, COLOR_GREEN, COLOR_BLACK);   /* block comments */
+	init_pair(ID_LINE_COMMENT, COLOR_GREEN, COLOR_BLACK);    /* line comments */
+	init_pair(ID_SINGLE_STRING, COLOR_YELLOW, COLOR_BLACK);  /* single quoted strings */
+	init_pair(ID_DOUBLE_STRING, COLOR_YELLOW, COLOR_BLACK);  /* double quoted strings */
+	
 	if (1 < argc) {
 		curbp = find_buffer(argv[1], TRUE);
 		(void) insert_file(argv[1], FALSE);
@@ -62,7 +68,6 @@ int main(int argc, char **argv)
 			(key_return->func)();
 		else
 			insert();
-		/* debug_stats("main loop:"); */
 	}
 	if (scrap != NULL)
 		free(scrap);
@@ -71,7 +76,6 @@ int main(int argc, char **argv)
 	refresh();
 	noraw();
 	endwin();
-
 	return 0;
 }
 
@@ -94,27 +98,4 @@ void msg(char *msg, ...)
 	(void)vsprintf(msgline, msg, args);
 	va_end(args);
 	msgflag = TRUE;
-}
-
-void debug(char *format, ...)
-{
-	char buffer[256];
-	va_list args;
-	va_start (args, format);
-
-	static FILE *debug_fp = NULL;
-
-	if (debug_fp == NULL) {
-		debug_fp = fopen("debug.out","w");
-	}
-
-	vsprintf (buffer, format, args);
-	va_end(args);
-
-	fprintf(debug_fp,"%s", buffer);
-	fflush(debug_fp);
-}
-
-void debug_stats(char *s) {
-	debug("%s bsz=%d gap=%d egap=%d\n", s, curbp->b_ebuf - curbp->b_buf, curbp->b_gap - curbp->b_buf, curbp->b_egap - curbp->b_buf);
 }

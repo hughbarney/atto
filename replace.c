@@ -1,4 +1,4 @@
-/* replace.c, Atto Emacs, Hugh Barney, Public Domain, 2015 */
+/* replace.c, Atto Emacs, Hugh Barney, Public Domain, 2016 */
 
 #include <string.h>
 #include "header.h"
@@ -18,10 +18,10 @@ void query_replace(void)
 	searchtext[0] = '\0';
 	replace[0] = '\0';
 	
-	if (!getinput("Query replace: ", (char*)searchtext, STRBUF_M))
+	if (!getinput("Query replace: ", (char*)searchtext, STRBUF_M, F_CLEAR))
 		return;
 
-	if (!getinput("With: ", (char*)replace, STRBUF_M))
+	if (!getinput("With: ", (char*)replace, STRBUF_M, F_CLEAR))
 		return;
 
 	slen = strlen(searchtext);
@@ -33,7 +33,7 @@ void query_replace(void)
 	/* scan through the file, from point */
 	numsub = 0;
 	while(TRUE) {
-		found = search_forward(searchtext);
+		found = search_forward(curbp, curbp->b_point, searchtext);
 
 		/* if not found set the point to the last point of replacement, or where we started */
 		if (found == -1) {

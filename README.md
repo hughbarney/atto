@@ -11,7 +11,7 @@ Atto Emacs is inspired by MicroEmacs, Nano, Pico and my earlier project known as
 * Provide a rich level of functionality in the smallest amount of code
 * Be easy to understand without extensive study (to encourage further experimentation).
 
-In Defining Atto as the lowest functional Emacs I have had to consider the essential feature set that makes Emacs, 'Emacs'.  I have defined this point as a basic Emacs command set and key bindings; the ability to edit multiple files (buffers), and switch between them; edit the buffers in mutliple windows, cut, copy and paste; forward and reverse searching and a replace function. The proviso being that all this will fit in less than 2000 lines of C.
+In Defining Atto as the lowest functional Emacs I have had to consider the essential feature set that makes Emacs, 'Emacs'.  I have defined this point as a basic Emacs command set and key bindings; the ability to edit multiple files (buffers), and switch between them; edit the buffers in mutliple windows, cut, copy and paste; forward and reverse searching, a replace function and basic syntax hilighting. The proviso being that all this will fit in less than 2000 lines of C.
 
 As of Atto v1.4, these goal has been achieved !.
 
@@ -20,66 +20,6 @@ The small Emacs naming scheme appears to use sub-unit prefixes in decending orde
 
 ##Derivation
 Atto is based on the public domain code of Anthony Howe's editor (commonly known as Anthony's Editor or AE, [2]).  Rather than representing a file as a linked list of lines, the AE Editor uses the concept of a Buffer-Gap [4,5,6].  A Buffer-Gap editor stores the file in a single piece of contiguous memory with some extra unused space known as the buffer gap.  On character insertion and deletion the gap is first moved to the current point.  A character deletion then extends the gap by moving the gap pointer back by 1 OR the gap is reduced by 1 when a character is inserted.  The Buffer-Gap technique is elegant and significantly reduces the amount of code required to load a file, modify it and redraw the display.  The proof of this is seen when you consider that Atto supports almost the same command set that Pico supports,  but Pico requires almost 17 times the amount of code.
-
-## Atto v1.7,  12 October 2016
-* Added filename completion
-NOTE: If this creates a problem on windows the change can be backed out by uncommenting the line in command.c readfile() and using the getinput() instead of getfilename() functions.
-
-## Atto v1.6,  29 December 2015
-* Fixed display problem when editing same buffer in multiple windows.
-* Fixed overflow of filename variable when a large filename is supplied at the command line
-* Reformatted comments at top of source files to claw back 30 more lines for defect fixes
-
-## Atto v1.5,  20 December 2015
-* Added INS = toggle-overwrite-mode
-* flushed keyboard on detection of Esc in search and replace, which means if you touch the arrow keys you exit cleanly without writing the rest of an escape sequence into the buffer.
-* Added entries for escape key binding (eg esc-v and esc-V) to handle when CAPSLOCK is active.
-* Handled CAPSLOCK when prompted y/n to exit.
-* Line count is 1987.
-
-## Atto v1.4.3, 15 December 2015
-* fixed bug with display of last line
-
-## Atto v1.4.2, 13 December 2015
-* Fixed crash bug with free_windows on MS windows, thanks to Ed Davies for reporting
-* went through all files and ensure correct indentation and tabstops, ensured if (foo) { opening brace style
-* line count is 1955
-
-## Atto v1.4.1, 12 December 2015
-* Added esc-@ as alternative to C-space for set-mark
-
-## Atto v1.4 8 December 2015
-* Working Atto that supports multiple windows. It all fits in 1969 lines of C !
-* Fixed bug that meant that scrolling to end of file in other than the first window jumped off the screen.
-* Removed previous-buffer which was not going to get used.
-* Removed redundant definitions of FIRST_LINE
-* Corrected PgDn and PgUp to work with variable size windows.
-
-## Atto V1.3.1 5 December 2015
-* Fixed bug with count_buffers causing kill-buffer to core dump
-
-## Atto V1.3 1 December 2015
-* Added M-r search and replace
-* Added M-g goto-line
-* Updated show-pos with line/total_lines count
-* fixed bug introduced in 1.2 where last modified buffer would not trigger the prompt to save.
-* code footprint is 1775 lines !
-
-## Atto v1.2 29 November 2015
-* Implemented multibuffer support, added approx 180 lines of code
-* First buffer created is called *scatch*
-* Creates *scratch* buffer if you want to delete last buffer
-* Added C-x C-n next-buffer
-* Added C-x C-p prev-buffer
-* Added C-x k   delete-buffer
-* Consumed key.h into header.h
-* code footprint is 1586 lines !
-
-## Atto v1.1 26 November 2015
-* Reduced code footprint by simplification of key code and the definition of keymap. This means I dont have to edit more than one map to add a function.
-* Added forward and reverse text search.
-* Code footprint is less than 1400 lines !
-
 
 ##Comparisons with Other Emacs Implementations
 

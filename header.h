@@ -1,7 +1,4 @@
-/*
- * header.h, Atto Emacs, Hugh Barney, 2015
- * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
- */
+/* header.h, Atto Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
 
 #include <stdlib.h>
 #include <stdarg.h>
@@ -14,7 +11,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define VERSION	 "Atto 1.7, Public Domain, December 2015, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.8, Public Domain, December 2016, by Hugh Barney,  No warranty."
 #define PROG_NAME "atto"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwite mode */
@@ -28,6 +25,16 @@
 #define STRBUF_S        16
 #define MIN_GAP_EXPAND  512
 #define TEMPFILE        "/tmp/feXXXXXX"
+#define F_NONE          0
+#define F_CLEAR         1
+#define ID_DEFAULT         1
+#define ID_SYMBOL          2
+#define ID_MODELINE        3
+#define ID_DIGITS          4
+#define ID_LINE_COMMENT    5
+#define ID_BLOCK_COMMENT   6
+#define ID_DOUBLE_STRING   7
+#define ID_SINGLE_STRING   8
 
 typedef unsigned char char_t;
 typedef long point_t;
@@ -37,13 +44,6 @@ typedef struct keymap_t {
 	char *lhs;              /* Left hand side invokes function or macro. */
 	void (*func)(void);
 } keymap_t;
-
-typedef struct undo_t {
-	point_t u_point;
-	point_t u_gap;
-	point_t u_egap;
-
-} undo_t;
 
 typedef struct buffer_t
 {
@@ -65,7 +65,6 @@ typedef struct buffer_t
 	char b_fname[NAME_MAX + 1]; /* filename */
 	char b_bname[STRBUF_S];   /* buffer name */
 	char b_flags;             /* buffer flags */
-	undo_t b_ubuf;            /* undoset */
 } buffer_t;
 
 typedef struct window_t
@@ -100,7 +99,6 @@ extern window_t *wheadp;
 
 extern int done;                /* Quit flag. */
 extern int msgflag;             /* True if msgline should be displayed. */
-extern int result;
 extern point_t nscrap;          /* Length of scrap buffer. */
 extern char_t *scrap;           /* Allocated scrap buffer. */
 extern int input;               /* Current input character. */
@@ -124,7 +122,7 @@ extern point_t segnext(buffer_t *, point_t, point_t);
 extern point_t upup(buffer_t *, point_t);
 extern point_t dndn(buffer_t *, point_t);
 extern int getkey(keymap_t *, keymap_t **);
-extern int getinput(char *, char *, int);
+extern int getinput(char *, char *, int, int);
 extern int getfilename(char *, char *, int);
 extern void display_prompt_and_response(char *, char *);
 extern int growgap(buffer_t *, point_t);
@@ -135,8 +133,6 @@ extern int posix_file(char *);
 extern int save(char *);
 extern int load_file(char *);
 extern int insert_file(char *, int);
-extern void undoset(void);
-extern void undo(void);
 extern void backsp(void);
 extern void block(void);
 extern void iblock(void);
@@ -176,8 +172,8 @@ extern void gotoline(void);
 extern void search(void);
 extern void query_replace(void);
 extern point_t line_to_point(int);
-extern point_t search_forward(char *);
-extern point_t search_backwards(char *);
+extern point_t search_forward(buffer_t *, point_t, char *);
+extern point_t search_backwards(buffer_t *, point_t, char *);
 extern void update_search_prompt(char *, char *);
 extern void display_search_result(point_t, int, char *, char *);
 extern char* get_temp_file(void);
@@ -202,3 +198,5 @@ extern void w2b(window_t *);
 extern void b2w(window_t *);
 extern void associate_b2w(buffer_t *, window_t *);
 extern void disassociate_b(window_t *);
+extern void set_parse_state(buffer_t *, point_t);
+extern int parse_text(buffer_t *, point_t);

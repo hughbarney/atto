@@ -1,7 +1,4 @@
-/*
- * command.c, Atto Emacs, Hugh Barney, Public Domain, 2015
- * Derived from: Anthony's Editor January 93, (Public Domain 1991, 1993 by Anthony Howe)
- */
+/* command.c, Atto Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
 
 #include "header.h"
 
@@ -146,7 +143,6 @@ void insert()
 void backsp()
 {
 	curbp->b_point = movegap(curbp, curbp->b_point);
-	undoset();
 	if (curbp->b_buf < curbp->b_gap) {
 		--curbp->b_gap;
 		curbp->b_flags |= B_MODIFIED;
@@ -157,7 +153,6 @@ void backsp()
 void delete()
 {
 	curbp->b_point = movegap(curbp, curbp->b_point);
-	undoset();
 	if (curbp->b_egap < curbp->b_ebuf) {
 		curbp->b_point = pos(curbp, ++curbp->b_egap);
 		curbp->b_flags |= B_MODIFIED;
@@ -166,12 +161,10 @@ void delete()
 
 void gotoline()
 {
-	temp[0] = '\0';
 	int line;
 	point_t p;
-	result = getinput("Goto line: ", (char*)temp, STRBUF_S);
 
-	if (temp[0] != '\0' && result) {
+	if (getinput("Goto line: ", temp, STRBUF_S, F_CLEAR)) {
 		line = atoi(temp);
 		p = line_to_point(line);
 		if (p != -1) {
@@ -185,10 +178,8 @@ void gotoline()
 
 void insertfile()
 {
-	temp[0] = '\0';
-	result = getinput("Insert file: ", (char*) temp, NAME_MAX);
-	if (temp[0] != '\0' && result)
-		(void) insert_file(temp, TRUE);
+	if (getfilename("Insert file: ", temp, NAME_MAX))
+		(void)insert_file(temp, TRUE);
 }
 
 void readfile()
@@ -196,9 +187,8 @@ void readfile()
 	buffer_t *bp;
 	
 	temp[0] = '\0';
-
-	result = getfilename("Find file: ", (char*)temp, NAME_MAX);
-	/* result = getinput("Find file: ", (char*)temp, NAME_MAX); */
+	int result = getfilename("Find file: ", (char*)temp, NAME_MAX);
+	/* int result = getinput("Find file: ", (char*)temp, NAME_MAX, F_CLEAR); */
 
 	if (result) {
 		bp = find_buffer(temp, TRUE);
@@ -231,8 +221,7 @@ void savebuffer()
 void writefile()
 {
 	strncpy(temp, curbp->b_fname, NAME_MAX);
-	result = getinput("Write file: ", (char*)temp, NAME_MAX);
-	if (temp[0] != '\0' && result)
+	if (getinput("Write file: ", temp, NAME_MAX, F_NONE))
 		if (save(temp) == TRUE)
 			strncpy(curbp->b_fname, temp, NAME_MAX);
 }
@@ -327,7 +316,6 @@ void copy_cut(int cut)
 	if ((scrap = (char_t*) malloc(nscrap)) == NULL) {
 		msg("No more memory available.");
 	} else {
-		undoset();
 		(void) memcpy(scrap, p, nscrap * sizeof (char_t));
 		if (cut) {
 			curbp->b_egap += nscrap; /* if cut expand gap down */
@@ -349,7 +337,6 @@ void paste()
 		msg("Scrap is empty.  Nothing to paste.");
 	} else if (nscrap < curbp->b_egap - curbp->b_gap || growgap(curbp, nscrap)) {
 		curbp->b_point = movegap(curbp, curbp->b_point);
-		undoset();
 		memcpy(curbp->b_gap, scrap, nscrap * sizeof (char_t));
 		curbp->b_gap += nscrap;
 		curbp->b_point = pos(curbp, curbp->b_egap);
