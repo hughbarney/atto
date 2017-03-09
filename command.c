@@ -304,13 +304,13 @@ void copy_cut(int cut)
 	}
 	if (curbp->b_point < curbp->b_mark) {
 		/* point above marker: move gap under point, region = marker - point */
-		p = ptr(curbp, curbp->b_point);
 		(void) movegap(curbp, curbp->b_point);
+		p = ptr(curbp, curbp->b_point);
 		nscrap = curbp->b_mark - curbp->b_point;
 	} else {
 		/* if point below marker: move gap under marker, region = point - marker */
-		p = ptr(curbp, curbp->b_mark);
 		(void) movegap(curbp, curbp->b_mark);
+		p = ptr(curbp, curbp->b_mark);
 		nscrap = curbp->b_point - curbp->b_mark;
 	}
 	if ((scrap = (char_t*) malloc(nscrap)) == NULL) {

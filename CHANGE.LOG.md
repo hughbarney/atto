@@ -1,5 +1,8 @@
 # Atto Emacs Change Log
 
+## Atto v1.9 9 March 2017
+* Fixed cut, copy code to avoid corruption as pointer p should be set after call to movegap()
+
 ## Atto v1.8 22 December 2016
 * Added generic syntax highlighting, removed the basic undo command to keep code cound under 2000 lines.
 * made searchtext start from empty string (as per GNU emacs)

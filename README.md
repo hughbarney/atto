@@ -28,14 +28,14 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     atto           atto       33002     1.9k     10
     pEmacs         pe         59465     5.7K     16
     Esatz-Emacs    ee         59050     5.7K     14
-	GNOME          GNOME      55922     9.8k     13
+    GNOME          GNOME      55922     9.8k     13
     Zile           zile      257360    11.7k     48
     Mg             mg        585313    16.5K     50
     uEmacs/Pk      em        147546    17.5K     34
     Pico           pico      438534    24.0k     29
     Nano           nano      192008    24.8K     17
-	jove           jove      248824    34.7k     94
-	Qemacs         qe        379968    36.9k     59
+    jove           jove      248824    34.7k     94
+    Qemacs         qe        379968    36.9k     59
     ue3.10         uemacs    171664    52.4K     16
     GNUEmacs       emacs   14632920   358.0k    186
 
