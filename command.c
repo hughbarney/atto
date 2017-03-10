@@ -2,6 +2,14 @@
 
 #include "header.h"
 
+void quit() { done = 1; }
+void left() { if (0 < curbp->b_point) --curbp->b_point; }
+void right() { if (curbp->b_point < pos(curbp, curbp->b_ebuf)) ++curbp->b_point; }
+void up() { curbp->b_point = lncolumn(curbp, upup(curbp, curbp->b_point),curbp->b_col); }
+void down() { curbp->b_point = lncolumn(curbp, dndn(curbp, curbp->b_point),curbp->b_col); }
+void lnbegin() { curbp->b_point = segstart(curbp, lnstart(curbp,curbp->b_point), curbp->b_point); }
+void version() { msg(VERSION); }
+
 void top()
 {
 	curbp->b_point = 0;
@@ -38,11 +46,6 @@ int yesno(int flag)
 	return (tolower(ch) == 'y');
 }
 
-void quit()
-{
-	done = 1;
-}
-
 void redraw()
 {
 	window_t *wp;
@@ -51,33 +54,6 @@ void redraw()
 	for (wp=wheadp; wp != NULL; wp = wp->w_next)
 		wp->w_update = TRUE;
 	update_display();
-}
-
-void left()
-{
-	if (0 < curbp->b_point)
-		--curbp->b_point;
-}
-
-void right()
-{
-	if (curbp->b_point < pos(curbp, curbp->b_ebuf))
-		++curbp->b_point;
-}
-
-void up()
-{
-	curbp->b_point = lncolumn(curbp, upup(curbp, curbp->b_point),curbp->b_col);
-}
-
-void down()
-{
-	curbp->b_point = lncolumn(curbp, dndn(curbp, curbp->b_point),curbp->b_col);
-}
-
-void lnbegin()
-{
-	curbp->b_point = segstart(curbp, lnstart(curbp,curbp->b_point), curbp->b_point);
 }
 
 void lnend()
@@ -129,12 +105,12 @@ void insert()
 	curbp->b_point = movegap(curbp, curbp->b_point);
 
 	/* overwrite if mid line, not EOL or EOF, CR will insert as normal */
-	if ((curbp->b_flags & B_OVERWRITE) && input != '\r' && *(ptr(curbp, curbp->b_point)) != '\n' && curbp->b_point < pos(curbp,curbp->b_ebuf) ) {
-		*(ptr(curbp, curbp->b_point)) = input;
+	if ((curbp->b_flags & B_OVERWRITE) && *input != '\r' && *(ptr(curbp, curbp->b_point)) != '\n' && curbp->b_point < pos(curbp,curbp->b_ebuf) ) {
+		*(ptr(curbp, curbp->b_point)) = *input;
 		if (curbp->b_point < pos(curbp, curbp->b_ebuf))
 			++curbp->b_point;
 	} else {
-		*curbp->b_gap++ = input == '\r' ? '\n' : input;
+		*curbp->b_gap++ = *input == '\r' ? '\n' : *input;
 		curbp->b_point = pos(curbp, curbp->b_egap);
 	}
 	curbp->b_flags |= B_MODIFIED;
@@ -359,11 +335,6 @@ void showpos()
 			current, lastln,
 			curbp->b_point, ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap)));
 	}
-}
-
-void version()
-{
-	msg(VERSION);
 }
 
 char* get_temp_file()

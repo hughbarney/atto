@@ -6,7 +6,7 @@ int done;
 point_t nscrap;
 char_t *scrap;
 
-int input;
+char_t *input;
 int msgflag;
 char msgline[TEMPBUF];
 char temp[TEMPBUF];
@@ -62,13 +62,21 @@ int main(int argc, char **argv)
 
 	while (!done) {
 		update_display();
-		input = getkey(key_map, &key_return);
+		input = get_key(key_map, &key_return);
 
-		if (key_return != NULL)
+		if (key_return != NULL) {
 			(key_return->func)();
-		else
-			insert();
+		} else {
+			/* allow TAB and NEWLINE, otherwise any Control Char is 'Not bound' */
+			if (*input > 31 || *input == 10 || *input == 9)
+				insert();
+                        else {
+				flushinp(); /* discard without writing in buffer */
+				msg("Not bound");
+			}
+		}
 	}
+
 	if (scrap != NULL)
 		free(scrap);
 

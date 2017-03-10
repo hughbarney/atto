@@ -1,5 +1,8 @@
 # Atto Emacs Change Log
 
+## Atto v1.10 9 March 2017
+* discard unbound keystrokes, compacted 1 line functions in command.c
+
 ## Atto v1.9 9 March 2017
 * Fixed cut, copy code to avoid corruption as pointer p should be set after call to movegap()
 

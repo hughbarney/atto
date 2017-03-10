@@ -67,18 +67,21 @@ keymap_t keymap[] = {
 	{"K_ERROR                  ", NULL, NULL }
 };
 
-int getkey(keymap_t *keys, keymap_t **key_return)
+
+char_t *get_key(keymap_t *keys, keymap_t **key_return)
 {
 	keymap_t *k;
 	int submatch;
-	static char buffer[K_BUFFER_LENGTH];
-	static char *record = buffer;
+	static char_t buffer[K_BUFFER_LENGTH];
+	static char_t *record = buffer;
 
 	*key_return = NULL;
 
 	/* if recorded bytes remain, return next recorded byte. */
-	if (*record != '\0')
+	if (*record != '\0') {
 		*key_return = NULL;
+		return record++;
+	}
 	/* reset record buffer. */
 	record = buffer;
 
@@ -89,16 +92,16 @@ int getkey(keymap_t *keys, keymap_t **key_return)
 		*record = '\0';
 
 		/* if recorded bytes match any multi-byte sequence... */
-		for (k = keys, submatch = 0; k->lhs != NULL; ++k) {
-			char *p, *q;
+		for (k = keys, submatch = 0; k->key_bytes != NULL; ++k) {
+			char_t *p, *q;
 
-			for (p = buffer, q = k->lhs; *p == *q; ++p, ++q) {
+			for (p = buffer, q = (char_t *)k->key_bytes; *p == *q; ++p, ++q) {
 			        /* an exact match */
 				if (*q == '\0' && *p == '\0') {
 	    				record = buffer;
 					*record = '\0';
 					*key_return = k;
-					return -1;
+					return record; /* empty string */
 				}
 			}
 			/* record bytes match part of a command sequence */
@@ -109,17 +112,18 @@ int getkey(keymap_t *keys, keymap_t **key_return)
 	} while (submatch);
 	/* nothing matched, return recorded bytes. */
 	record = buffer;
-	return (*(unsigned char *)record++);
+	return (record++);
 }
 
 int getinput(char *prompt, char *buf, int nbuf, int flag)
 {
 	int cpos = 0;
 	int c;
-	int start_col = strlen(prompt); 
+	int start_col = strlen(prompt);
 
 	mvaddstr(MSGLINE, 0, prompt);
 	clrtoeol();
+
 	if (flag == F_CLEAR) buf[0] = '\0';
 
 	/* if we have a default value print it and go to end of it */
@@ -148,14 +152,14 @@ int getinput(char *prompt, char *buf, int nbuf, int flag)
 		case 0x08: /* backspace */
 			if (cpos == 0)
 				continue;
-			
+
 			move(MSGLINE, start_col + cpos - 1);
 			addch(' ');
 			move(MSGLINE, start_col + cpos - 1);
 			buf[--cpos] = '\0';
 			break;
 
-		default:	
+		default:
 			if (cpos < nbuf -1) {
 				addch(c);
 				buf[cpos++] = c;

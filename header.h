@@ -11,7 +11,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define VERSION	 "Atto 1.9, Public Domain, March 2017, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.10, Public Domain, March 2017, by Hugh Barney,  No warranty."
 #define PROG_NAME "atto"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwite mode */
@@ -40,8 +40,8 @@ typedef unsigned char char_t;
 typedef long point_t;
 
 typedef struct keymap_t {
-	char *key_bind;
-	char *lhs;              /* Left hand side invokes function or macro. */
+	char *key_desc;                 /* name of bound function */
+	char *key_bytes;		/* the string of bytes when this key is pressed */
 	void (*func)(void);
 } keymap_t;
 
@@ -101,7 +101,7 @@ extern int done;                /* Quit flag. */
 extern int msgflag;             /* True if msgline should be displayed. */
 extern point_t nscrap;          /* Length of scrap buffer. */
 extern char_t *scrap;           /* Allocated scrap buffer. */
-extern int input;               /* Current input character. */
+extern char_t *input;
 extern char msgline[];          /* Message line input/output buffer. */
 extern char temp[];             /* Temporary buffer. */
 extern char searchtext[];
@@ -121,7 +121,7 @@ extern point_t segstart(buffer_t *, point_t, point_t);
 extern point_t segnext(buffer_t *, point_t, point_t);
 extern point_t upup(buffer_t *, point_t);
 extern point_t dndn(buffer_t *, point_t);
-extern int getkey(keymap_t *, keymap_t **);
+extern char_t *get_key(keymap_t *, keymap_t **);
 extern int getinput(char *, char *, int, int);
 extern int getfilename(char *, char *, int);
 extern void display_prompt_and_response(char *, char *);
