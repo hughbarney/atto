@@ -132,16 +132,14 @@ Generally, the procedure for copying or moving text is:
 
 When building on Ubuntu you will need to install the libcurses dev package.
 
-$ sudo apt-get install apt-file
-$ apt-file update
+    $ sudo apt-get install apt-file
+    $ apt-file update
 
-now search for which package would have curses.h
-$ apt-file search curses.h
+now search for which package would have curses.h and install it:
 
-libncurses5-dev: /usr/include/curses.h
-
-$ sudo apt-get install libncurses5-dev
-
+    $ apt-file search curses.h
+    libncurses5-dev: /usr/include/curses.h
+    $ sudo apt-get install libncurses5-dev
 
 ## Future Enhancements
 
@@ -158,7 +156,7 @@ A multi-window display issue (specifically evident in a buffer-gap editor) was r
 
 ## Known Issues
 
-	Goto-line will fail to go to the very last line.  This is a special case that could easily be fixed.
+* Goto-line will fail to go to the very last line.  This is a special case that could easily be fixed.
 
 ## Copying
 
