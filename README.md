@@ -1,4 +1,5 @@
-#Atto Emacs
+# Atto Emacs
+
 The smallest functional Emacs in less than 2000 lines of C.
 
 Atto Emacs is inspired by MicroEmacs, Nano, Pico and my earlier project known as Perfect Emacs [1].
@@ -6,7 +7,8 @@ Atto Emacs is inspired by MicroEmacs, Nano, Pico and my earlier project known as
 > A designer knows he has achieved perfection not when there is nothing left to add, but when there is nothing left to take away.
 > -- <cite>Antoine de Saint-Exupery</cite>
 
-##Goals of Atto Emacs
+## Goals of Atto Emacs
+
 * Be the smallest fuctional Emacs in less than 2000 lines of C.
 * Provide a rich level of functionality in the smallest amount of code
 * Be easy to understand without extensive study (to encourage further experimentation).
@@ -15,13 +17,15 @@ In Defining Atto as the lowest functional Emacs I have had to consider the essen
 
 As of Atto v1.4, these goal has been achieved !.
 
-##Why the name Atto?
+## Why the name Atto?
+
 The small Emacs naming scheme appears to use sub-unit prefixes in decending order with each further reduction of functionality.  Atto means 10 to the power of minus 18.   Logically Femto (10^-15) comes after Pico (10^-12). However choosing Atto allows for the potential for Femto to be an Atto based Emacs with a scripting language.
 
-##Derivation
+## Derivation
+
 Atto is based on the public domain code of Anthony Howe's editor (commonly known as Anthony's Editor or AE, [2]).  Rather than representing a file as a linked list of lines, the AE Editor uses the concept of a Buffer-Gap [4,5,6].  A Buffer-Gap editor stores the file in a single piece of contiguous memory with some extra unused space known as the buffer gap.  On character insertion and deletion the gap is first moved to the current point.  A character deletion then extends the gap by moving the gap pointer back by 1 OR the gap is reduced by 1 when a character is inserted.  The Buffer-Gap technique is elegant and significantly reduces the amount of code required to load a file, modify it and redraw the display.  The proof of this is seen when you consider that Atto supports almost the same command set that Pico supports,  but Pico requires almost 17 times the amount of code.
 
-##Comparisons with Other Emacs Implementations
+## Comparisons with Other Emacs Implementations
 
     Editor         Binary   BinSize     KLOC  Files
 
@@ -39,7 +43,8 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     ue3.10         uemacs    171664    52.4K     16
     GNUEmacs       emacs   14632920   358.0k    186
 
-##Atto Key Bindings
+## Atto Key Bindings
+
     C-A   begining-of-line
     C-B   backward-character
     C-D   delete-char
@@ -100,7 +105,8 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     Ctrk+Left    Page Down
     Ctrl+Right   Page Up
 
-###Copying and moving
+### Copying and moving
+
     C-<spacebar> Set mark at current position
     ^W   Delete region
     ^Y   Yank back kill buffer at cursor
@@ -113,7 +119,8 @@ Generally, the procedure for copying or moving text is:
 2. Delete it (with ^W) or copy it (with M-W) into the kill buffer.
 3. Move the cursor to the desired location and yank it back (with ^Y).
 
-###Searching
+### Searching
+
     C-S or C-R enters the search prompt, where you type the search string
     BACKSPACE - will reduce the search string, any other character will extend it
     C-S at the search prompt will search forward, will wrap at end of the buffer
@@ -121,7 +128,7 @@ Generally, the procedure for copying or moving text is:
     ESC will escape from the search prompt and return to the point of the match
     C-G abort the search and return to point before the search started
 
-##Building on Ubuntu
+## Building on Ubuntu
 
 When building on Ubuntu you will need to install the libcurses dev package.
 
@@ -136,11 +143,11 @@ libncurses5-dev: /usr/include/curses.h
 $ sudo apt-get install libncurses5-dev
 
 
-##Future Enhancements
+## Future Enhancements
 
 As of Atto 1.6 we have about 46 lines of code before we reach the design limit of 2000 lines.  Whilst I would have liked to have added a few other features the priority will now be bug fixes and keeping the code count below 2000 lines.
-       
-##Multiple Windows or Not?
+
+## Multiple Windows or Not?
 
 Atto supports multiple windows !  This was the hardest part of the project to get working reliably.
 
@@ -149,14 +156,17 @@ The lack of multiple windows would have been quickly noticed as it is a very vis
 A multi-window display issue (specifically evident in a buffer-gap editor) was resolved in Atto 1.6.  This is where you are editing a file that is displayed in more than one window.  Say you are in window1 and delete 3 lines, the current point in the other windows (if the point is below the point in window1) have to be adjusted to take into account that thier relative positions in the buffer have now shifted up. We do this by tracking the size of the text in the buffer before and after each command.  At the start of the display function we can work out the difference and adjust the other windows when they are updated. This mechanism works well even when inserting a text file that means that the gap has to be re-allocated.
 
 
-##Known Issues
+## Known Issues
+
 	Goto-line will fail to go to the very last line.  This is a special case that could easily be fixed.
 
-##Copying
+## Copying
+
   Atto code is released to the public domain.
   hughbarney AT gmail.com 2016
 
-##References
+## References
+
     [1] Perfect Emacs - https://github.com/hughbarney/pEmacs
     [2] Anthony's Editor - https://github.com/hughbarney/Anthony-s-Editor
     [3] MG - https://github.com/rzalamena/mg
