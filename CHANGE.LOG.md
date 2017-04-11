@@ -1,5 +1,8 @@
 # Atto Emacs Change Log
 
+## Atto v1.11 11 April 2017
+* reduced some functions to 1 liners in command.c to make space for future UTF8 fixes
+
 ## Atto v1.10 9 March 2017
 * discard unbound keystrokes, compacted 1 line functions in command.c
 

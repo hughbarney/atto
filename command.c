@@ -9,18 +9,11 @@ void up() { curbp->b_point = lncolumn(curbp, upup(curbp, curbp->b_point),curbp->
 void down() { curbp->b_point = lncolumn(curbp, dndn(curbp, curbp->b_point),curbp->b_col); }
 void lnbegin() { curbp->b_point = segstart(curbp, lnstart(curbp,curbp->b_point), curbp->b_point); }
 void version() { msg(VERSION); }
-
-void top()
-{
-	curbp->b_point = 0;
-	curwp->w_point = curbp->b_point;
-}
-
-void bottom()
-{
-	curbp->b_epage = curbp->b_point = pos(curbp, curbp->b_ebuf);
-	curwp->w_point = curbp->b_point;
-}
+void top() { curbp->b_point = 0; }
+void bottom() {	curbp->b_epage = curbp->b_point = pos(curbp, curbp->b_ebuf); }
+void block() { curbp->b_mark = curbp->b_point; }
+void copy() { copy_cut(FALSE); }
+void cut() { copy_cut(TRUE); }
 
 void quit_ask()
 {
@@ -236,11 +229,6 @@ void iblock()
 	msg("Mark set");
 }
 
-void block()
-{
-	curbp->b_mark = curbp->b_point;
-}
-
 void toggle_overwrite_mode() {
 	if (curbp->b_flags & B_OVERWRITE)
 		curbp->b_flags &= ~B_OVERWRITE;
@@ -258,14 +246,6 @@ void killtoeol()
 		lnend();
 		copy_cut(TRUE);
 	}
-}
-
-void copy() {
-	copy_cut(FALSE);
-}
-
-void cut() {
-	copy_cut(TRUE);
 }
 
 void copy_cut(int cut)
