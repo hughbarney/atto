@@ -1,5 +1,6 @@
 /* header.h, Atto Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
 
+#include <locale.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <assert.h>
@@ -11,7 +12,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define VERSION	 "Atto 1.11, Public Domain, April 2017, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.12, Public Domain, April 2017, by Hugh Barney,  No warranty."
 #define PROG_NAME "atto"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwite mode */
@@ -115,6 +116,9 @@ extern void msg(char *, ...);
 extern void display(window_t *, int);
 extern void dispmsg(void);
 extern void modeline(window_t *);
+extern int utf8_size(char_t);
+extern int prev_utf8_char_size(void);
+extern void display_utf8(buffer_t *, char_t, int);
 extern point_t lnstart(buffer_t *, point_t);
 extern point_t lncolumn(buffer_t *, point_t, int);
 extern point_t segstart(buffer_t *, point_t, point_t);
@@ -164,8 +168,6 @@ extern void wleft(void);
 extern void wright(void);
 extern void writefile(void);
 extern void savebuffer(void);
-extern void debug(char *, ...);
-extern void debug_stats(char *);
 extern void showpos(void);
 extern void killtoeol(void);
 extern void gotoline(void);

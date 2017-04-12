@@ -1,5 +1,8 @@
 # Atto Emacs Change Log
 
+## Atto v1.12 12 April 2017
+* added UTF8 support
+
 ## Atto v1.11 11 April 2017
 * reduced some functions to 1 liners in command.c to make space for future UTF8 fixes
 

@@ -12,10 +12,7 @@ point_t lnstart(buffer_t *bp, register point_t off)
 	return (bp->b_buf < p ? ++off : 0);
 }
 
-/*
- * Forward scan for start of logical line segment containing 'finish'.
- * A segment of a logical line corresponds to a physical screen line.
- */
+/* Forward scan for start of logical line segment (corresponds to screen line)  containing 'finish' */
 point_t segstart(buffer_t *bp, point_t start, point_t finish)
 {
 	char_t *p;
@@ -26,12 +23,12 @@ point_t segstart(buffer_t *bp, point_t start, point_t finish)
 		p = ptr(bp, scan);
 		if (*p == '\n') {
 			c = 0;
-			start = scan+1;
+			start = scan + 1;
 		} else if (COLS <= c) {
 			c = 0;
 			start = scan;
 		}
-		++scan;
+		scan += utf8_size(*ptr(bp,scan));
 		c += *p == '\t' ? 8 - (c & 7) : 1;
 	}
 	return (c < COLS ? start : finish);
@@ -48,7 +45,7 @@ point_t segnext(buffer_t *bp, point_t start, point_t finish)
 		p = ptr(bp, scan);
 		if (bp->b_ebuf <= p || COLS <= c)
 			break;
-		++scan;
+		scan += utf8_size(*ptr(bp,scan));
 		if (*p == '\n')
 			break;
 		c += *p == '\t' ? 8 - (c & 7) : 1;
@@ -81,7 +78,7 @@ point_t lncolumn(buffer_t *bp, point_t offset, int column)
 	char_t *p;
 	while ((p = ptr(bp, offset)) < bp->b_ebuf && *p != '\n' && c < column) {
 		c += *p == '\t' ? 8 - (c & 7) : 1;
-		++offset;
+		offset += utf8_size(*ptr(bp,offset));
 	}
 	return (offset);
 }
@@ -89,7 +86,7 @@ point_t lncolumn(buffer_t *bp, point_t offset, int column)
 void display(window_t *wp, int flag)
 {
 	char_t *p;
-	int i, j, k;
+	int i, j, k, nch;
 	buffer_t *bp = wp->w_bufp;
 	int token_type = ID_DEFAULT;
 	
@@ -128,10 +125,15 @@ void display(window_t *wp, int flag)
 			bp->b_col = j;
 		}
 		p = ptr(bp, bp->b_epage);
+		nch = 1;
 		if (wp->w_top + wp->w_rows <= i || bp->b_ebuf <= p) /* maxline */
 			break;
 		if (*p != '\r') {
-			if (isprint(*p) || *p == '\t' || *p == '\n') {
+			nch = utf8_size(*p);
+			if ( nch > 1) {
+				j++;
+				display_utf8(bp, *p, nch);
+			} else if (isprint(*p) || *p == '\t' || *p == '\n') {
 				j += *p == '\t' ? 8-(j&7) : 1;
 				token_type = parse_text(bp, bp->b_epage);
 				attron(COLOR_PAIR(token_type));
@@ -148,7 +150,7 @@ void display(window_t *wp, int flag)
 				j = 0;
 			++i;
 		}
-		++bp->b_epage;
+		bp->b_epage = bp->b_epage + nch;
 	}
 
 	/* replacement for clrtobot() to bottom of window */
@@ -166,6 +168,17 @@ void display(window_t *wp, int flag)
 		refresh();
 	}
 	wp->w_update = FALSE;
+}
+
+void display_utf8(buffer_t *bp, char_t c, int n)
+{
+	char sbuf[6];
+	int i = 0;
+
+	for (i=0; i<n; i++)
+		sbuf[i] = *ptr(bp, bp->b_epage + i);
+	sbuf[n] = '\0';
+	addstr(sbuf);
 }
 
 void modeline(window_t *wp)

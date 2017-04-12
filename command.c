@@ -3,8 +3,6 @@
 #include "header.h"
 
 void quit() { done = 1; }
-void left() { if (0 < curbp->b_point) --curbp->b_point; }
-void right() { if (curbp->b_point < pos(curbp, curbp->b_ebuf)) ++curbp->b_point; }
 void up() { curbp->b_point = lncolumn(curbp, upup(curbp, curbp->b_point),curbp->b_col); }
 void down() { curbp->b_point = lncolumn(curbp, dndn(curbp, curbp->b_point),curbp->b_col); }
 void lnbegin() { curbp->b_point = segstart(curbp, lnstart(curbp,curbp->b_point), curbp->b_point); }
@@ -47,6 +45,38 @@ void redraw()
 	for (wp=wheadp; wp != NULL; wp = wp->w_next)
 		wp->w_update = TRUE;
 	update_display();
+}
+
+void left()
+{
+	int n = prev_utf8_char_size();
+	while (0 < curbp->b_point && n-- > 0)
+		--curbp->b_point;
+}
+
+void right()
+{
+	int n = utf8_size(*ptr(curbp,curbp->b_point));
+	while ((curbp->b_point < pos(curbp, curbp->b_ebuf)) && n-- > 0)
+		++curbp->b_point;
+}
+
+/* work out number of bytes based on first byte */
+int utf8_size(char_t c)
+{
+	if (c >= 192 && c < 224) return 2;
+	if (c >= 224 && c < 240) return 3;
+	if (c >= 240 && c < 248) return 4;
+	return 1; /* if in doubt it is 1 */
+}
+
+int prev_utf8_char_size()
+{
+	int n;
+	for (n=2;n<5;n++)
+		if (-1 < curbp->b_point - n && (utf8_size(*(ptr(curbp, curbp->b_point - n))) == n))
+			return n;
+	return 1;
 }
 
 void lnend()
@@ -321,9 +351,6 @@ char* get_temp_file()
 {
 	static char temp_file[] = TEMPFILE;
 	strcpy(temp_file, TEMPFILE);
-
-	if (-1 == mkstemp(temp_file))
-		fatal("%s: Failed to create temp file\n");
-
+	if (-1 == mkstemp(temp_file)) fatal("%s: Failed to create temp file\n");
 	return temp_file;
 }

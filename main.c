@@ -22,9 +22,8 @@ window_t *wheadp;
 
 int main(int argc, char **argv)
 {
-	if (initscr() == NULL)
-		fatal("%s: Failed to initialize the screen.\n");
-
+	setlocale(LC_ALL, "") ; /* required for 3,4 byte UTF8 chars */
+	if (initscr() == NULL) fatal("%s: Failed to initialize the screen.\n");
 	raw();
 	noecho();
 	idlok(stdscr, TRUE);
@@ -54,10 +53,7 @@ int main(int argc, char **argv)
 	one_window(curwp);
 	associate_b2w(curbp, curwp);
 
-	if (!growgap(curbp, CHUNK))
-		fatal("%s: Failed to allocate required memory.\n");
-
-	top();
+	if (!growgap(curbp, CHUNK)) fatal("%s: Failed to allocate required memory.\n");
 	key_map = keymap;
 
 	while (!done) {
@@ -77,9 +73,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (scrap != NULL)
-		free(scrap);
-
+	if (scrap != NULL) free(scrap);
 	move(LINES-1, 0);
 	refresh();
 	noraw();
@@ -92,6 +86,7 @@ void fatal(char *msg)
 	if (curscr != NULL) {
 		move(LINES-1, 0);
 		refresh();
+		noraw();
 		endwin();
 		putchar('\n');
 	}

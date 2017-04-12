@@ -10,7 +10,7 @@ CC      = cc
 CFLAGS  = -O -Wall
 
 LD      = cc
-LIBS    = -lncurses
+LIBS    = -lncursesw
 
 CP      = cp
 MV      = mv
