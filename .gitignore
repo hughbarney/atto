@@ -1,0 +1,4 @@
+*.o
+atto
+debug.out
+
