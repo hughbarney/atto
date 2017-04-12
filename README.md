@@ -4,6 +4,10 @@ The smallest functional Emacs in less than 2000 lines of C.
 
 Atto Emacs is inspired by MicroEmacs, Nano, Pico and my earlier project known as Perfect Emacs [1].
 
+
+![Atto screenshot](https://github.com/hughbarney/atto/blob/master/screenshots/atto.png)
+
+
 > A designer knows he has achieved perfection not when there is nothing left to add, but when there is nothing left to take away.
 > -- <cite>Antoine de Saint-Exupery</cite>
 
