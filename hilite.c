@@ -11,29 +11,27 @@ char_t get_at(buffer_t *bp, point_t pt)
 	return (*ptr(bp, pt));
 }
 
+static char_t symbols[] = "{}[]()!'£$%^&*-+=:;@~#<>,.?/\\|";
+
+int is_symbol(char_t c)
+{
+	register char_t *p = symbols;
+
+	for (p = symbols; *p != '\0'; p++)
+		if (*p == c) return 1;
+	return 0;
+}
+
 void set_parse_state(buffer_t *bp, point_t pt)
 {
-	point_t p_saved = bp->b_point;
-	point_t p_before1, p_before2, p_after, q_before, q_after;
-	p_before1 = p_before2 = p_after = q_before = q_after = -1;
+	register point_t po;
 
-	p_before1 = (pt == 0 ? -1 : search_backwards(bp, pt, "/*"));
-	p_before2 = (p_before1 == -1 ? -1 : search_backwards(bp, pt, "*/"));
-	p_after =  (p_before1 == -1 ? -1 : search_forward(bp, pt, "*/"));
-	bp->b_point = p_saved;
+	state = ID_DEFAULT;
+	next_state = ID_DEFAULT;
 	skip_count = 0;
-	state = next_state = ID_DEFAULT;
 
-	/* first line on screen is potentially inside a block comment, which starts off screen */
-	if (p_before1 > -1 && p_after > -1 && p_before1 <= pt && p_after >= pt && p_before2 < p_before1) {
-		q_before = search_backwards(bp, p_before1, "\"");
-		q_after = (q_before == -1 ? -1 : search_forward(bp, p_before1, "\""));
-		bp->b_point = p_saved;
-		/* check our sequence was NOT quote something start_comment something quote */
-		if (q_before > -1 && q_after > -1 && q_before < p_before1 && q_after > p_before1)
-			return;
-		state = next_state = ID_BLOCK_COMMENT;
-	}
+	for (po =0; po < pt; po++)
+		parse_text(bp, po);
 }
 
 int parse_text(buffer_t *bp, point_t pt)
@@ -98,7 +96,7 @@ int parse_text(buffer_t *bp, point_t pt)
 		return (state = ID_DIGITS);
 	}
 
-	if (state == ID_DEFAULT && NULL != strchr("{}[]()!'£$%^&*-+=:;@~#<>,.?/\\|", c_now)) {
+	if (state == ID_DEFAULT && 1 == is_symbol(c_now)) {
 		next_state = ID_DEFAULT;
 		return (state = ID_SYMBOL);
 	}

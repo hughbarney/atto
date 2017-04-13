@@ -64,6 +64,7 @@ keymap_t keymap[] = {
 	{"C-x C-w write-file       ", "\x18\x17", writefile },  /* write and prompt for name */
 	{"C-x C-c exit             ", "\x18\x03", quit_ask },
 	{"esc esc show-version     ", "\x1B\x1B", version },
+        {"resize resize-terminal   ", "\x9A",     resize_terminal },
 	{"K_ERROR                  ", NULL, NULL }
 };
 

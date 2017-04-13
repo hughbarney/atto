@@ -1,5 +1,10 @@
 # Atto Emacs Change Log
 
+## Atto v1.13 13 April 2017
+* fixed problem with set_parse_state.  To be sure of setting hilite state we parse the text up to point at the top of the screen.
+* fixed problem with complete.c not initialising response buffer
+* added resize-terminal
+
 ## Atto v1.12 12 April 2017
 * added UTF8 support
 

@@ -12,7 +12,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define VERSION	 "Atto 1.12, Public Domain, April 2017, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.13, Public Domain, April 2017, by Hugh Barney,  No warranty."
 #define PROG_NAME "atto"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwite mode */
@@ -201,4 +201,6 @@ extern void b2w(window_t *);
 extern void associate_b2w(buffer_t *, window_t *);
 extern void disassociate_b(window_t *);
 extern void set_parse_state(buffer_t *, point_t);
+extern void set_parse_state2(buffer_t *, point_t);
 extern int parse_text(buffer_t *, point_t);
+extern void resize_terminal();

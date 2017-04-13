@@ -11,6 +11,7 @@ int getfilename(char *prompt, char *buf, int nbuf)
 	char sys_command[255];
 	char *output_file = get_temp_file();
 	FILE *fp = NULL;
+	buf[0] ='\0';
 
 	for (;;) {
 		if (!didtry)

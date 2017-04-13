@@ -12,6 +12,7 @@ void bottom() {	curbp->b_epage = curbp->b_point = pos(curbp, curbp->b_ebuf); }
 void block() { curbp->b_mark = curbp->b_point; }
 void copy() { copy_cut(FALSE); }
 void cut() { copy_cut(TRUE); }
+void resize_terminal() { one_window(curwp); }
 
 void quit_ask()
 {
