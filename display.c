@@ -1,6 +1,8 @@
 /* display.c, Atto Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
 
+#define _XOPEN_SOURCE
 #include "header.h"
+#include <wchar.h>
 
 /* Reverse scan for start of logical line containing offset */
 point_t lnstart(buffer_t *bp, register point_t off)
@@ -131,7 +133,13 @@ void display(window_t *wp, int flag)
 		if (*p != '\r') {
 			nch = utf8_size(*p);
 			if ( nch > 1) {
-				j++;
+				wchar_t c;
+				if (mbtowc(&c, (char*)p, 6) < 0) {
+					mbtowc(NULL, NULL, 0); // reset if invalid multi-byte character
+					j++;
+				} else {
+					j += wcwidth(c) < 0 ? 1 : wcwidth(c);
+				}
 				display_utf8(bp, *p, nch);
 			} else if (isprint(*p) || *p == '\t' || *p == '\n') {
 				j += *p == '\t' ? 8-(j&7) : 1;
