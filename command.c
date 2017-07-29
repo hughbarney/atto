@@ -144,7 +144,7 @@ void backsp()
 {
 	curbp->b_point = movegap(curbp, curbp->b_point);
 	if (curbp->b_buf < curbp->b_gap) {
-		--curbp->b_gap;
+		curbp->b_gap -= prev_utf8_char_size();
 		curbp->b_flags |= B_MODIFIED;
 	}
 	curbp->b_point = pos(curbp, curbp->b_egap);
@@ -154,7 +154,8 @@ void delete()
 {
 	curbp->b_point = movegap(curbp, curbp->b_point);
 	if (curbp->b_egap < curbp->b_ebuf) {
-		curbp->b_point = pos(curbp, ++curbp->b_egap);
+		curbp->b_egap += utf8_size(*curbp->b_egap);
+		curbp->b_point = pos(curbp, curbp->b_egap);
 		curbp->b_flags |= B_MODIFIED;
 	}
 }
