@@ -1,0 +1,15 @@
+简化字，民间俗稱簡體字，这一体系常被称为简体中文, 
+其簡化字形來自草書楷化或文獻中筆畫簡單的俗字、異體字、
+古字、假借字，但也有很多是民間流行的寫法。同时，
+也有很多汉字沒有簡化，如：「工欲善其事，必先利其器」，
+千年以来字体皆未改变，称为傳承字、正體字，
+而同時共用的就稱為傳統漢字。
+
+Translation:
+Simplified characters, commonly known as simplified
+Chenese characters, is a writing system often referred
+to as Simplified Chinese.
+
+The system has its origin not only in simplified glyphs from 
+the cursive script used in literary works, but also from
+popular writings, etc. etc.

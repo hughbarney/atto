@@ -12,7 +12,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define VERSION	 "Atto 1.14, Public Domain, April 2017, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.15, Public Domain, July 2017, by Hugh Barney,  No warranty."
 #define PROG_NAME "atto"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwite mode */

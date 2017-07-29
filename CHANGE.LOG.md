@@ -1,5 +1,9 @@
 # Atto Emacs Change Log
 
+## Atto v1.15 29 July 2017
+* Merged in fixes for multi-byte/wide chars, backspace and cursor position provided by Matt Fielding (Magnetic Realms)
+* Added simplified chinese test file to docs
+
 ## Atto v1.14 14 April 2017
 * added alternative home and end key bindings (some systems differ in setup)
 * removed some non emacs bindings 
