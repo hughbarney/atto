@@ -166,6 +166,11 @@ A multi-window display issue (specifically evident in a buffer-gap editor) was r
   Atto code is released to the public domain.
   hughbarney AT gmail.com 2016
 
+## Acknowledgements
+    Ed Davies for bring Athony's Editor to my attention
+    Anthony Howe for his original codebase
+    Matt Fielding (Magnetic Realms) for providing fixes for multi-byte / wide characters, delete, backspace and cursor position
+
 ## References
 
     [1] Perfect Emacs - https://github.com/hughbarney/pEmacs
