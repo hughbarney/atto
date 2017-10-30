@@ -7,20 +7,18 @@ int getfilename(char *prompt, char *buf, int nbuf)
 {
 	static char temp_file[] = TEMPFILE;
 	int cpos = 0;	/* current character position in string */
-	int c, fd, nskip = 0, didtry = 0, iswild = 0;
+	int k = 0, c, fd, didtry, iswild = 0;
 
 	char sys_command[255];
 	FILE *fp = NULL;
 	buf[0] ='\0';
 
 	for (;;) {
-		if (!didtry)
-			nskip = -1;
-		didtry = 0;
+		didtry = (k == 0x09);	/* Was last command tab-completion? */
 		display_prompt_and_response(prompt, buf);
-		c = getch(); /* get a character from the user */
+		k = getch(); /* get a character from the user */
 
-		switch(c) {
+		switch(k) {
 		case 0x0a: /* cr, lf */
 		case 0x0d:
 			buf[cpos] = 0;
@@ -55,7 +53,7 @@ int getfilename(char *prompt, char *buf, int nbuf)
 			}
 
 			/* first time retrieval */
-			if (nskip < 0) {
+			if (! didtry) {
 				if (fp != NULL)
 					fclose(fp);
 				strcpy(temp_file, TEMPFILE);
@@ -71,7 +69,6 @@ int getfilename(char *prompt, char *buf, int nbuf)
 				(void) ! system(sys_command); /* stop compiler unused result warning */
 				fp = fdopen(fd, "r");
 				unlink(temp_file);
-				nskip = 0;
 			}
 
 			/* copy next filename into buf */
@@ -88,7 +85,7 @@ int getfilename(char *prompt, char *buf, int nbuf)
 
 		default:
 			if (cpos < nbuf - 1) {
-				  buf[cpos++] = c;
+				  buf[cpos++] = k;
 				  buf[cpos] = '\0';
 			}
 			break;
