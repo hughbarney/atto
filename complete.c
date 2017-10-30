@@ -6,7 +6,7 @@
 int getfilename(char *prompt, char *buf, int nbuf)
 {
 	int cpos = 0;	/* current character position in string */
-	int c, n, nskip = 0, didtry = 0, iswild = 0, result = 0;
+	int c, n, nskip = 0, didtry = 0, iswild = 0;
 
 	char sys_command[255];
 	char *output_file = NULL;
@@ -69,8 +69,7 @@ int getfilename(char *prompt, char *buf, int nbuf)
 				output_file = get_temp_file();
 				strcat(sys_command, output_file);
 				strcat(sys_command, " 2>&1");
-				result = system(sys_command);
-				result++; /* stop compiler warning about not used */
+				(void) ! system(sys_command); /* stop compiler unused result warning */
 				fp = fopen(output_file, "r");
 				nskip = 0;
 			}
