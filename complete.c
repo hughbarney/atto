@@ -6,7 +6,7 @@
 int getfilename(char *prompt, char *buf, int nbuf)
 {
 	int cpos = 0;	/* current character position in string */
-	int c, ocpos, n, nskip = 0, didtry = 0, iswild = 0, result = 0;
+	int c, n, nskip = 0, didtry = 0, iswild = 0, result = 0;
 
 	char sys_command[255];
 	char *output_file = NULL;
@@ -47,7 +47,6 @@ int getfilename(char *prompt, char *buf, int nbuf)
 
 		case 0x09: /* TAB, complete file name */
 			didtry = 1;
-			ocpos = cpos;
 
 			/* scan backwards for a wild card and set */
 			iswild=0;
@@ -60,7 +59,6 @@ int getfilename(char *prompt, char *buf, int nbuf)
 
 			/* first time retrieval */
 			if (nskip < 0) {
-				buf[ocpos] = 0;
 				if (fp != NULL)
 					fclose(fp);
 				strcpy(sys_command, "echo ");
