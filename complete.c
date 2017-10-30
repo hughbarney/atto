@@ -7,7 +7,7 @@ int getfilename(char *prompt, char *buf, int nbuf)
 {
 	static char temp_file[] = TEMPFILE;
 	int cpos = 0;	/* current character position in string */
-	int c, n, fd, nskip = 0, didtry = 0, iswild = 0;
+	int c, fd, nskip = 0, didtry = 0, iswild = 0;
 
 	char sys_command[255];
 	FILE *fp = NULL;
@@ -46,8 +46,6 @@ int getfilename(char *prompt, char *buf, int nbuf)
 			break;
 
 		case 0x09: /* TAB, complete file name */
-			didtry = 1;
-
 			/* scan backwards for a wild card and set */
 			iswild=0;
 			while (cpos > 0) {
@@ -76,24 +74,16 @@ int getfilename(char *prompt, char *buf, int nbuf)
 				nskip = 0;
 			}
 
-			/* skip to start of next filename in the list */
-			c = ' ';
-			for (n = nskip; n > 0; n--)
-				while ((c = getc(fp)) != EOF && c != ' ')
-					;
-			nskip++;
-
-			/* at end of list */
-			if (c != ' ')
-				nskip = 0;
-
 			/* copy next filename into buf */
-			while ((c = getc(fp)) != EOF && c != '\n' && c != ' ' && c != '*')
-				if (cpos < nbuf - 1)
+			while ((c = getc(fp)) != EOF && c != '\n' && c != ' ')
+				if (cpos < nbuf - 1 && c != '*')
 					buf[cpos++] = c;
 
 			buf[cpos] = '\0';
-			rewind(fp);
+			if (c != ' ')
+				rewind(fp);
+
+			didtry = 1;
 			break;
 
 		default:
