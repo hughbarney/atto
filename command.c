@@ -348,13 +348,3 @@ void showpos()
 			curbp->b_point, ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap)));
 	}
 }
-
-char* get_temp_file()
-{
-	static char temp_file[] = TEMPFILE;
-	int fd;
-	strcpy(temp_file, TEMPFILE);
-	if (-1 == (fd = mkstemp(temp_file))) fatal("%s: Failed to create temp file\n");
-	close(fd);
-	return temp_file;
-}

@@ -5,11 +5,11 @@
 /* basic filename completion, based on code in uemacs/PK */
 int getfilename(char *prompt, char *buf, int nbuf)
 {
+	static char temp_file[] = TEMPFILE;
 	int cpos = 0;	/* current character position in string */
-	int c, n, nskip = 0, didtry = 0, iswild = 0;
+	int c, n, fd, nskip = 0, didtry = 0, iswild = 0;
 
 	char sys_command[255];
-	char *output_file = NULL;
 	FILE *fp = NULL;
 	buf[0] ='\0';
 
@@ -61,16 +61,19 @@ int getfilename(char *prompt, char *buf, int nbuf)
 			if (nskip < 0) {
 				if (fp != NULL)
 					fclose(fp);
+				strcpy(temp_file, TEMPFILE);
+				if (-1 == (fd = mkstemp(temp_file)))
+					fatal("%s: Failed to create temp file\n");
 				strcpy(sys_command, "echo ");
 				strcat(sys_command, buf);
 				if (!iswild)
 					strcat(sys_command, "*");
 				strcat(sys_command, " >");
-				output_file = get_temp_file();
-				strcat(sys_command, output_file);
+				strcat(sys_command, temp_file);
 				strcat(sys_command, " 2>&1");
 				(void) ! system(sys_command); /* stop compiler unused result warning */
-				fp = fopen(output_file, "r");
+				fp = fdopen(fd, "r");
+				unlink(temp_file);
 				nskip = 0;
 			}
 
@@ -92,7 +95,6 @@ int getfilename(char *prompt, char *buf, int nbuf)
 
 			buf[cpos] = '\0';
 			rewind(fp);
-			unlink(output_file);
 			break;
 
 		default:

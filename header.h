@@ -178,7 +178,6 @@ extern point_t search_forward(buffer_t *, point_t, char *);
 extern point_t search_backwards(buffer_t *, point_t, char *);
 extern void update_search_prompt(char *, char *);
 extern void display_search_result(point_t, int, char *, char *);
-extern char* get_temp_file(void);
 extern buffer_t* find_buffer(char *, int);
 extern void buffer_init(buffer_t *);
 extern int delete_buffer(buffer_t *);
