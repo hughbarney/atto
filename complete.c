@@ -50,12 +50,11 @@ int getfilename(char *prompt, char *buf, int nbuf)
 
 			/* scan backwards for a wild card and set */
 			iswild=0;
-			while (cpos > -1) {
+			while (cpos > 0) {
+				cpos--;
 				if (buf[cpos] == '*' || buf[cpos] == '?')
 					iswild = 1;
-				cpos--;
 			}
-			cpos=0;
 
 			/* first time retrieval */
 			if (nskip < 0) {
