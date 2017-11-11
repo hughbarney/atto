@@ -19,17 +19,12 @@ int getfilename(char *prompt, char *buf, int nbuf)
 		k = getch(); /* get a character from the user */
 
 		switch(k) {
+		case 0x07: /* ctrl-g, abort */
 		case 0x0a: /* cr, lf */
 		case 0x0d:
-			buf[cpos] = 0;
 			if (fp != NULL)
 				fclose(fp);
-			return (cpos > 0 ? TRUE : FALSE);
-
-		case 0x07: /* ctrl-g, abort */
-			if (fp != NULL)
-				fclose(fp);
-			return FALSE;
+			return (k != 0x07 && cpos > 0);
 
 		case 0x7f: /* del, erase */
 		case 0x08: /* backspace */
