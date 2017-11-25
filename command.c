@@ -1,6 +1,7 @@
 /* command.c, Atto Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
 
 #include "header.h"
+int mkstemp(char *);
 
 void quit() { done = 1; }
 void up() { curbp->b_point = lncolumn(curbp, upup(curbp, curbp->b_point),curbp->b_col); }

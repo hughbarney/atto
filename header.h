@@ -1,5 +1,6 @@
 /* header.h, Atto Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
 
+#define _XOPEN_SOURCE
 #include <locale.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -11,8 +12,9 @@
 #include <limits.h>
 #include <string.h>
 #include <unistd.h>
+#include <wchar.h>
 
-#define VERSION	 "Atto 1.15, Public Domain, July 2017, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.15.1, Public Domain, Nov 2017, by Hugh Barney,  No warranty."
 #define PROG_NAME "atto"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwite mode */

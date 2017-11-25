@@ -1,5 +1,8 @@
 # Atto Emacs Change Log
 
+## Atto v1.15.1 25 Nov 2017
+* small code optimisation to reduce line count
+
 ## Atto v1.15 29 July 2017
 * Merged in fixes for multi-byte/wide chars, backspace and cursor position provided by Matt Fielding (Magnetic Realms)
 * Added simplified chinese test file to docs
