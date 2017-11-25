@@ -1,7 +1,6 @@
 /* command.c, Atto Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
 
 #include "header.h"
-int mkstemp(char *);
 
 void quit() { done = 1; }
 void up() { curbp->b_point = lncolumn(curbp, upup(curbp, curbp->b_point),curbp->b_col); }
@@ -348,14 +347,4 @@ void showpos()
 			current, lastln,
 			curbp->b_point, ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap)));
 	}
-}
-
-char* get_temp_file()
-{
-	static char temp_file[] = TEMPFILE;
-	int fd;
-	strcpy(temp_file, TEMPFILE);
-	if (-1 == (fd = mkstemp(temp_file))) fatal("%s: Failed to create temp file\n");
-	close(fd);
-	return temp_file;
 }

@@ -5,33 +5,26 @@
 /* basic filename completion, based on code in uemacs/PK */
 int getfilename(char *prompt, char *buf, int nbuf)
 {
+	static char temp_file[] = TEMPFILE;
 	int cpos = 0;	/* current character position in string */
-	int c, ocpos, n, nskip = 0, didtry = 0, iswild = 0, result = 0;
+	int k = 0, c, fd, didtry, iswild = 0;
 
 	char sys_command[255];
-	char *output_file = NULL;
 	FILE *fp = NULL;
 	buf[0] ='\0';
 
 	for (;;) {
-		if (!didtry)
-			nskip = -1;
-		didtry = 0;
+		didtry = (k == 0x09);	/* Was last command tab-completion? */
 		display_prompt_and_response(prompt, buf);
-		c = getch(); /* get a character from the user */
+		k = getch(); /* get a character from the user */
 
-		switch(c) {
+		switch(k) {
+		case 0x07: /* ctrl-g, abort */
 		case 0x0a: /* cr, lf */
 		case 0x0d:
-			buf[cpos] = 0;
 			if (fp != NULL)
 				fclose(fp);
-			return (cpos > 0 ? TRUE : FALSE);
-
-		case 0x07: /* ctrl-g, abort */
-			if (fp != NULL)
-				fclose(fp);
-			return FALSE;
+			return (k != 0x07 && cpos > 0);
 
 		case 0x7f: /* del, erase */
 		case 0x08: /* backspace */
@@ -46,61 +39,48 @@ int getfilename(char *prompt, char *buf, int nbuf)
 			break;
 
 		case 0x09: /* TAB, complete file name */
-			didtry = 1;
-			ocpos = cpos;
-
 			/* scan backwards for a wild card and set */
 			iswild=0;
-			while (cpos > -1) {
+			while (cpos > 0) {
+				cpos--;
 				if (buf[cpos] == '*' || buf[cpos] == '?')
 					iswild = 1;
-				cpos--;
 			}
-			cpos=0;
 
 			/* first time retrieval */
-			if (nskip < 0) {
-				buf[ocpos] = 0;
+			if (! didtry) {
 				if (fp != NULL)
 					fclose(fp);
+				strcpy(temp_file, TEMPFILE);
+				if (-1 == (fd = mkstemp(temp_file)))
+					fatal("%s: Failed to create temp file\n");
 				strcpy(sys_command, "echo ");
 				strcat(sys_command, buf);
 				if (!iswild)
 					strcat(sys_command, "*");
 				strcat(sys_command, " >");
-				output_file = get_temp_file();
-				strcat(sys_command, output_file);
+				strcat(sys_command, temp_file);
 				strcat(sys_command, " 2>&1");
-				result = system(sys_command);
-				result++; /* stop compiler warning about not used */
-				fp = fopen(output_file, "r");
-				nskip = 0;
+				(void) ! system(sys_command); /* stop compiler unused result warning */
+				fp = fdopen(fd, "r");
+				unlink(temp_file);
 			}
 
-			/* skip to start of next filename in the list */
-			c = ' ';
-			for (n = nskip; n > 0; n--)
-				while ((c = getc(fp)) != EOF && c != ' ')
-					;
-			nskip++;
-
-			/* at end of list */
-			if (c != ' ')
-				nskip = 0;
-
 			/* copy next filename into buf */
-			while ((c = getc(fp)) != EOF && c != '\n' && c != ' ' && c != '*')
-				if (cpos < nbuf - 1)
+			while ((c = getc(fp)) != EOF && c != '\n' && c != ' ')
+				if (cpos < nbuf - 1 && c != '*')
 					buf[cpos++] = c;
 
 			buf[cpos] = '\0';
-			rewind(fp);
-			unlink(output_file);
+			if (c != ' ')
+				rewind(fp);
+
+			didtry = 1;
 			break;
 
 		default:
 			if (cpos < nbuf - 1) {
-				  buf[cpos++] = c;
+				  buf[cpos++] = k;
 				  buf[cpos] = '\0';
 			}
 			break;

@@ -13,8 +13,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <wchar.h>
+int mkstemp(char *);
 
-#define VERSION	 "Atto 1.15.1, Public Domain, Nov 2017, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.16, Public Domain, Nov 2017, by Hugh Barney,  No warranty."
 #define PROG_NAME "atto"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwite mode */
@@ -180,7 +181,6 @@ extern point_t search_forward(buffer_t *, point_t, char *);
 extern point_t search_backwards(buffer_t *, point_t, char *);
 extern void update_search_prompt(char *, char *);
 extern void display_search_result(point_t, int, char *, char *);
-extern char* get_temp_file(void);
 extern buffer_t* find_buffer(char *, int);
 extern void buffer_init(buffer_t *);
 extern int delete_buffer(buffer_t *);
