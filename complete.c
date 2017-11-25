@@ -9,7 +9,7 @@ int getfilename(char *prompt, char *buf, int nbuf)
 	int c, ocpos, n, nskip = 0, didtry = 0, iswild = 0, result = 0;
 
 	char sys_command[255];
-	char *output_file = get_temp_file();
+	char *output_file = NULL;
 	FILE *fp = NULL;
 	buf[0] ='\0';
 
@@ -24,9 +24,13 @@ int getfilename(char *prompt, char *buf, int nbuf)
 		case 0x0a: /* cr, lf */
 		case 0x0d:
 			buf[cpos] = 0;
+			if (fp != NULL)
+				fclose(fp);
 			return (cpos > 0 ? TRUE : FALSE);
 
 		case 0x07: /* ctrl-g, abort */
+			if (fp != NULL)
+				fclose(fp);
 			return FALSE;
 
 		case 0x7f: /* del, erase */

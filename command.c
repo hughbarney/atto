@@ -353,7 +353,9 @@ void showpos()
 char* get_temp_file()
 {
 	static char temp_file[] = TEMPFILE;
+	int fd;
 	strcpy(temp_file, TEMPFILE);
-	if (-1 == mkstemp(temp_file)) fatal("%s: Failed to create temp file\n");
+	if (-1 == (fd = mkstemp(temp_file))) fatal("%s: Failed to create temp file\n");
+	close(fd);
 	return temp_file;
 }
