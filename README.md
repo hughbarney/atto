@@ -144,9 +144,9 @@ now search for which package would have curses.h and install it:
     libncurses5-dev: /usr/include/curses.h
     $ sudo apt-get install libncurses5-dev
 
-## Future Enhancements
+## Future Enhancements and Collaboration
 
-As of Atto 1.6 we have about 46 lines of code before we reach the design limit of 2000 lines.  Whilst I would have liked to have added a few other features the priority will now be bug fixes and keeping the code count below 2000 lines.
+The priority now is bug fixes and keeping the code count below 2000 lines. Bug fixes and optimisations are welcome especially if they deliver code reductions which made space for further fixes.
 
 ## Multiple Windows or Not?
 
@@ -164,12 +164,13 @@ A multi-window display issue (specifically evident in a buffer-gap editor) was r
 ## Copying
 
   Atto code is released to the public domain.
-  hughbarney AT gmail.com 2016
+  hughbarney AT gmail.com 2017
 
 ## Acknowledgements
-    Ed Davies for bring Athony's Editor to my attention
+    Ed Davies for bringing Athony's Editor to my attention
     Anthony Howe for his original codebase
     Matt Fielding (Magnetic Realms) for providing fixes for multi-byte / wide characters, delete, backspace and cursor position
+    The Infinnovation team for bug fixes to complete.c
 
 ## References
 

@@ -22,14 +22,12 @@ int getfilename(char *prompt, char *buf, int nbuf)
 		case 0x07: /* ctrl-g, abort */
 		case 0x0a: /* cr, lf */
 		case 0x0d:
-			if (fp != NULL)
-				fclose(fp);
+			if (fp != NULL) fclose(fp);
 			return (k != 0x07 && cpos > 0);
 
 		case 0x7f: /* del, erase */
 		case 0x08: /* backspace */
-			if (cpos == 0)
-				continue;
+			if (cpos == 0) continue;
 			buf[--cpos] = '\0';
 			break;
 
@@ -49,15 +47,13 @@ int getfilename(char *prompt, char *buf, int nbuf)
 
 			/* first time retrieval */
 			if (! didtry) {
-				if (fp != NULL)
-					fclose(fp);
+				if (fp != NULL) fclose(fp);
 				strcpy(temp_file, TEMPFILE);
 				if (-1 == (fd = mkstemp(temp_file)))
 					fatal("%s: Failed to create temp file\n");
 				strcpy(sys_command, "echo ");
 				strcat(sys_command, buf);
-				if (!iswild)
-					strcat(sys_command, "*");
+				if (!iswild) strcat(sys_command, "*");
 				strcat(sys_command, " >");
 				strcat(sys_command, temp_file);
 				strcat(sys_command, " 2>&1");
@@ -72,9 +68,7 @@ int getfilename(char *prompt, char *buf, int nbuf)
 					buf[cpos++] = c;
 
 			buf[cpos] = '\0';
-			if (c != ' ')
-				rewind(fp);
-
+			if (c != ' ') rewind(fp);
 			didtry = 1;
 			break;
 

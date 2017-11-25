@@ -1,5 +1,9 @@
 # Atto Emacs Change Log
 
+## Atto V1.16 25 Nov 2017
+* merged in file descriptor leak from and code reductions in complete.c from "The Infinnovation team"
+* small changes in complete.c to reduce line count
+
 ## Atto v1.15.1 25 Nov 2017
 * small code optimisation to reduce line count
 
