@@ -146,7 +146,7 @@ now search for which package would have curses.h and install it:
 
 ## Future Enhancements and Collaboration
 
-The priority now is bug fixes and keeping the code count below 2000 lines. Bug fixes and optimisations are welcome especially if they deliver code reductions which made space for further fixes.
+The priority now is bug fixes and keeping the code count below 2000 lines. Bug fixes and optimisations are welcome especially if they deliver code reductions which make space for further fixes.
 
 ## Multiple Windows or Not?
 
