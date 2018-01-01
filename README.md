@@ -24,7 +24,7 @@ In Defining Atto as the lowest functional Emacs I have had to consider the essen
 
 The small Emacs naming scheme appears to use sub-unit prefixes in decending order with each further reduction of functionality.  Atto means 10 to the power of minus 18.   Logically Femto (10^-15) comes after Pico (10^-12). However choosing Atto allows for the potential for **Femto** to be an Atto based Emacs with a scripting language.
 
-* As of November 2017 Atto's big brother *Femto* can be found [here](https://github.com/hughbarney/femto)
+* As of November 2017 Atto's big brother **Femto** can be found [here](https://github.com/hughbarney/femto)
 
 ## Derivation
 
