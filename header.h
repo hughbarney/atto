@@ -1,5 +1,4 @@
 /* header.h, Atto Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
-
 #define _XOPEN_SOURCE
 #include <locale.h>
 #include <stdlib.h>
@@ -15,7 +14,7 @@
 #include <wchar.h>
 int mkstemp(char *);
 
-#define VERSION	 "Atto 1.16, Public Domain, Nov 2017, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.17, Public Domain, Jan 2018, by Hugh Barney,  No warranty."
 #define PROG_NAME "atto"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwite mode */

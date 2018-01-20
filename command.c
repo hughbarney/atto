@@ -8,7 +8,7 @@ void down() { curbp->b_point = lncolumn(curbp, dndn(curbp, curbp->b_point),curbp
 void lnbegin() { curbp->b_point = segstart(curbp, lnstart(curbp,curbp->b_point), curbp->b_point); }
 void version() { msg(VERSION); }
 void top() { curbp->b_point = 0; }
-void bottom() {	curbp->b_epage = curbp->b_point = pos(curbp, curbp->b_ebuf); }
+void bottom() { curbp->b_point = pos(curbp, curbp->b_ebuf); }
 void block() { curbp->b_mark = curbp->b_point; }
 void copy() { copy_cut(FALSE); }
 void cut() { copy_cut(TRUE); }
@@ -82,8 +82,11 @@ int prev_utf8_char_size()
 
 void lnend()
 {
+        if (curbp->b_point == pos(curbp, curbp->b_ebuf)) return; /* do nothing if EOF */
 	curbp->b_point = dndn(curbp, curbp->b_point);
+	point_t p = curbp->b_point;
 	left();
+	curbp->b_point = (*ptr(curbp, curbp->b_point) == '\n') ? curbp->b_point : p;
 }
 
 void wleft()
@@ -270,13 +273,14 @@ void toggle_overwrite_mode() {
 
 void killtoeol()
 {
-	/* point = start of empty line or last char in file */
-	if (*(ptr(curbp, curbp->b_point)) == 0xa || (curbp->b_point + 1 == ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap))) ) {
-		delete();
+        if (curbp->b_point == pos(curbp, curbp->b_ebuf))
+		return; /* do nothing if at end of file */
+	if (*(ptr(curbp, curbp->b_point)) == 0xa) {
+		delete(); /* delete CR if at start of empty line */
 	} else {
 		curbp->b_mark = curbp->b_point;
 		lnend();
-		copy_cut(TRUE);
+		if (curbp->b_mark != curbp->b_point) copy_cut(TRUE);
 	}
 }
 

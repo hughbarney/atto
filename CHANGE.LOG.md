@@ -1,5 +1,8 @@
 # Atto Emacs Change Log
 
+## Atto v1.17 20 Jan 2018
+* fixed bug with lnend() when at end of buffer, fixed killtoeol() behaviour
+
 ## Atto V1.16 25 Nov 2017
 * merged in file descriptor leak from and code reductions in complete.c from "The Infinnovation team"
 * small changes in complete.c to reduce line count
