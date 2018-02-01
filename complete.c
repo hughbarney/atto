@@ -19,9 +19,10 @@ int getfilename(char *prompt, char *buf, int nbuf)
 		k = getch(); /* get a character from the user */
 
 		switch(k) {
-		case 0x07: /* ctrl-g, abort */
 		case 0x0a: /* cr, lf */
 		case 0x0d:
+			if (cpos > 0 && NULL != strchr(buf, '~')) goto do_tab;
+		case 0x07: /* ctrl-g, abort */
 			if (fp != NULL) fclose(fp);
 			return (k != 0x07 && cpos > 0);
 
@@ -36,6 +37,7 @@ int getfilename(char *prompt, char *buf, int nbuf)
 			buf[0] = '\0';
 			break;
 
+do_tab: 
 		case 0x09: /* TAB, complete file name */
 			/* scan backwards for a wild card and set */
 			iswild=0;

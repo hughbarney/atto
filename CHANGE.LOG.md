@@ -1,5 +1,8 @@
 # Atto Emacs Change Log
 
+## Atto v1.18 1 Feb 2018
+* fixed bug with opening file ~/.xxx where filename completion has not been used. If ~ is detected we force a call as if the user had selected filename completion.
+
 ## Atto v1.17 20 Jan 2018
 * fixed bug with lnend() when at end of buffer, fixed killtoeol() behaviour
 
