@@ -14,7 +14,7 @@
 #include <wchar.h>
 int mkstemp(char *);
 
-#define VERSION	 "Atto 1.18, Public Domain, Feb 2018, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.19, Public Domain, Mar 2018, by Hugh Barney,  No warranty."
 #define PROG_NAME "atto"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwite mode */
@@ -56,6 +56,7 @@ typedef struct buffer_t
 	point_t b_cpoint;         /* the original current point, used for mutliple window displaying */
 	point_t b_page;           /* start of page */
 	point_t b_epage;          /* end of page */
+	point_t b_reframe;        /* force a reframe of the display */
 	int b_cnt;                /* count of windows referencing this buffer */
 	int b_size;               /* current size of text being edited (not including gap) */
 	int b_psize;              /* previous size */

@@ -1,5 +1,8 @@
 # Atto Emacs Change Log
 
+## Atto v1.19 9 Mar 2018
+* fixed issue with display reframe when last line is displayed and text has been cut above it. On scrolling to end of buffer there was a nasty jump to frame the screen with the last line anchored to the end of the screen. This issue was present in the original Anthonys Editor.
+
 ## Atto v1.18 1 Feb 2018
 * fixed bug with opening file ~/.xxx where filename completion has not been used. If ~ is detected we force a call as if the user had selected filename completion.
 

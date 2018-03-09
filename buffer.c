@@ -11,6 +11,7 @@ void buffer_init(buffer_t *bp)
 	bp->b_cpoint = 0;
 	bp->b_page = 0;
 	bp->b_epage = 0;
+	bp->b_reframe = 0;
 	bp->b_size = 0;
 	bp->b_psize = 0;	
 	bp->b_flags = 0;
