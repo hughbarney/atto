@@ -1,5 +1,8 @@
 # Atto Emacs Change Log
 
+## Atto v1.20 30 Mar 2018
+* very small enhancement to previous fix.  When we go to the end of the file we do not reframe if the end of file is already displayed in the window.
+
 ## Atto v1.19 9 Mar 2018
 * fixed issue with display reframe when last line is displayed and text has been cut above it. On scrolling to end of buffer there was a nasty jump to frame the screen with the last line anchored to the end of the screen. This issue was present in the original Anthonys Editor.
 
