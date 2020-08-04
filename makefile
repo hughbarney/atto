@@ -10,6 +10,7 @@ CC      = cc
 CFLAGS  = -O -Wall
 
 LD      = cc
+LDFLAGS =
 LIBS    = -lncursesw
 
 CP      = cp
@@ -22,7 +23,7 @@ O       = .o
 OBJ     = command$(O) display$(O) gap$(O) key$(O) search$(O) buffer$(O) replace$(O) window$(O) complete$(O) hilite$(O) main$(O)
 
 atto$(E) : $(OBJ)
-	$(LD) -o atto$(E) $(OBJ) $(LIBS)
+	$(LD) $(LDFLAGS) -o atto$(E) $(OBJ) $(LIBS)
 
 command$(O): command.c header.h
 	$(CC) $(CFLAGS) -c command.c
