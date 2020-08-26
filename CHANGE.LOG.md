@@ -1,5 +1,8 @@
 # Atto Emacs Change Log
 
+## Atto v1.21 27 Aug 2020
+* small fix, reframe on insert if point is sitting on EOF and have scrolled off end of window
+
 ## Atto v1.20 30 Mar 2018
 * very small enhancement to previous fix.  When we go to the end of the file we do not reframe if the end of file is already displayed in the window.
 

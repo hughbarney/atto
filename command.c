@@ -139,6 +139,8 @@ void insert()
 	} else {
 		*curbp->b_gap++ = *input == '\r' ? '\n' : *input;
 		curbp->b_point = pos(curbp, curbp->b_egap);
+		// force reframe if scrolled off bottom of screen and at EOF
+		if (curbp->b_point == pos(curbp, curbp->b_ebuf) && curbp->b_point >= curbp->b_epage) curbp->b_reframe = 1;
 	}
 	curbp->b_flags |= B_MODIFIED;
 }
