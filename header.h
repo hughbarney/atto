@@ -14,7 +14,7 @@
 #include <wchar.h>
 int mkstemp(char *);
 
-#define VERSION	 "Atto 1.21, Public Domain, Aug 2020, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.22, Public Domain, Dec 2020, by Hugh Barney,  No warranty."
 #define PROG_NAME "atto"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwite mode */

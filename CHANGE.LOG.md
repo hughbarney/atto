@@ -1,5 +1,8 @@
 # Atto Emacs Change Log
 
+## Atto v1.22 06 Dec 2020
+* fixed some color issues when running on Arch, needed to set color in modeline and msg line
+
 ## Atto v1.21 27 Aug 2020
 * small fix, reframe on insert if point is sitting on EOF and have scrolled off end of window
 

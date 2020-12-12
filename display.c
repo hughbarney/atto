@@ -172,6 +172,7 @@ void display(window_t *wp, int flag)
 		refresh();
 	}
 	wp->w_update = FALSE;
+	attron(COLOR_PAIR(ID_SYMBOL));
 }
 
 void display_utf8(buffer_t *bp, char_t c, int n)
@@ -190,7 +191,7 @@ void modeline(window_t *wp)
 	int i;
 	char lch, mch, och;
 	
-	standout();
+	attron(COLOR_PAIR(ID_MODELINE));
 	move(wp->w_top + wp->w_rows, 0);
 	lch = (wp == curwp ? '=' : '-');
 	mch = ((wp->w_bufp->b_flags & B_MODIFIED) ? '*' : lch);
@@ -201,13 +202,13 @@ void modeline(window_t *wp)
 
 	for (i = strlen(temp) + 1; i <= COLS; i++)
 		addch(lch);
-	standend();
 }
 
 void dispmsg()
 {
 	move(MSGLINE, 0);
 	if (msgflag) {
+		attron(COLOR_PAIR(ID_SYMBOL));
 		addstr(msgline);
 		msgflag = FALSE;
 	}
