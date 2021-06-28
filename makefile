@@ -62,5 +62,5 @@ clean:
 	-$(RM) $(OBJ) atto$(E)
 
 install:
-	-$(MV) atto$(E) $(HOME)/bin
+	-$(MV) atto$(E) /usr/local/bin/
 
