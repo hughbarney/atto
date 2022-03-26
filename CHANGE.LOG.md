@@ -52,7 +52,7 @@
 * Fixed cut, copy code to avoid corruption as pointer p should be set after call to movegap()
 
 ## Atto v1.8 22 December 2016
-* Added generic syntax highlighting, removed the basic undo command to keep code cound under 2000 lines.
+* Added generic syntax highlighting, removed the basic undo command to keep code count under 2000 lines.
 * made searchtext start from empty string (as per GNU emacs)
 * modified search_forward() and search_backwards() so that they can be called on any buffer (not just current buf)
 * fixed failed search when first char in buffer should match.
@@ -105,7 +105,7 @@ NOTE: If this creates a problem on windows the change can be backed out by uncom
 
 ## Atto v1.2 29 November 2015
 * Implemented multibuffer support, added approx 180 lines of code
-* First buffer created is called *scatch*
+* First buffer created is called *scratch*
 * Creates *scratch* buffer if you want to delete last buffer
 * Added C-x C-n next-buffer
 * Added C-x C-p prev-buffer

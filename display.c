@@ -100,7 +100,7 @@ void display(window_t *wp, int flag)
 		bp->b_reframe = 0;
 		/* Find end of screen plus one. */
 		bp->b_page = dndn(bp, bp->b_point);
-		/* if we scoll to EOF we show 1 blank line at bottom of screen */
+		/* if we scroll to EOF we show 1 blank line at bottom of screen */
 		if (pos(bp, bp->b_ebuf) <= bp->b_page) {
 			bp->b_page = pos(bp, bp->b_ebuf);
 			i = wp->w_rows - 1;
