@@ -206,3 +206,4 @@ extern void set_parse_state(buffer_t *, point_t);
 extern void set_parse_state2(buffer_t *, point_t);
 extern int parse_text(buffer_t *, point_t);
 extern void resize_terminal();
+extern void arguments(int argc, char **argv);
