@@ -354,3 +354,14 @@ void showpos()
 			curbp->b_point, ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap)));
 	}
 }
+
+void suspend()
+{
+	noraw();
+	endwin();
+	kill(0, SIGSTOP);
+	raw();
+	noecho();
+	idlok(stdscr, TRUE);
+
+}
