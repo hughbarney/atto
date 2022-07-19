@@ -12,6 +12,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <wchar.h>
+#include <signal.h>
 int mkstemp(char *);
 
 #define VERSION	 "Atto 1.22, Public Domain, Dec 2020, by Hugh Barney,  No warranty."
@@ -155,6 +156,7 @@ extern void left(void);
 extern void lnbegin(void);
 extern void lnend(void);
 extern void paste(void);
+extern void suspend(void);
 extern void pgdown(void);
 extern void pgup(void);
 extern void quit(void);
