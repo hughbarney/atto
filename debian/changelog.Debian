@@ -1,0 +1,5 @@
+atto (1.22f-1.0) stable; urgency=low
+
+  * Initial Debian packaging
+
+ -- Georg Lehner <jorge@at.anteris.net>  Sat, 23 Jul 2022 09:40:24 +0200
