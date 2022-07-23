@@ -1,5 +1,9 @@
 # Atto Emacs Change Log
 
+# Atto v1.22f1 19 Jul 2022
+* Add C-z command to suspend the editor.
+* Load all files on command line and optionally jump to a specified line.
+
 ## Atto v1.22 06 Dec 2020
 * fixed some color issues when running on Arch, needed to set color in modeline and msg line
 

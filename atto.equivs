@@ -1,0 +1,24 @@
+# leg20220722: atto Debian packaging
+Package: atto
+Version: 1.22f-1.0
+Priority: optional
+Section: editors
+Maintainer: Georg Lehner <jorge@at.anteris.net>
+Homepage: https://github.com/jorge-leon/atto
+Tag: implemented-in::c, interface::text-mode, role::program,
+ scope::application, uitoolkit::ncurses, use::editing,
+ works-with::text, works-with::unicode
+Description:  The smallest functional Emacs in less than 2000 lines of C.
+ Atto is a small, multi buffer, multi window text editor for the console
+ with UTF-8 support and Emacs key bindings.
+
+Architecture: any
+Standards-Version: 3.9.2
+Copyright: debian/public_domain
+Readme: debian/README.Debian
+Changelog: debian/changelog.Debian
+Extra-Files: README.md
+Files: atto /usr/bin/
+
+Postinst: debian/postinst
+Prerm: debian/prerm
