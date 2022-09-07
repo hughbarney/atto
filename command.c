@@ -355,13 +355,4 @@ void showpos()
 	}
 }
 
-void suspend()
-{
-	noraw();
-	endwin();
-	kill(0, SIGSTOP);
-	raw();
-	noecho();
-	idlok(stdscr, TRUE);
-
-}
+void suspend() { raise(SIGTSTP); }

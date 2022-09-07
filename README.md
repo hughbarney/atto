@@ -72,6 +72,7 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     C-W   Kill Region (Cut)
     C-X   CTRL-X command prefix
     C-Y   Yank (Paste)
+    C-Y   Suspend the Atto process (Run 'fg' at the shell to resume it)
 
     M-<   Start of file
     M->   End of file
