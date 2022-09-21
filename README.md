@@ -1,9 +1,10 @@
 # Atto Emacs
 
+This is Atto v1.22f1 with a small set of additions be Georg Lehner <jorge@at.anteris.net>
+
 The smallest functional Emacs in less than 2000 lines of C.
 
 Atto Emacs is inspired by MicroEmacs, Nano, Pico and my earlier project known as Perfect Emacs [1].
-
 
 ![Atto screenshot](https://github.com/hughbarney/atto/blob/master/screenshots/atto.png)
 
@@ -71,6 +72,7 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     C-W   Kill Region (Cut)
     C-X   CTRL-X command prefix
     C-Y   Yank (Paste)
+    C-Y   Suspend the Atto process (Run 'fg' at the shell to resume it)
 
     M-<   Start of file
     M->   End of file

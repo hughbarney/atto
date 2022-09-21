@@ -12,9 +12,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <wchar.h>
+#include <signal.h>
 int mkstemp(char *);
 
-#define VERSION	 "Atto 1.22, Public Domain, Dec 2020, by Hugh Barney,  No warranty."
+#define VERSION	 "Atto 1.22f1, Public Domain, Dec 2020, by Hugh Barney,  No warranty."
 #define PROG_NAME "atto"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwite mode */
@@ -155,6 +156,7 @@ extern void left(void);
 extern void lnbegin(void);
 extern void lnend(void);
 extern void paste(void);
+extern void suspend(void);
 extern void pgdown(void);
 extern void pgup(void);
 extern void quit(void);
@@ -206,3 +208,4 @@ extern void set_parse_state(buffer_t *, point_t);
 extern void set_parse_state2(buffer_t *, point_t);
 extern int parse_text(buffer_t *, point_t);
 extern void resize_terminal();
+extern void arguments(int argc, char **argv);

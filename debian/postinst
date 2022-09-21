@@ -1,0 +1,5 @@
+#!/bin/sh
+
+set -e
+
+update-alternatives --install /usr/bin/editor editor /usr/bin/atto 30

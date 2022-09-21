@@ -37,17 +37,11 @@ int main(int argc, char **argv)
 	init_pair(ID_LINE_COMMENT, COLOR_GREEN, COLOR_BLACK);    /* line comments */
 	init_pair(ID_SINGLE_STRING, COLOR_YELLOW, COLOR_BLACK);  /* single quoted strings */
 	init_pair(ID_DOUBLE_STRING, COLOR_YELLOW, COLOR_BLACK);  /* double quoted strings */
-	
-	if (1 < argc) {
-		curbp = find_buffer(argv[1], TRUE);
-		(void) insert_file(argv[1], FALSE);
-		/* Save filename irregardless of load() success. */
-		strncpy(curbp->b_fname, argv[1], NAME_MAX);
-		curbp->b_fname[NAME_MAX] = '\0'; /* force truncation */
-	} else {
-		curbp = find_buffer("*scratch*", TRUE);
-		strncpy(curbp->b_bname, "*scratch*", STRBUF_S);
-	}
+
+	curbp = find_buffer("*scratch*", TRUE);
+	strncpy(curbp->b_bname, "*scratch*", STRBUF_S);
+
+	arguments(argc, argv);
 
 	wheadp = curwp = new_window();
 	one_window(curwp);
@@ -66,7 +60,7 @@ int main(int argc, char **argv)
 			/* allow TAB and NEWLINE, otherwise any Control Char is 'Not bound' */
 			if (*input > 31 || *input == 10 || *input == 9)
 				insert();
-                        else {
+			else {
 				flushinp(); /* discard without writing in buffer */
 				msg("Not bound");
 			}
@@ -79,6 +73,35 @@ int main(int argc, char **argv)
 	noraw();
 	endwin();
 	return 0;
+}
+
+void arguments(int argc, char **argv)
+{
+	int i, ln = 0, opts = 1;
+	point_t p;
+
+	for (i=1; i < argc; i++) {
+		if (!strcmp(argv[i], "--")) {
+			opts = 0;
+			continue;
+		}
+		if (opts && argv[i][0] == '+') {
+			ln = atoi(argv[i]+1);
+			continue;
+		}
+
+		curbp = find_buffer(argv[i], TRUE);
+		(void) insert_file(argv[i], FALSE);
+		/* Save filename irregardless of load() success. */
+		strncpy(curbp->b_fname, argv[i], NAME_MAX);
+		curbp->b_fname[NAME_MAX] = '\0'; /* force truncation */
+
+		if (ln > 0) {
+			p = line_to_point(ln);
+			if (p != -1) curbp->b_point = p;
+			ln = 0;
+		}
+	}
 }
 
 void fatal(char *msg)

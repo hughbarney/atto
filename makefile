@@ -6,6 +6,10 @@
 # Public Domain 1991, 1993 by Anthony Howe.  No warranty.
 #
 
+BINDIR  = /usr/local/bin
+DOCDIR  = /usr/local/share/doc/atto
+DESTDIR =
+
 CC      = cc
 CFLAGS  = -O -Wall
 
@@ -16,6 +20,7 @@ LIBS    = -lncursesw
 CP      = cp
 MV      = mv
 RM      = rm
+MKDIR	= mkdir
 
 E       =
 O       = .o
@@ -59,8 +64,19 @@ main$(O): main.c header.h
 	$(CC) $(CFLAGS) -c main.c
 
 clean:
-	-$(RM) $(OBJ) atto$(E)
+	-$(RM) -f $(OBJ) atto$(E)
 
-install:
-	-$(MV) atto$(E) /usr/local/bin/
+install: atto$(E)
+	$(MKDIR) -p $(DESTDIR)$(BINDIR)
+	$(CP) atto$(E) $(DESTDIR)$(BINDIR)
 
+uninstall:
+	-$(RM)	$(DESTDIR)$(BINDIR)/atto$(E)
+	@echo not removing $(DESTDIR)$(BINDIR)
+
+install-doc:
+	$(MKDIR) -p $(DESTDIR)$(DOCDIR)
+	$(CP) README.md $(DESTDIR)$(DOCDIR)/
+
+uninstall-doc:
+	$(RM) -rf $(DESTDIR)$(DOCDIR)
