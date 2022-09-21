@@ -87,7 +87,7 @@ point_t pos(buffer_t *bp, register char_t *cp)
 
 int posix_file(char *fn)
 {
-	if (fn[0] == '_')
+	if (fn[0] == '-')
 		return (FALSE);
 
 	for (; *fn != '\0'; ++fn) {
