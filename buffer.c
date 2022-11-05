@@ -49,7 +49,7 @@ buffer_t* find_buffer (char *fname, int cflag)
 		if (bheadp == NULL) {
 			bheadp = bp;
 		} else if (strcmp (bheadp->b_fname, fname) > 0) {
-			/* insert at the begining */
+			/* insert at the beginning */
 			bp->b_next = bheadp;
 			bheadp = bp;
 		} else {

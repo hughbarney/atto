@@ -17,12 +17,12 @@ Atto Emacs is inspired by MicroEmacs, Nano, Pico and my earlier project known as
 * Provide a rich level of functionality in the smallest amount of code
 * Be easy to understand without extensive study (to encourage further experimentation).
 
-In Defining Atto as the lowest functional Emacs I have had to consider the essential feature set that makes Emacs, 'Emacs'.  I have defined this point as a basic Emacs command set and key bindings; the ability to edit multiple files (buffers), and switch between them; edit the buffers in mutliple windows, cut, copy and paste; forward and reverse searching, a replace function, basic syntax hilighting and UTF8 support. The proviso being that all this will fit in less than 2000 lines of C.
+In Defining Atto as the lowest functional Emacs I have had to consider the essential feature set that makes Emacs, 'Emacs'.  I have defined this point as a basic Emacs command set and key bindings; the ability to edit multiple files (buffers), and switch between them; edit the buffers in multiple windows, cut, copy and paste; forward and reverse searching, a replace function, basic syntax highlighting and UTF8 support. The proviso being that all this will fit in less than 2000 lines of C.
 
 
 ## Why the name Atto?
 
-The small Emacs naming scheme appears to use sub-unit prefixes in decending order with each further reduction of functionality.  Atto means 10 to the power of minus 18.   Logically Femto (10^-15) comes after Pico (10^-12). However choosing Atto allows for the potential for **Femto** to be an Atto based Emacs with a scripting language.
+The small Emacs naming scheme appears to use sub-unit prefixes in descending order with each further reduction of functionality.  Atto means 10 to the power of minus 18.   Logically Femto (10^-15) comes after Pico (10^-12). However choosing Atto allows for the potential for **Femto** to be an Atto based Emacs with a scripting language.
 
 * As of November 2017 Atto's big brother **Femto** can be found [here](https://github.com/hughbarney/femto)
 
@@ -104,7 +104,7 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     Right Move point right
     Up    Move to the previous line
     Down  Move to the next line
-    Backspace delete caharacter on the left
+    Backspace delete character on the left
     Ctrl+Up      beginning of file
     Ctrl+Down    end of file
     Ctrk+Left    Page Down
@@ -154,9 +154,9 @@ The priority now is bug fixes and keeping the code count below 2000 lines. Bug f
 
 Atto supports multiple windows !  This was the hardest part of the project to get working reliably.
 
-The lack of multiple windows would have been quickly noticed as it is a very visible feature of the Emacs user interface.  It is very useful to be able to look at some code in one window whilst editing another section of the same file (or a different file) in another window.  As more than one window can access the same buffer the current point now has now to be associated with the window structure and updated back to the buffer structure whenever any gap or display code is called that accesses the point location. The strategy I used in the end was to treat the buffer as the master and update the window structure with copies of the critical values (point, page, epage, cursor row & col) after each display update of that window.  This is because the display code does the calculations necessary to reframe the sceen when the point scrolls up off the screen or below the screen. Getting everthing to work correctly when displaying the same buffer in more that one winow was a reall challenge and took arpund 15-20 hours to get it working.
+The lack of multiple windows would have been quickly noticed as it is a very visible feature of the Emacs user interface.  It is very useful to be able to look at some code in one window whilst editing another section of the same file (or a different file) in another window.  As more than one window can access the same buffer the current point now has now to be associated with the window structure and updated back to the buffer structure whenever any gap or display code is called that accesses the point location. The strategy I used in the end was to treat the buffer as the master and update the window structure with copies of the critical values (point, page, epage, cursor row & col) after each display update of that window.  This is because the display code does the calculations necessary to reframe the screen when the point scrolls up off the screen or below the screen. Getting everything to work correctly when displaying the same buffer in more that one winow was a real challenge and took arpund 15-20 hours to get it working.
 
-A multi-window display issue (specifically evident in a buffer-gap editor) was resolved in Atto 1.6.  This is where you are editing a file that is displayed in more than one window.  Say you are in window1 and delete 3 lines, the current point in the other windows (if the point is below the point in window1) have to be adjusted to take into account that thier relative positions in the buffer have now shifted up. We do this by tracking the size of the text in the buffer before and after each command.  At the start of the display function we can work out the difference and adjust the other windows when they are updated. This mechanism works well even when inserting a text file that means that the gap has to be re-allocated.
+A multi-window display issue (specifically evident in a buffer-gap editor) was resolved in Atto 1.6.  This is where you are editing a file that is displayed in more than one window.  Say you are in window1 and delete 3 lines, the current point in the other windows (if the point is below the point in window1) have to be adjusted to take into account that their relative positions in the buffer have now shifted up. We do this by tracking the size of the text in the buffer before and after each command.  At the start of the display function we can work out the difference and adjust the other windows when they are updated. This mechanism works well even when inserting a text file that means that the gap has to be re-allocated.
 
 
 ## Known Issues

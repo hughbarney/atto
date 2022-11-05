@@ -1,4 +1,4 @@
-/* hlite.c, generic syntax hilighting, Atto Emacs, Hugh Barney, Public Domain, 2016 */
+/* hlite.c, generic syntax highlighting, Atto Emacs, Hugh Barney, Public Domain, 2016 */
 
 #include "header.h"
 

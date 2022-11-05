@@ -17,7 +17,7 @@ int mkstemp(char *);
 #define VERSION	 "Atto 1.22, Public Domain, Dec 2020, by Hugh Barney,  No warranty."
 #define PROG_NAME "atto"
 #define B_MODIFIED	0x01		/* modified buffer */
-#define B_OVERWRITE	0x02		/* overwite mode */
+#define B_OVERWRITE	0x02		/* overwrite mode */
 #define MSGLINE         (LINES-1)
 #define NOMARK          -1
 #define CHUNK           8096L
@@ -53,7 +53,7 @@ typedef struct buffer_t
 	struct buffer_t *b_next;  /* Link to next buffer_t */
 	point_t b_mark;	     	  /* the mark */
 	point_t b_point;          /* the point */
-	point_t b_cpoint;         /* the original current point, used for mutliple window displaying */
+	point_t b_cpoint;         /* the original current point, used for multiple window displaying */
 	point_t b_page;           /* start of page */
 	point_t b_epage;          /* end of page */
 	point_t b_reframe;        /* force a reframe of the display */

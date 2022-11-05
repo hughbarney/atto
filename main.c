@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 	if (1 < argc) {
 		curbp = find_buffer(argv[1], TRUE);
 		(void) insert_file(argv[1], FALSE);
-		/* Save filename irregardless of load() success. */
+		/* Save filename regardless of load() success. */
 		strncpy(curbp->b_fname, argv[1], NAME_MAX);
 		curbp->b_fname[NAME_MAX] = '\0'; /* force truncation */
 	} else {
