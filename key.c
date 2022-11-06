@@ -19,6 +19,7 @@ keymap_t keymap[] = {
 	{"C-v forward-page         ", "\x16", pgdown },
 	{"C-w kill-region          ", "\x17", cut},
 	{"C-y yank                 ", "\x19", paste},
+	{"C-z suspend              ", "\x1A", suspend},
 	{"C-space set-mark         ", "\x00", iblock },  /* ctrl-space */
 	{"C-x 1 delete-other-window", "\x18\x31", delete_other_windows },
 	{"C-x 2 split-window       ", "\x18\x32", split_window },

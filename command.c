@@ -354,3 +354,5 @@ void showpos()
 			curbp->b_point, ((curbp->b_ebuf - curbp->b_buf) - (curbp->b_egap - curbp->b_gap)));
 	}
 }
+
+void suspend() { raise(SIGTSTP); }
