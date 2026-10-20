@@ -13,8 +13,6 @@ char temp[TEMPBUF];
 char searchtext[STRBUF_M];
 char replace[STRBUF_M];
 
-keymap_t *key_return;
-keymap_t *key_map;
 buffer_t *curbp;			/* current buffer */
 buffer_t *bheadp;			/* head of list of buffers */
 window_t *curwp;
@@ -22,10 +20,13 @@ window_t *wheadp;
 
 int main(int argc, char **argv)
 {
+	void (*command)(void);
+
 	setlocale(LC_ALL, "") ; /* required for 3,4 byte UTF8 chars */
 	if (initscr() == NULL) fatal("%s: Failed to initialize the screen.\n");
 	raw();
 	noecho();
+	keypad(stdscr, TRUE);
 	idlok(stdscr, TRUE);
 
 	start_color();
@@ -54,14 +55,13 @@ int main(int argc, char **argv)
 	associate_b2w(curbp, curwp);
 
 	if (!growgap(curbp, CHUNK)) fatal("%s: Failed to allocate required memory.\n");
-	key_map = keymap;
 
 	while (!done) {
 		update_display();
-		input = get_key(key_map, &key_return);
+		input = get_key(&command);
 
-		if (key_return != NULL) {
-			(key_return->func)();
+		if (command != NULL) {
+			command();
 		} else {
 			/* allow TAB and NEWLINE, otherwise any Control Char is 'Not bound' */
 			if (*input > 31 || *input == 10 || *input == 9)

@@ -42,12 +42,6 @@ int mkstemp(char *);
 typedef unsigned char char_t;
 typedef long point_t;
 
-typedef struct keymap_t {
-	char *key_desc;                 /* name of bound function */
-	char *key_bytes;		/* the string of bytes when this key is pressed */
-	void (*func)(void);
-} keymap_t;
-
 typedef struct buffer_t
 {
 	struct buffer_t *b_next;  /* Link to next buffer_t */
@@ -110,9 +104,6 @@ extern char msgline[];          /* Message line input/output buffer. */
 extern char temp[];             /* Temporary buffer. */
 extern char searchtext[];
 extern char replace[];
-extern keymap_t *key_map;       /* Command key mappings. */
-extern keymap_t keymap[];
-extern keymap_t *key_return;    /* Command key return */
 
 extern void fatal(char *);
 extern void msg(char *, ...);
@@ -128,7 +119,7 @@ extern point_t segstart(buffer_t *, point_t, point_t);
 extern point_t segnext(buffer_t *, point_t, point_t);
 extern point_t upup(buffer_t *, point_t);
 extern point_t dndn(buffer_t *, point_t);
-extern char_t *get_key(keymap_t *, keymap_t **);
+extern char_t *get_key(void (**)(void));
 extern int getinput(char *, char *, int, int);
 extern int getfilename(char *, char *, int);
 extern void display_prompt_and_response(char *, char *);

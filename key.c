@@ -2,14 +2,42 @@
 
 #include "header.h"
 
+struct mapkey {
+	const char *key_desc;   	/* name of bound function */
+	const char *key_bytes;  	/* the string of bytes when this key is pressed */
+	void (*func)(void);
+};
+
+struct cursorkey {
+	const char *key_desc;
+	int key_val;
+	void (*func)(void);
+};
+
+static const struct cursorkey curskeymap[] = {
+	{"backspace delete-left    ", KEY_BACKSPACE, backsp },
+	{"down next-line           ", KEY_DOWN, down },
+	{"up previous-line         ", KEY_UP, up },
+	{"left backward-character  ", KEY_LEFT, left },
+	{"right forward-character  ", KEY_RIGHT, right },
+	{"home beginning-of-line   ", KEY_HOME, lnbegin },
+	{"end end-of-line          ", KEY_END, lnend },
+	{"pgup backward-page       ", KEY_PPAGE, pgup },
+	{"pgdn forward-page        ", KEY_NPAGE, pgdown },
+	{"resize resize-terminal   ", KEY_RESIZE, resize_terminal },
+	{"del forward-delete-char  ", KEY_DC, delete },
+	{"ins toggle-overwrite-mode", KEY_IC, toggle_overwrite_mode },
+	{"K_ERROR                  ", -1, NULL }
+};
+
 /* desc, keys, func */
-keymap_t keymap[] = {
+static const struct mapkey keymap[] = {
 	{"C-a beginning-of-line    ", "\x01", lnbegin },
 	{"C-b backward-char        ", "\x02", left },
 	{"C-d delete               ", "\x04", delete },
 	{"C-e end-of-line          ", "\x05", lnend },
 	{"C-f foward-char          ", "\x06", right },
-	{"C-h backspace            ", "\x08", backsp },
+	{"C-h backspace            ", "\x7F", backsp },
 	{"C-k kill-to-eol          ", "\x0B", killtoeol },
 	{"C-l refresh              ", "\x0C", redraw },
 	{"C-n next-line            ", "\x0E", down },
@@ -42,40 +70,23 @@ keymap_t keymap[] = {
 	{"esc @ set-mark           ", "\x1B\x40", iblock },  /* esc-@ */
 	{"esc < beg-of-buf         ", "\x1B\x3C", top },
 	{"esc > end-of-buf         ", "\x1B\x3E", bottom },
-	{"esc home, beg-of-buf     ", "\x1B\x1B\x4F\x48", top },
-	{"esc end, end-of-buf      ", "\x1B\x1B\x4F\x46", bottom },
-	{"esc up, beg-of-buf       ", "\x1B\x1B\x5B\x41", top },
-	{"esc down, end-of-buf     ", "\x1B\x1B\x5B\x42", bottom },
 	{"esc esc show-version     ", "\x1B\x1B", version },
-	{"ins toggle-overwrite-mode", "\x1B\x5B\x32\x7E", toggle_overwrite_mode }, /* Ins key */
-	{"del forward-delete-char  ", "\x1B\x5B\x33\x7E", delete }, /* Del key */
-	{"backspace delete-left    ", "\x7f", backsp },
-	{"up previous-line         ", "\x1B\x5B\x41", up },
-	{"down next-line           ", "\x1B\x5B\x42", down },
-	{"left backward-character  ", "\x1B\x5B\x44", left },
-	{"right forward-character  ", "\x1B\x5B\x43", right },
-	{"home beginning-of-line   ", "\x1B\x4F\x48", lnbegin },
-	{"end end-of-line          ", "\x1B\x4F\x46", lnend },
-	{"home beginning-of-line   ", "\x1B\x5B\x48", lnbegin },
-	{"end end-of-line          ", "\x1B\x5B\x46", lnend },
-	{"pgup backward-page       ", "\x1B\x5B\x35\x7E",pgup }, /* PgUp key */
-	{"pgdn forward-page        ", "\x1B\x5B\x36\x7E", pgdown }, /* PgDn key */
-        {"resize resize-terminal   ", "\x9A",     resize_terminal },
 	{"K_ERROR                  ", NULL, NULL }
 };
 
-char_t *get_key(keymap_t *keys, keymap_t **key_return)
+char_t *get_key(void (**command_return)(void))
 {
-	keymap_t *k;
+	const struct cursorkey *ck;
+	const struct mapkey *k;
 	int submatch;
+	int res;
 	static char_t buffer[K_BUFFER_LENGTH];
 	static char_t *record = buffer;
 
-	*key_return = NULL;
+	*command_return = NULL;
 
 	/* if recorded bytes remain, return next recorded byte. */
 	if (*record != '\0') {
-		*key_return = NULL;
 		return record++;
 	}
 	/* reset record buffer. */
@@ -84,11 +95,22 @@ char_t *get_key(keymap_t *keys, keymap_t **key_return)
 	do {
 		assert(K_BUFFER_LENGTH > record - buffer);
 		/* read and record one byte. */
-		*record++ = (unsigned)getch();
+		res = getch();
+		*record++ = (char_t)res;
 		*record = '\0';
+		if (res == ERR) {
+			return record; /* empty string */
+		}
+
+		for (ck = curskeymap; ck->func != NULL; ++ck) {
+			if (ck->key_val == res) {
+				*command_return = ck->func;
+				return record; /* empty string */
+			}
+		}
 
 		/* if recorded bytes match any multi-byte sequence... */
-		for (k = keys, submatch = 0; k->key_bytes != NULL; ++k) {
+		for (k = keymap, submatch = 0; k->key_bytes != NULL; ++k) {
 			char_t *p, *q;
 
 			for (p = buffer, q = (char_t *)k->key_bytes; *p == *q; ++p, ++q) {
@@ -96,7 +118,7 @@ char_t *get_key(keymap_t *keys, keymap_t **key_return)
 				if (*q == '\0' && *p == '\0') {
 	    				record = buffer;
 					*record = '\0';
-					*key_return = k;
+					*command_return = k->func;
 					return record; /* empty string */
 				}
 			}

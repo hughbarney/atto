@@ -105,10 +105,6 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     Up    Move to the previous line
     Down  Move to the next line
     Backspace delete character on the left
-    Ctrl+Up      beginning of file
-    Ctrl+Down    end of file
-    Ctrk+Left    Page Down
-    Ctrl+Right   Page Up
 
 ### Copying and moving
 
