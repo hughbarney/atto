@@ -1,5 +1,5 @@
 /* header.h, Atto Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
-#define _XOPEN_SOURCE
+#define _XOPEN_SOURCE 600
 #include <locale.h>
 #include <stdlib.h>
 #include <stdarg.h>
