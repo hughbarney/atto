@@ -111,7 +111,7 @@ char_t *get_key(keymap_t *keys, keymap_t **key_return)
 	return (record++);
 }
 
-int getinput(char *prompt, char *buf, int nbuf, int flag)
+int getinput(const char *prompt, char *buf, int nbuf, int flag)
 {
 	int cpos = 0;
 	int c;

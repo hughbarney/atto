@@ -25,7 +25,7 @@ void buffer_init(buffer_t *bp)
 }
 
 /* Find a buffer by filename or create if requested */
-buffer_t* find_buffer (char *fname, int cflag)
+buffer_t* find_buffer (const char *fname, int cflag)
 {
 	buffer_t *bp = NULL;
 	buffer_t *sb = NULL;
@@ -90,7 +90,7 @@ int delete_buffer (buffer_t *bp)
 	return TRUE;
 }
 
-void next_buffer()
+void next_buffer(void)
 {
 	assert(curbp != NULL);
 	assert(bheadp != NULL);
@@ -104,7 +104,7 @@ char* get_buffer_name(buffer_t *bp)
 	return (strlen(bp->b_fname) > 0) ? bp->b_fname : bp->b_bname;
 }
 
-int count_buffers()
+int count_buffers(void)
 {
 	buffer_t* bp;
 	int i;
@@ -115,7 +115,7 @@ int count_buffers()
 	return i;
 }
 
-int modified_buffers()
+int modified_buffers(void)
 {
 	buffer_t* bp;
 

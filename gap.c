@@ -22,13 +22,13 @@ int growgap(buffer_t *bp, point_t n)
 	newlen = buflen + n * sizeof (char_t);
 
 	if (buflen == 0) {
-		if (newlen < 0 || MAX_SIZE_T < newlen)
+		if (newlen < 0 || MAX_SIZE_T < (size_t) newlen)
 			fatal("%s: Failed to allocate required memory.\n");
 		new = (char_t*) malloc((size_t) newlen);
 		if (new == NULL)			
 			fatal("%s: Failed to allocate required memory.\n");	/* Cannot edit a file without a buffer. */
 	} else {
-		if (newlen < 0 || MAX_SIZE_T < newlen) {
+		if (newlen < 0 || MAX_SIZE_T < (size_t) newlen) {
 			msg("Failed to allocate required memory");
 			return (FALSE);
 		}
@@ -71,7 +71,7 @@ point_t movegap(buffer_t *bp, point_t offset)
 }
 
 /* Given a buffer offset, convert it to a pointer into the buffer */
-char_t * ptr(buffer_t *bp, register point_t offset)
+char_t * ptr(buffer_t *bp, point_t offset)
 {
 	if (offset < 0)
 		return (bp->b_buf);
@@ -79,7 +79,7 @@ char_t * ptr(buffer_t *bp, register point_t offset)
 }
 
 /* Given a pointer into the buffer, convert it to a buffer offset */
-point_t pos(buffer_t *bp, register char_t *cp)
+point_t pos(buffer_t *bp, char_t *cp)
 {
 	assert(bp->b_buf <= cp && cp <= bp->b_ebuf);
 	return (cp - bp->b_buf - (cp < bp->b_egap ? 0 : bp->b_egap - bp->b_gap));
@@ -113,7 +113,7 @@ int save(char *fn)
 	}
 	(void) movegap(curbp, (point_t) 0);
 	length = (point_t) (curbp->b_ebuf - curbp->b_egap);
-	if (fwrite(curbp->b_egap, sizeof (char), (size_t) length, fp) != length) {
+	if (fwrite(curbp->b_egap, sizeof (char), (size_t) length, fp) != (size_t)length) {
 		msg("Failed to write file \"%s\".", fn);
 		return (FALSE);
 	}
@@ -146,7 +146,7 @@ int insert_file(char *fn, int modflag)
 		msg("Failed to find file \"%s\".", fn);
 		return (FALSE);
 	}
-	if (MAX_SIZE_T < sb.st_size) {
+	if (MAX_SIZE_T < (size_t) sb.st_size) {
 		msg("File \"%s\" is too big to load.", fn);
 		return (FALSE);
 	}

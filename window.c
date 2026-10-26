@@ -4,7 +4,7 @@
 
 int win_cnt = 0;
 
-window_t* new_window()
+window_t* new_window(void)
 {
 	window_t *wp = (window_t *)malloc(sizeof(window_t));
 	
@@ -27,7 +27,7 @@ void one_window(window_t *wp)
 	wp->w_next = NULL;
 }
 
-void split_window()
+void split_window(void)
 {
 	window_t *wp, *wp2;
 	int ntru, ntrl;
@@ -56,7 +56,7 @@ void split_window()
 	redraw(); /* mark the lot for update */
 }
 
-void next_window() {
+void next_window(void) {
 	curwp->w_update = TRUE; /* make sure modeline gets updated */
 	curwp = (curwp->w_next == NULL ? wheadp : curwp->w_next);
 	curbp = curwp->w_bufp;
@@ -65,7 +65,7 @@ void next_window() {
 		w2b(curwp); /* push win vars to buffer */
 }
 
-void delete_other_windows()
+void delete_other_windows(void)
 {
 	if (wheadp->w_next == NULL) {
 		msg("Only 1 window");

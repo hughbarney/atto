@@ -3,7 +3,7 @@
 #include "header.h"
 
 /* basic filename completion, based on code in uemacs/PK */
-int getfilename(char *prompt, char *buf, int nbuf)
+int getfilename(const char *prompt, char *buf, int nbuf)
 {
 	static char temp_file[] = TEMPFILE;
 	int cpos = 0;	/* current character position in string */

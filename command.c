@@ -14,7 +14,7 @@ void copy() { copy_cut(FALSE); }
 void cut() { copy_cut(TRUE); }
 void resize_terminal() { one_window(curwp); }
 
-void quit_ask()
+void quit_ask(void)
 {
 	if (modified_buffers() > 0) {
 		mvaddstr(MSGLINE, 0, "Modified buffers exist; really exit (y/n) ?");
@@ -38,7 +38,7 @@ int yesno(int flag)
 	return (tolower(ch) == 'y');
 }
 
-void redraw()
+void redraw(void)
 {
 	window_t *wp;
 	
@@ -48,14 +48,14 @@ void redraw()
 	update_display();
 }
 
-void left()
+void left(void)
 {
 	int n = prev_utf8_char_size();
 	while (0 < curbp->b_point && n-- > 0)
 		--curbp->b_point;
 }
 
-void right()
+void right(void)
 {
 	int n = utf8_size(*ptr(curbp,curbp->b_point));
 	while ((curbp->b_point < pos(curbp, curbp->b_ebuf)) && n-- > 0)
@@ -71,7 +71,7 @@ int utf8_size(char_t c)
 	return 1; /* if in doubt it is 1 */
 }
 
-int prev_utf8_char_size()
+int prev_utf8_char_size(void)
 {
 	int n;
 	for (n=2;n<5;n++)
@@ -80,7 +80,7 @@ int prev_utf8_char_size()
 	return 1;
 }
 
-void lnend()
+void lnend(void)
 {
         if (curbp->b_point == pos(curbp, curbp->b_ebuf)) return; /* do nothing if EOF */
 	curbp->b_point = dndn(curbp, curbp->b_point);
@@ -89,7 +89,7 @@ void lnend()
 	curbp->b_point = (*ptr(curbp, curbp->b_point) == '\n') ? curbp->b_point : p;
 }
 
-void wleft()
+void wleft(void)
 {
 	char_t *p;
 	while (!isspace(*(p = ptr(curbp, curbp->b_point))) && curbp->b_buf < p)
@@ -98,7 +98,7 @@ void wleft()
 		--curbp->b_point;
 }
 
-void pgdown()
+void pgdown(void)
 {
 	curbp->b_page = curbp->b_point = upup(curbp, curbp->b_epage);
 	while (0 < curbp->b_row--)
@@ -106,7 +106,7 @@ void pgdown()
 	curbp->b_epage = pos(curbp, curbp->b_ebuf);
 }
 
-void pgup()
+void pgup(void)
 {
 	int i = curwp->w_rows;
 	while (0 < --i) {
@@ -115,7 +115,7 @@ void pgup()
 	}
 }
 
-void wright()
+void wright(void)
 {
 	char_t *p;
 	while (!isspace(*(p = ptr(curbp, curbp->b_point))) && p < curbp->b_ebuf)
@@ -124,7 +124,7 @@ void wright()
 		++curbp->b_point;
 }
 
-void insert()
+void insert(void)
 {
 	assert(curbp->b_gap <= curbp->b_egap);
 	if (curbp->b_gap == curbp->b_egap && !growgap(curbp, CHUNK))
@@ -145,7 +145,7 @@ void insert()
 	curbp->b_flags |= B_MODIFIED;
 }
 
-void backsp()
+void backsp(void)
 {
 	curbp->b_point = movegap(curbp, curbp->b_point);
 	if (curbp->b_buf < curbp->b_gap) {
@@ -155,7 +155,7 @@ void backsp()
 	curbp->b_point = pos(curbp, curbp->b_egap);
 }
 
-void delete()
+void delete(void)
 {
 	curbp->b_point = movegap(curbp, curbp->b_point);
 	if (curbp->b_egap < curbp->b_ebuf) {
@@ -165,7 +165,7 @@ void delete()
 	}
 }
 
-void gotoline()
+void gotoline(void)
 {
 	int line;
 	point_t p;
@@ -182,13 +182,13 @@ void gotoline()
 	}
 }
 
-void insertfile()
+void insertfile(void)
 {
 	if (getfilename("Insert file: ", temp, NAME_MAX))
 		(void)insert_file(temp, TRUE);
 }
 
-void readfile()
+void readfile(void)
 {
 	buffer_t *bp;
 	
@@ -213,7 +213,7 @@ void readfile()
 	}
 }
 
-void savebuffer()
+void savebuffer(void)
 {
 	if (curbp->b_fname[0] != '\0') {
 		save(curbp->b_fname);
@@ -224,7 +224,7 @@ void savebuffer()
 	refresh();
 }
 
-void writefile()
+void writefile(void)
 {
 	strncpy(temp, curbp->b_fname, NAME_MAX);
 	if (getinput("Write file: ", temp, NAME_MAX, F_NONE))
@@ -232,7 +232,7 @@ void writefile()
 			strncpy(curbp->b_fname, temp, NAME_MAX);
 }
 
-void killbuffer()
+void killbuffer(void)
 {
 	buffer_t *kill_bp = curbp;
 	buffer_t *bp;
@@ -260,20 +260,20 @@ void killbuffer()
 	delete_buffer(kill_bp);
 }
 
-void iblock()
+void iblock(void)
 {
 	block();
 	msg("Mark set");
 }
 
-void toggle_overwrite_mode() {
+void toggle_overwrite_mode(void) {
 	if (curbp->b_flags & B_OVERWRITE)
 		curbp->b_flags &= ~B_OVERWRITE;
 	else
 		curbp->b_flags |= B_OVERWRITE;
 }
 
-void killtoeol()
+void killtoeol(void)
 {
         if (curbp->b_point == pos(curbp, curbp->b_ebuf))
 		return; /* do nothing if at end of file */
@@ -323,7 +323,7 @@ void copy_cut(int cut)
 	}
 }
 
-void paste()
+void paste(void)
 {
 	if(curbp->b_flags & B_OVERWRITE)
 		return;
@@ -338,7 +338,7 @@ void paste()
 	}
 }
 
-void showpos()
+void showpos(void)
 {
 	int current, lastln;
 	point_t end_p = pos(curbp, curbp->b_ebuf);

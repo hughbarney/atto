@@ -5,7 +5,7 @@
 #define FWD_SEARCH 1
 #define REV_SEARCH 2
 
-void search()
+void search(void)
 {
 	int cpos = 0;	
 	int c;
@@ -61,7 +61,7 @@ void search()
 	}
 }
 
-void display_search_result(point_t found, int dir, char *prompt, char *search)
+void display_search_result(point_t found, int dir, const char *prompt, const char *search)
 {
 	if (found != -1 ) {
 		curbp->b_point = found;

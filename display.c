@@ -3,9 +3,9 @@
 #include "header.h"
 
 /* Reverse scan for start of logical line containing offset */
-point_t lnstart(buffer_t *bp, register point_t off)
+point_t lnstart(buffer_t *bp, point_t off)
 {
-	register char_t *p;
+	char_t *p;
 	do
 		p = ptr(bp, --off);
 	while (bp->b_buf < p && *p != '\n');
@@ -136,7 +136,7 @@ void display(window_t *wp, int flag)
 				/* reset if invalid multi-byte character */
 				if (mbtowc(&c, (char*)p, 6) < 0) mbtowc(NULL, NULL, 0); 
 				j += wcwidth(c) < 0 ? 1 : wcwidth(c);
-				display_utf8(bp, *p, nch);
+				display_utf8(bp, nch);
 			} else if (isprint(*p) || *p == '\t' || *p == '\n') {
 				j += *p == '\t' ? 8-(j&7) : 1;
 				token_type = parse_text(bp, bp->b_epage);
@@ -175,7 +175,7 @@ void display(window_t *wp, int flag)
 	attron(COLOR_PAIR(ID_SYMBOL));
 }
 
-void display_utf8(buffer_t *bp, char_t c, int n)
+void display_utf8(buffer_t *bp, int n)
 {
 	char sbuf[6];
 	int i = 0;
@@ -204,7 +204,7 @@ void modeline(window_t *wp)
 		addch(lch);
 }
 
-void dispmsg()
+void dispmsg(void)
 {
 	move(MSGLINE, 0);
 	if (msgflag) {
@@ -215,7 +215,7 @@ void dispmsg()
 	clrtoeol();
 }
 
-void display_prompt_and_response(char *prompt, char *response)
+void display_prompt_and_response(const char *prompt, const char *response)
 {
 	mvaddstr(MSGLINE, 0, prompt);
 	/* if we have a value print it and go to end of it */
@@ -224,7 +224,7 @@ void display_prompt_and_response(char *prompt, char *response)
 	clrtoeol();
 }
 
-void update_display()
+void update_display(void)
 {   
 	window_t *wp;
 	buffer_t *bp;

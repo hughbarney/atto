@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-void fatal(char *msg)
+void fatal(const char *msg)
 {
 	if (curscr != NULL) {
 		move(LINES-1, 0);
@@ -94,7 +94,7 @@ void fatal(char *msg)
 	exit(1);
 }
 
-void msg(char *msg, ...)
+void msg(const char *msg, ...)
 {
 	va_list args;
 	va_start(args, msg);

@@ -6,16 +6,16 @@ int state = ID_DEFAULT;
 int next_state = ID_DEFAULT;
 int skip_count = 0;
 
-char_t get_at(buffer_t *bp, point_t pt)
+static char_t get_at(buffer_t *bp, point_t pt)
 {
 	return (*ptr(bp, pt));
 }
 
 static char_t symbols[] = "{}[]()!'£$%^&*-+=:;@~#<>,.?/\\|";
 
-int is_symbol(char_t c)
+static int is_symbol(char_t c)
 {
-	register char_t *p = symbols;
+	char_t *p = symbols;
 
 	for (p = symbols; *p != '\0'; p++)
 		if (*p == c) return 1;
@@ -24,7 +24,7 @@ int is_symbol(char_t c)
 
 void set_parse_state(buffer_t *bp, point_t pt)
 {
-	register point_t po;
+	point_t po;
 
 	state = ID_DEFAULT;
 	next_state = ID_DEFAULT;
