@@ -196,7 +196,7 @@ extern void one_window(window_t *);
 extern void split_window();
 extern void next_window();
 extern void delete_other_windows();
-extern void free_other_windows();
+extern void free_other_windows(window_t *);
 extern void update_display();
 extern void w2b(window_t *);
 extern void b2w(window_t *);
